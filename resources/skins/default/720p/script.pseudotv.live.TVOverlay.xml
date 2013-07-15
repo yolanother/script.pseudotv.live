@@ -1,0 +1,273 @@
+<window>
+    <allowoverlay>no</allowoverlay>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <controls>
+        <control type="image" id="101">
+            <description>Background</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>1080</height>
+            <texture>pstvSolid.png</texture>
+            <colordiffuse>FF000000</colordiffuse>
+        </control>
+        <control type="image" id="103">
+            <description>Channel Bug</description>
+            <posx>150r</posx>
+            <posy>125r</posy>
+            <width>100</width>
+            <height>100</height>
+            <aspectratio>keep</aspectratio>
+            <texture></texture>
+            <animation effect="fade" start="40" end="40" condition="True">Conditional</animation>
+        </control>
+        <!--Background Image -->
+        <control type="group" id="102">
+            <animation effect="fade" time="500">VisibleChange</animation>
+            <control type="image">
+                <description>Info Background</description>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1280</width>
+                <height>720</height>
+                <texture>pstvInfoWindow.png</texture>
+            </control>
+            <control type="grouplist">
+                <posx>155</posx>
+                <posy>500</posy>
+                <width>850</width>
+                <height>30</height>
+                <orientation>horizontal</orientation>
+                <itemgap>6</itemgap>
+
+                <control type="label" id="502">
+                    <description>Now watching Label</description>
+                    <width>175</width>
+                    <height>30</height>
+                    <label>Now watching</label>
+                    <font>Font_Bold34</font>
+                    <align>center</align>
+                    <textcolor>FFFFFFFF</textcolor>
+                </control>
+                <control type="label" id="503">
+                    <description>Show Name Label</description>
+                    <width min="5" max="600">auto</width>
+                    <height>30</height>
+                    <label>Show Name</label>
+                    <font>Font_Bold34</font>
+                    <align>left</align>
+                    <textcolor>FF00b4db</textcolor>
+                </control>                
+                <control type="label">
+                    <description>Show Name Label</description>
+                    <width min="10" max="50">auto</width>
+                    <height>30</height>
+                    <label></label>
+                    <font>font_bold20</font>
+                    <align>left</align>
+                    <textcolor>FF00b4db</textcolor>
+                </control>
+<!-- 				<control type="label">
+					<description>Show on</description>
+					<width>22</width>
+					<height>30</height>
+					<label>on</label>
+					<font>font13</font>
+					<align>left</align>
+					<textcolor>FFFFFFFF</textcolor>
+				</control>
+				<control type="label" id="300">
+					<description>Channel Name</description>
+					<width min="5" max="600">auto</width>
+					<height>30</height>
+					<label>Channel Name</label>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FFFFFFFF</textcolor>
+				</control> -->
+				<!-- TVDB/TMDB ID *Lunatixz -->
+				<!--
+				<control type="label" id="500">
+					<description>Show tvid Label</description>
+					<width min="5" max="100">auto</width>
+					<height>30</height>
+					<label></label>
+					<font>font_bold20</font>
+					<align>left</align>
+					<textcolor>FF00b4db</textcolor>
+				</control>  
+				-->
+				<control type="label" id="504">
+					<description>Show Title Label</description>
+					<width min="5" max="600">auto</width>
+					<height>30</height>
+					<label>Show Title</label>
+					<font>Font_Reg28</font>
+					<align>left</align>
+					<textcolor>FFFFFFFF</textcolor>
+				</control>
+			</control>
+			
+			<control type="label" id="505">
+    			<posx>155</posx>
+                <posy>540</posy>
+                <width>865</width>
+                <height>60</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <label>Show Description</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <font>font12</font>
+    			<wrapmultiline>true</wrapmultiline>
+    			<autoscroll time="2000" delay="2000" repeat="9000">Skin.HasSetting(AutoScroll)</autoscroll>
+            </control>            
+            <control type="image" id="506">
+                <description>Channel Logo</description>
+                <posx>10</posx>
+                <posy>490</posy>
+                <width>125</width>
+                <height>125</height>
+    			<aspectratio>keep</aspectratio>
+            </control>
+            
+            <control type="image" id="507">
+                <!-- <texture>$INFO[Player.Art(poster)]</texture> -->
+                <texture>$INFO[VideoPlayer.Cover]</texture>
+				<posx>1040</posx>
+                <posy>420</posy>
+                <width  max="200">auto</width>
+                <height  max="300">auto</height>
+    			<aspectratio>scale</aspectratio>
+            </control>
+			<control type="image" id="507">
+                <!-- <texture>$INFO[Player.Art(poster)]</texture> -->
+                <texture>$INFO[Player.Art(poster)]</texture>
+				<posx>1040</posx>
+                <posy>420</posy>
+                <width  max="200">auto</width>
+                <height  max="300">auto</height>
+    			<aspectratio>scale</aspectratio>
+            </control>
+            <control type="image" id="508">
+                <texture>$INFO[Player.Art(tvshow.poster)]</texture>
+                <posx>1040</posx>
+                <posy>420</posy>
+                <width  max="200">auto</width>
+                <height  max="300">auto</height>
+    			<aspectratio>scale</aspectratio>
+            </control>
+            
+			<!-- <control type="label" id="509">
+				<posx>155</posx>
+    			<posy>627</posy>
+				<width  max="800">auto</width>
+    		    <height>30</height>
+				<align>left</align>
+				<font>font12</font>
+				<textcolor>FFFFFFFF</textcolor>
+				<label>$INFO[VideoPlayer.NextTitle]</label>
+			</control> -->
+			<!-- <control type="image" id="999">
+				<description>Rating</description>
+				<posx>60</posx>
+    			<posy>627</posy>
+				<width>60</width>
+    		    <height>60</height>
+				<align>left</align>
+				<aspectratio>keep</aspectratio>
+				<texture fallback="flags/rating/MPAA_NR_Certificate_US.png">$VAR[RatingFlagVar,flags/rating/,.png]</texture>
+			</control> -->
+			<!-- <control type="image" id="999">
+				<description>Resolution</description>
+				<posx>20</posx>
+    			<posy>627</posy>
+				<width  max="800">auto</width>
+    		    <height>50</height>
+				<align>center</align>
+				<aspectratio>keep</aspectratio>
+				<texture fallback="flags/source/defaultscreen.png">$INFO[VideoPlayer.VideoResolution,flags/resolution/,.png]</texture>
+			</control>
+			 -->
+			<control type="fadelabel">
+				<posx>830</posx>
+    			<posy>630</posy>
+				 <width>250</width>
+    		     <height>8</height>
+				<align>left</align>
+				<font>font12</font>
+				<textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[VideoPlayer.Genre]</label>
+                <label>$INFO[VideoPlayer.RatingAndVotes,[COLOR bcicon]$LOCALIZE[31095]:[/COLOR] ]$INFO[VideoPlayer.Top250,[COLOR bcicon] $LOCALIZE[13409][/COLOR] # ]</label>
+                <label>$INFO[VideoPlayer.mpaa]</label>
+				<label>$INFO[VideoPlayer.TimeRemaining, Remaining: ]</label>
+				<scroll>true</scroll>
+				<scrollspeed>90</scrollspeed>
+				<pauseatend>5000</pauseatend>
+				<visible>VideoPlayer.Content(movies)</visible>
+			</control>
+			<control type="fadelabel">
+				<posx>830</posx>
+    			<posy>630</posy>
+				 <width>650</width>i
+    		     <height>8</height>
+				<align>left</align>
+				<font>font12</font>
+				<textcolor>FFFFFFFF</textcolor>
+				<label>$INFO[VideoPlayer.Premiered, First aired: ]</label>
+				<label>$INFO[Player.Duration, Duration: ]</label>
+            	<label>$INFO[Player.TimeRemaining, Remaining: ]</label>
+				<label>$INFO[PlayerPlayer.FinishTime, Finish By: ]</label>
+            <scroll>true</scroll>
+            <scrollspeed>70</scrollspeed>
+            <pauseatend>5000</pauseatend>
+            <visible>VideoPlayer.Content(episodes)</visible>
+        </control>
+        <control type="image" id="506">
+            <description>Channel Logo2</description>
+            <posx>160</posx>
+            <posy>437</posy>
+            <width>130</width>
+            <height>75</height>
+            <aspectratio>keep</aspectratio>
+        </control>
+       <!--Time/Weather-->    
+        <control type="label">
+            <description>Time</description>
+            <posx>50</posx>
+            <posy>60</posy>
+            <width min="40" max="100">auto</width>
+            <height>30</height>
+            <label>$INFO[System.Time]</label>
+            <font>font25</font>
+            <align>center</align>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <!--Weather-->
+        <control type="image">
+            <posx>178</posx>
+            <posy>42</posy>
+            <width>60</width>
+            <height>60</height>
+            <aspectratio align="center">keep</aspectratio>
+            <info>Window(weather).Property(Current.ConditionIcon)</info>
+        </control>
+        <!--<control type="label" id="513">
+            <description>Weather</description>
+            <posx>50</posx>
+            <posy>60</posy>
+            <width min="40" max="100">auto</width>
+            <height>30</height>
+            <label>$INFO[Window(weather).Property(Current.Temperature)] $INFO[System.TemperatureUnits]</label>
+            <font>Font_Reg10</font>
+            <align>center</align>
+            <textcolor>FFFFFFFF</textcolor>
+            <visible>!Window(weather).Property(Current.ConditionIcon)</visible>
+        </control>-->
+        </control>
+    </controls>
+</window>
