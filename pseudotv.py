@@ -28,8 +28,8 @@ from resources.lib.Globals import *
 # Script constants
 __scriptname__ = "PseudoTV Live"
 __author__     = "Lunatixz, Orginally Jason102 & Angrycamel"
-__url__        = "http://github.com/Jasonra/XBMC-PseudoTV"
-__settings__   = xbmcaddon.Addon(id='script.pseudotv')
+__url__        = "https://github.com/Lunatixz/script.pseudotv.live"
+__settings__   = xbmcaddon.Addon(id='script.pseudotv.live')
 __cwd__        = __settings__.getAddonInfo('path')
 __version__    = VERSION
 __language__   = __settings__.getLocalizedString

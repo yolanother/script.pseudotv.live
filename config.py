@@ -261,14 +261,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             self.changeListData(self.showList, 192, -1)
         elif controlId == 191:      # TV Show channel, right
             self.changeListData(self.showList, 192, 1)
-        elif controlId == 299:      # LiveTV channel, left
-            self.changeListData(self.LiveTVList, 172, -1)
-        elif controlId == 300:      # LiveTV channel, right
-            self.changeListData(self.LiveTVList, 172, 1)
-        elif controlId == 399:      # InternetTV channel, left
-            self.changeListData(self.InternetTVList, 172, -1)
-        elif controlId == 400:      # InternetTV channel, right
-            self.changeListData(self.InternetTVList, 172, 1)
         elif controlId == 200:      # Directory channel, select
             dlg = xbmcgui.Dialog()
             retval = dlg.browse(0, "Channel " + str(self.channel) + " Directory", "files")
@@ -557,8 +549,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         self.studioList = chnlst.studioList
         self.showGenreList = chnlst.showGenreList
         self.movieGenreList = chnlst.movieGenreList
-        # self.LiveTV = chnlst.LiveTVList
-        # self.InternetTV = chnlst.LiveTVList
 
         for i in range(len(chnlst.showList)):
             self.showList.append(chnlst.showList[i][0])

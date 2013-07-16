@@ -24,8 +24,8 @@ import xbmcaddon
 # Script constants
 __scriptname__ = "PseudoTV Live"
 __author__     = "Lunatixz, Orginally Jason102 & Angrycamel"
-__url__        = "http://github.com/Jasonra/XBMC-PseudoTV"
-__settings__   = xbmcaddon.Addon(id='script.pseudotv')
+__url__        = "https://github.com/Lunatixz/script.pseudotv.live"
+__settings__   = xbmcaddon.Addon(id='script.pseudotv.live')
 __cwd__        = __settings__.getAddonInfo('path')
 
 
@@ -55,4 +55,4 @@ if xbmcgui.Window(10000).getProperty("PseudoTVRunning") != "True":
     if shouldrestart == False:
         xbmc.executebuiltin('RunScript("' + __cwd__ + '/pseudotv.py' + '")')
 else:
-    xbmc.log('script.PseudoTV - Already running, exiting', xbmc.LOGERROR)
+    xbmc.log('script.pseudotv.live - Already running, exiting', xbmc.LOGERROR)
