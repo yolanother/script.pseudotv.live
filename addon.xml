@@ -3,7 +3,8 @@
     id="script.pseudotv"
 	version="0.1.0"
 	name="PseudoTV Live"
-	provider-name="Lunatixz">
+	provider-name="Lunatixz, Jason102, Angrycamel">
+	
 
 	<requires>
 		<import addon="xbmc.python" version="2.0"/>
