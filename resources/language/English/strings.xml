@@ -33,16 +33,6 @@
     <string id="30032">Enable TMDB</string>
     <string id="30033">TMDB API KEY</string>
     <string id="30034">Enable TMDB Art</string>
-    <string id="30300">Thanks to:</string>
-    <string id="30301">XBMC, XBMCHUB - Foundation.</string>
-    <string id="30302">jason102, angrycamel, bradvido88 - Orginal Code and Inspriation.</string>
-    <string id="30303">thedarkonaut, tman12 - Orginal Skinning code.</string>
-    <string id="30304">scilz - Internet stream sourcing... </string>
-    <string id="30305">blazin912 - HDhomerun Master/Slave mod.</string>
-    <string id="30306">mwkurt, XvMMvX, spyder - Forum Help and Support.</string>
-    <string id="30307">badkarma, Vidar, Or121... - Alpha testers (if I forgot u PM me)</string>
-    <string id="30400">F U List:</string>
-    <string id="30401">geebs61, redhalo - Two forum douchebags!</string>
 	<string id="30500">LiveTV</string>
 	<string id="30501">xmltv.xml location</string>
 	<string id="30502">InternetTV</string>

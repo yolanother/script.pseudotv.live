@@ -18,8 +18,16 @@
 		<platform>all</platform>
 		<minversion>35647</minversion>
 		<summary lang="en">Channel surfing for your video library</summary>
-		<summary lang="nl">Zenderlijst voor jouw video bibliotheek</summary>
-		<description lang="en">PseudoTV acts similar to normal broadcast or cable TV, complete with multiple preset and user-defined channels and an EPG.</description>
-		<description lang="nl">PseudoTV gedraagt zich vergelijkbaar als een normale TV zender, compleet met standaard en instelbare kanalen en EPG (TV gids).</description>
+		<description lang="en">PseudoTV acts similar to normal broadcast or cable TV, complete with multiple preset and user-defined channels and an EPG.
+		Special thanks to:
+							XBMC - Foundation
+							jason102, angrycamel, bradvido88 - Core Code and Inspriation.
+							thedarkonaut, tman12 - Skinning ideas and core code.
+							scilz	 - Internet stream sourcing... 
+							blazin912	 - HDhomerun Master/Slave mod.
+							mwkurt, XvMMvX, spyder - Forum Help and support.
+							badkarma, Vidar, Or121 - Alpha testers (if I forgot you PM me)
+					FU List:
+							geebs61, redhalo - Two forum douchebags!</description>
 	</extension>
 </addon>

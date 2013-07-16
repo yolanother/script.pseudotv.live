@@ -109,13 +109,6 @@ class Migrate:
         elif presetnum - len(networks) - len(genres) < len(studio):
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "2")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", studio[presetnum - len(networks) - len(genres)])
-        elif REAL_SETTINGS.getSetting('IncludeInternetTV') == "true":
-            Globals.ADDON_SETTINGS.setSetting("Channel_999_" + "type","9")
-            Globals.ADDON_SETTINGS.setSetting("Channel_999_" + "_1", "5400")
-            Globals.ADDON_SETTINGS.setSetting("Channel_999_" + "_2", "rtmp://vevohp2livefs.fplive.net:1935/vevohp2live-live/ playpath=stream2272000 swfUrl=http://cache.vevo.com/livepassdl.conviva.com/ver/2.64.0.68610/LivePassModuleMain_osmf.swf")
-            Globals.ADDON_SETTINGS.setSetting("Channel_999_" + "_3", "VevoTV")
-            Globals.ADDON_SETTINGS.setSetting("Channel_999_" + "_4", "Sit back and enjoy VEVO TV")
-            Globals.ADDON_SETTINGS.setSetting("Channel_999_" + "_rule_1_opt_1", "VevoTV")
 
     def compareVersions(self, version1, version2):
         retval = 0

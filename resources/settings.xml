@@ -42,15 +42,5 @@
 		<setting id="tmdb.enabled" label="30032" type="bool" default="false" />
         <setting id="tmdb.apikey" label="30033" visible="eq(-1,true)" type="text" default="c974c461a9767defec862674bf6c704e"/>
         <setting id="tmdb.showart" label="30034" visible="eq(-2,true)" type="bool" default="false" />
-		<setting id="thanks" label="30300" type="lsep" />
-		<setting id="thanks" label="30301" type="text" />
-		<setting id="thanks" label="30302" type="text" />
-		<setting id="thanks" label="30303" type="text" />
-		<setting id="thanks" label="30304" type="text" />
-		<setting id="thanks" label="30305" type="text" />
-		<setting id="thanks" label="30306" type="text" />
-		<setting id="thanks" label="30307" type="text" />
-		<setting id="thanks" label="30400" type="lsep" />
-		<setting id="thanks" label="30401" type="text" />
 	</category>
 </settings>

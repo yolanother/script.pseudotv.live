@@ -171,8 +171,8 @@ class AdvancedConfig(xbmcgui.WindowXMLDialog):
         self.setupOptions()
 
 
-     def setupOptions(self):
-         self.getControl(102).setVisible(False)
+    def setupOptions(self):
+        self.getControl(102).setVisible(False)
         optcount = self.ruleList[self.selectedRuleIndex].getOptionCount()
 
         try:
@@ -191,7 +191,7 @@ class AdvancedConfig(xbmcgui.WindowXMLDialog):
         except:
             pass
  
-         for i in range(4):
+        for i in range(4):
             if i < (optcount - (self.optionRowOffset * 2)):
                 self.getControl(i + 150).setVisible(True)
                 self.getControl(i + 150).setLabel(self.ruleList[self.selectedRuleIndex].getOptionLabel(i + (self.optionRowOffset * 2)))

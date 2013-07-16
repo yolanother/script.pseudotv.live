@@ -48,8 +48,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         self.channel_type = 9999
         self.setting1 = ''
         self.setting2 = ''
-        self.setting3 = ''
-        self.setting4 = ''
         self.savedRules = False
 
         if CHANNEL_SHARING:
@@ -106,8 +104,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         chan = str(self.channel)
         set1 = ''
         set2 = ''
-        set3 = ''
-        set4 = ''
 
         try:
             chantype = int(ADDON_SETTINGS.getSetting("Channel_" + chan + "_type"))
@@ -116,9 +112,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
 
         setting1 = "Channel_" + chan + "_1"
         setting2 = "Channel_" + chan + "_2"
-        setting3 = "Channel_" + chan + "_3"
-        setting4 = "Channel_" + chan + "_4"
-
 
         if chantype == 0:
             ADDON_SETTINGS.setSetting(setting1, self.getControl(130).getLabel2())
@@ -134,27 +127,16 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             ADDON_SETTINGS.setSetting(setting1, self.getControl(182).getLabel())
         elif chantype == 6:
             ADDON_SETTINGS.setSetting(setting1, self.getControl(192).getLabel())
-            
+
             if self.getControl(194).isSelected():
                 ADDON_SETTINGS.setSetting(setting2, str(MODE_ORDERAIRDATE))
             else:
                 ADDON_SETTINGS.setSetting(setting2, "0")
-        
         elif chantype == 7:
             ADDON_SETTINGS.setSetting(setting1, self.getControl(200).getLabel())
-        elif chantype == 8:
-            ADDON_SETTINGS.setSetting(setting1, self.getControl(301).getLabel())
-            ADDON_SETTINGS.setSetting(setting2, self.getControl(302).getLabel())
-        elif chantype == 9:
-            ADDON_SETTINGS.setSetting(setting1, self.getControl(401).getLabel())
-            ADDON_SETTINGS.setSetting(setting2, self.getControl(402).getLabel())
-            ADDON_SETTINGS.setSetting(setting3, self.getControl(403).getLabel())
-            ADDON_SETTINGS.setSetting(setting4, self.getControl(404).getLabel())
         elif chantype == 9999:
             ADDON_SETTINGS.setSetting(setting1, '')
             ADDON_SETTINGS.setSetting(setting2, '')
-            ADDON_SETTINGS.setSetting(setting3, '')
-            ADDON_SETTINGS.setSetting(setting4, '')
 
         if self.savedRules:
             self.saveRules(self.channel)
@@ -162,18 +144,14 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         # Check to see if the user changed anything
         set1 = ''
         set2 = ''
-        set3 = ''
-        set4 = ''
 
         try:
             set1 = ADDON_SETTINGS.getSetting(setting1)
             set2 = ADDON_SETTINGS.getSetting(setting2)
-            set3 = ADDON_SETTINGS.getSetting(setting3)
-            set4 = ADDON_SETTINGS.getSetting(setting4)
         except:
             pass
 
-        if chantype != self.channel_type or set1 != self.setting1 or set2 != self.setting2 or set3 != self.setting3 or set4 != self.setting4 or self.savedRules:
+        if chantype != self.channel_type or set1 != self.setting1 or set2 != self.setting2 or self.savedRules:
             ADDON_SETTINGS.setSetting('Channel_' + chan + '_changed', 'True')
 
         self.log("saveSettings return")
@@ -183,8 +161,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         ADDON_SETTINGS.setSetting("Channel_" + str(self.channel) + "_type", str(self.channel_type))
         ADDON_SETTINGS.setSetting("Channel_" + str(self.channel) + "_1", self.setting1)
         ADDON_SETTINGS.setSetting("Channel_" + str(self.channel) + "_2", self.setting2)
-        ADDON_SETTINGS.setSetting("Channel_" + str(self.channel) + "_3", self.setting3)
-        ADDON_SETTINGS.setSetting("Channel_" + str(self.channel) + "_4", self.setting4)
 
 
     def hideChanDetails(self):
@@ -261,14 +237,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             self.changeListData(self.showList, 192, -1)
         elif controlId == 191:      # TV Show channel, right
             self.changeListData(self.showList, 192, 1)
-        elif controlId == 299:      # LiveTV channel, left
-            self.changeListData(self.LiveTVList, 172, -1)
-        elif controlId == 300:      # LiveTV channel, right
-            self.changeListData(self.LiveTVList, 172, 1)
-        elif controlId == 399:      # InternetTV channel, left
-            self.changeListData(self.InternetTVList, 172, -1)
-        elif controlId == 400:      # InternetTV channel, right
-            self.changeListData(self.InternetTVList, 172, 1)
         elif controlId == 200:      # Directory channel, select
             dlg = xbmcgui.Dialog()
             retval = dlg.browse(0, "Channel " + str(self.channel) + " Directory", "files")
@@ -365,14 +333,10 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             self.channel_type = chantype
             self.setting1 = ''
             self.setting2 = ''
-            self.setting3 = ''
-            self.setting4 = ''
 
             try:
                 self.setting1 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_1")
                 self.setting2 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_2")
-                self.setting3 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_3")
-                self.setting4 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_4")
             except:
                 pass
 
@@ -401,17 +365,11 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         chantype = 9999
         chansetting1 = ''
         chansetting2 = ''
-        chansetting3 = ''
-        chansetting4 = ''
-        channame = ''
 
         try:
             chantype = int(ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_type"))
             chansetting1 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_1")
             chansetting2 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_2")
-            chansetting3 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_3")
-            chansetting4 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_4")
-            channame = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_rule_' + str(i + 1) + '_opt_' + str(i + 1))
         except:
             self.log("Unable to get some setting")
 
@@ -437,14 +395,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         elif chantype == 6:
             self.getControl(192).setLabel(self.findItemInList(self.showList, chansetting1))
             self.getControl(194).setSelected(chansetting2 == str(MODE_ORDERAIRDATE))
-        elif chantype == 8:
-            self.getControl(301).setLabel(chansetting1)
-            self.getControl(302).setLabel(chansetting2)
-        elif chantype == 9:
-            self.getControl(401).setLabel(chansetting1)
-            self.getControl(402).setLabel(chansetting2)
-            self.getControl(403).setLabel(chansetting3)
-            self.getControl(404).setLabel(chansetting4)
         elif chantype == 7:
             if (chansetting1.find('/') > -1) or (chansetting1.find('\\') > -1):
                 plname = self.getSmartPlaylistName(chansetting1)
@@ -454,10 +404,9 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             else:
                 chansetting1 = ''
 
-            self.getControl(200).setLabel(chansetting1)
-
+             self.getControl(200).setLabel(chansetting1)
  
-        self.loadRules(channel)
+         self.loadRules(channel)
         self.log("fillInDetails return")
 
 
@@ -557,8 +506,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         self.studioList = chnlst.studioList
         self.showGenreList = chnlst.showGenreList
         self.movieGenreList = chnlst.movieGenreList
-        # self.LiveTV = chnlst.LiveTVList
-        # self.InternetTV = chnlst.LiveTVList
 
         for i in range(len(chnlst.showList)):
             self.showList.append(chnlst.showList[i][0])
@@ -595,18 +542,12 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             chantype = 9999
             chansetting1 = ''
             chansetting2 = ''
-            chansetting3 = ''
-            chansetting4 = ''
-            channame = ''
             newlabel = ''
 
             try:
                 chantype = int(ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_type"))
                 chansetting1 = ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_1")
                 chansetting2 = ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_2")
-                chansetting3 = ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_3")
-                chansetting4 = ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_4")
-                channame = ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_rule_1_opt_1")
             except:
                 pass
 
@@ -618,10 +559,6 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
                 newlabel = chansetting1 + " TV"
             elif chantype == 4:
                 newlabel = chansetting1 + " Movies"
-            elif chantype == 8:
-                newlabel = channame + " LiveTV"
-            elif chantype == 9:
-                newlabel = channame + " InternetTV"
             elif chantype == 7:
                 if chansetting1[-1] == '/' or chansetting1[-1] == '\\':
                     newlabel = os.path.split(chansetting1[:-1])[1]
