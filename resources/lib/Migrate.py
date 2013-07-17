@@ -96,10 +96,11 @@ class Migrate:
 
 
     def addPreset(self, channel, presetnum):
-        networks = ['AMC', 'CBS', 'NBS', 'FOX', 'FX', 'ABC', 'TBS']
+        networks = ['AMC', 'CBS', 'NBS', 'FOX', 'ABC', 'TBS', 'FX', 'HBO', 'Showtime']
         genres = ['Animation', 'Action']
-        studio = ['Universal Pictures']
-        internettv = ['VevoTV']
+        studio = ['GK Films']
+        VevoTV = ['VevoTV']
+        SkyTV = ['SKY NEWS HD']
 
         if presetnum < len(networks):
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "1")
@@ -110,13 +111,28 @@ class Migrate:
         elif presetnum - len(networks) - len(genres) < len(studio):
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "2")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", studio[presetnum - len(networks) - len(genres)])
-        elif presetnum - len(networks) - len(genres) - len(studio) < len(internettv):
+        elif presetnum - len(networks) - len(genres) - len(studio) < len(VevoTV):
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "9")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "5400")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "rtmp://vevohp2livefs.fplive.net:1935/vevohp2live-live/ playpath=stream2272000 swfUrl=http://cache.vevo.com/livepassdl.conviva.com/ver/2.64.0.68610/LivePassModuleMain_osmf.swf")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_4",  "Sit back and enjoy VEVO TV")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_3", VevoTV[presetnum - len(networks) - len(genres) - len(VevoTV)])
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_4",  "Sit back and enjoy a 24/7 stream of music videos on VEVO TV.")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rulecount", "1")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_changed", "true")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_time", "0")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_id", "1")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "VevoTV")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_3", internettv[presetnum - len(networks) - len(genres) - len(internettv)])
+        elif presetnum - len(networks) - len(genres) - len(studio) - len(VevoTV) < len(SkyTV):
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "9")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "5400")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "http://fw01.livem3u8.me.totiptv.com/live//31b003ab7e7749a798fe00424e3dd9ff.m3u8?bitrate=800")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_4", "Analysis and top stories from business, politics, entertainment and more")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rulecount", "1")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_changed", "true")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_time", "0")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_id", "1")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "SKY NEWS HD")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_3", SkyTV[presetnum - len(networks) - len(genres) - len(VevoTV) - len(SkyTV)])
 
     def compareVersions(self, version1, version2):
         retval = 0

@@ -17,7 +17,7 @@
 	<extension point="xbmc.addon.metadata">
 		<platform>all</platform>
 		<minversion>35647</minversion>
-		<summary lang="en">Channel surfing for your video library, livetv and Internettv</summary>
+		<summary lang="en">Channel surfing for your video library</summary>
 		<description lang="en">PseudoTV acts similar to normal broadcast or cable TV, complete with multiple preset and user-defined channels and an EPG.
 		Special thanks to:
 							XBMC - Foundation
