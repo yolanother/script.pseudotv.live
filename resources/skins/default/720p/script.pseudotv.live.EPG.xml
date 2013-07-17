@@ -1,0 +1,563 @@
+<window>
+    <allowoverlay>no</allowoverlay>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <animation effect="fade" time="700">WindowOpen</animation>
+    <animation effect="fade" time="700">WindowClose</animation>
+    <controls>
+        <!--EPG Background-->
+        <control type="image">
+            <description>Info Background</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1280</width>
+            <height>720</height>
+            <texture>pstvBackground.png</texture>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+        </control>
+        <!--Movie.thumb Now Playing-->
+        <control type="image">
+            <description>Fanart</description>
+            <posx>965</posx>
+            <posy>570</posy>
+            <width>275</width>
+            <height>125</height>
+            <align>center</align>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture fallback="common/fallback.fanart.png">$INFO[Player.Art(thumb)]</texture>
+            <aspectratio aligny="center">keep</aspectratio>
+        </control>
+        <!--Movie.landscape Now Playing-->
+        <control type="image">
+            <description>Fanart</description>
+            <posx>965</posx>
+            <posy>570</posy>
+            <width>275</width>
+            <height>125</height>
+            <align>center</align>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture fallback="common/fallback.fanart.png">$INFO[Player.Art(landscape)]</texture>
+            <aspectratio aligny="center">keep</aspectratio>
+        </control>
+        <!--TV.Fanart Now Playing-->
+        <control type="image">
+            <description>Fanart</description>
+            <posx>965</posx>
+            <posy>570</posy>
+            <width>275</width>
+            <height>125</height>
+            <align>center</align>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture fallback="common/fallback.fanart.png">$INFO[Player.Art(tvshow.landscape)]</texture>
+            <aspectratio aligny="center">keep</aspectratio>
+        </control>
+        <!--TEXT Now Playing-->
+        <control type="label">
+            <description>Now Playing</description>
+            <posx>950</posx>
+            <posy>525</posy>
+            <width min="100" max="300">auto</width>
+            <height>30</height>
+            <label>Now Playing</label>
+            <font>Font_Bold34</font>
+            <align>center</align>
+            <textcolor>C0C0C0C0</textcolor>
+        </control>
+        <!--PTVlive.Fanart-->
+        <control type="image">
+            <description>PTV</description>
+            <posx>1025</posx>
+            <posy>5</posy>
+            <width>150</width>
+            <height>150</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>guide.png</texture>            
+        </control>
+        <!--LEFT/RIGHT art-->
+        <control type="image">
+            <description>left</description>
+            <posx>375</posx>
+            <posy>151</posy>
+            <width>10</width>
+            <height>18</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>left.png</texture>
+        </control>
+        <control type="image">
+            <description>right</description>
+            <posx>1230</posx>
+            <posy>151</posy>
+            <width>10</width>
+            <height>18</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>right.png</texture>
+        </control>
+        <!--Dark Column-->
+        <control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>185</posy>
+            <width>284</width>
+            <height>51</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+        </control>
+        <control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>240</posy>
+            <width>284</width>
+            <height>51</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+        </control>
+        <control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>295</posy>
+            <width>284</width>
+            <height>51</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+        </control>    
+        <control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>350</posy>
+            <width>284</width>
+            <height>51</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+        </control>
+        <control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>405</posy>
+            <width>284</width>
+            <height>51</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+        </control>
+        <control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>460</posy>
+            <width>284</width>
+            <height>51</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+        </control>
+		<!--Poster-->
+		<!-- <control type="image">
+            <description>Poster</description>
+            <posx>70</posx>
+            <posy>405</posy>
+            <width>284</width>
+            <height>51</height>
+			<colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>$INFO[ListItem.Art(poster)]</texture>
+		</control> -->
+		<!--Time/Weather-->    
+        <control type="label">
+            <description>Time</description>
+            <posx>50</posx>
+            <posy>60</posy>
+            <width min="40" max="100">auto</width>
+            <height>30</height>
+            <label>$INFO[System.Time]</label>
+            <font>font25</font>
+            <align>center</align>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <!--Weather-->
+        <control type="image">
+            <posx>179</posx>
+            <posy>41</posy>
+            <width>60</width>
+            <height>60</height>
+            <aspectratio align="center">keep</aspectratio>
+            <info>Window(weather).Property(Current.ConditionIcon)</info>
+        </control>
+        <!--<control type="label" id="513">
+            <description>Weather</description>
+            <posx>184</posx>
+            <posy>98</posy>
+            <width min="20" max="50">auto</width>
+            <height>10</height>
+            <label>$INFO[Window(weather).Property(Current.Temperature)] $INFO[System.TemperatureUnits]</label>
+            <font>Font_Reg10</font>
+            <align>center</align>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>-->
+        <control type="grouplist">
+            <posx>68</posx>
+            <posy>520</posy>
+            <width>1000</width>
+            <height>40</height>
+            <orientation>horizontal</orientation>
+            <itemgap>10</itemgap>
+            <control type="label" id="500">
+                <description>Show Name Label</description>
+                <width min="100" max="800">auto</width>
+                <height>40</height>
+                <label>Show Name</label>
+                <font>font_bold20</font>
+                <align>left</align>
+                <textcolor>FF00b4db</textcolor>
+            </control>
+            <control type="label">
+                <description>Show Name Label</description>
+                <width>10</width>
+                <height>40</height>
+                <label>•</label>
+                <font>font12</font>
+                <align>left</align>
+                <textcolor>FF00b4db</textcolor>
+            </control>
+            <control type="label" id="501">
+                <description>Show Title Label</description>
+                <width min="100" max="800">auto</width>
+                <height>40</height>
+                <label>Show Title</label>
+                <font>font_bold20</font>
+                <align>left</align>
+                <textcolor>FFFFFFFF</textcolor>
+            </control>
+        </control>
+        <control type="label" id="502">
+            <description>Show Description Label</description>
+            <posx>68</posx>
+            <posy>567</posy>
+            <width>835</width>
+            <height>100</height>
+            <label>Show Description</label>
+            <font>font20</font>
+            <align>left</align>
+            <aligny>top</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+            <wrapmultiline>true</wrapmultiline>
+    		<autoscroll time="2000" delay="2000" repeat="9000">Skin.HasSetting(AutoScroll)</autoscroll>
+        </control>
+        <control type="image" id="503">
+            <description>Show Channel Icon</description>
+            <posx>1310</posx>
+            <posy>605</posy>
+            <width>1</width>
+            <height>1</height>
+            <aspectratio>keep</aspectratio>
+            <aligny>top</aligny>
+        </control>
+        <control type="label" id="101">
+            <description>Time Left Label</description>
+            <posx>400</posx>
+            <posy>152</posy>
+            <width>270</width>
+            <height>26</height>
+            <label>Time 1</label>
+            <font>font12</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+		<control type="label" id="102">
+            <description>Time Middle Label</description>
+            <posx>645</posx>
+            <posy>152</posy>
+            <width>270</width>
+            <height>26</height>
+            <label>Time 2</label>
+            <font>font12</font>
+            <align>left</align>
+        <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+		<control type="label" id="103">
+            <description>Time Right Label</description>
+            <posx>915</posx>
+        <posy>152</posy>
+            <width>270</width>
+            <height>26</height>
+            <label>Time 2</label>
+            <font>font12</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+		<!--Date-->
+		<control type="label" id="104">
+            <description>Date Label</description>
+            <posx>135</posx>
+            <posy>152</posy>
+            <width>270</width>
+            <height>26</height>
+            <label>Current Date</label>
+            <font>font12</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <!--SHOW LISTINGS-->
+		<control type="group" id="111">
+            <posx>365</posx>
+            <posy>185</posy>
+            <width>880</width>
+            <height>51</height>
+        </control>
+        <control type="group" id="112">
+            <posx>365</posx>
+            <posy>240</posy>
+            <width>880</width>
+            <height>51</height>
+        </control>
+        <control type="group" id="113">
+            <posx>365</posx>
+            <posy>295</posy>
+            <width>880</width>
+            <height>51</height>
+        </control>
+        <control type="group" id="114">
+            <posx>365</posx>
+            <posy>350</posy>
+            <width>880</width>
+            <height>51</height>
+        </control>
+        <control type="group" id="115">
+            <posx>365</posx>
+            <posy>405</posy>
+            <width>880</width>
+            <height>51</height>
+        </control>
+        <control type="group" id="116">
+            <posx>365</posx>
+            <posy>460</posy>
+            <width>880</width>
+            <height>51</height>
+        </control>
+        <control type="image" id="120">
+            <posx>360</posx>
+            <posy>180</posy>
+            <width>20</width>
+            <height>330</height>
+        </control>
+        <!--CHANNEL BUTTONS AND LABELS-->
+        <control type="label" id="301">
+            <description>Channel 1 Name</description>
+            <posx>110</posx>
+            <posy>190</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FF00b4db</textcolor>
+            <visible>StringCompare(Control.GetLabel(321),)</visible>
+        </control>
+        <control type="label" id="311">
+            <description>Channel 1 Number</description>
+            <posx>85</posx>
+            <posy>190</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>1</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <control type="image" id="321">
+            <description>Channel 1 Icon</description>
+            <posx>105</posx>
+            <posy>185</posy>
+            <width>225</width>
+            <height>50</height>
+            <align>center</align>
+            <aligny>center</aligny>
+            <aspectratio>keep</aspectratio>
+            <visible>!StringCompare(Control.GetLabel(321),)</visible>
+        </control>
+        <control type="label" id="302">
+            <description>Channel 2 Name</description>
+            <posx>110</posx>
+            <posy>243</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FF00b4db</textcolor>
+            <visible>StringCompare(Control.GetLabel(322),)</visible>
+        </control>
+        <control type="label" id="312">
+            <description>Channel 2 Number</description>
+            <posx>85</posx>
+            <posy>243</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>2</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <control type="image" id="322">
+            <description>Channel 2 Icon</description>
+            <posx>105</posx>
+            <posy>243</posy>
+            <width>225</width>
+            <height>50</height>
+            <align>center</align>
+            <aligny>center</aligny>
+            <aspectratio>keep</aspectratio>
+            <visible>!StringCompare(Control.GetLabel(322),)</visible>
+        </control>
+        <control type="label" id="303">
+            <description>Channel 3 Name</description>
+            <posx>110</posx>
+            <posy>298</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FF00b4db</textcolor>
+            <visible>StringCompare(Control.GetLabel(323),)</visible>
+        </control>
+        <control type="label" id="313">
+            <description>Channel 3 Number</description>
+            <posx>85</posx>
+            <posy>298</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>3</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <control type="image" id="323">
+            <description>Channel 3 Icon</description>
+            <posx>105</posx>
+            <posy>298</posy>
+            <width>225</width>
+            <height>50</height>
+            <align>center</align>
+            <aligny>center</aligny>
+            <aspectratio>keep</aspectratio>
+            <visible>!StringCompare(Control.GetLabel(323),)</visible>
+        </control>
+        <control type="label" id="304">
+            <description>Channel 4 Name</description>
+            <posx>110</posx>
+            <posy>352</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FF00b4db</textcolor>
+            <visible>StringCompare(Control.GetLabel(324),)</visible>
+        </control>
+        <control type="label" id="314">
+            <description>Channel 4 Number</description>
+            <posx>85</posx>
+            <posy>352</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>4</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <control type="image" id="324">
+            <description>Channel 4 Icon</description>
+            <posx>105</posx>
+            <posy>352</posy>
+            <width>225</width>
+            <height>50</height>
+            <align>center</align>
+            <aligny>center</aligny>
+            <aspectratio>keep</aspectratio>
+            <visible>!StringCompare(Control.GetLabel(324),)</visible>
+        </control>
+        <control type="label" id="305">
+            <description>Channel 5 Name</description>
+            <posx>110</posx>
+            <posy>407</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FF00b4db</textcolor>
+            <visible>StringCompare(Control.GetLabel(325),)</visible>
+        </control>
+        <control type="label" id="315">
+            <description>Channel 5 Number</description>
+            <posx>85</posx>
+            <posy>407</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>5</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <control type="image" id="325">
+            <description>Channel 5 Icon</description>
+            <posx>105</posx>
+            <posy>407</posy>
+            <width>225</width>
+            <height>50</height>
+            <align>center</align>
+            <aligny>center</aligny>
+            <aspectratio>keep</aspectratio>
+            <visible>!StringCompare(Control.GetLabel(325),)</visible>
+        </control>        
+        <control type="label" id="306">
+            <description>Channel 6 Name</description>
+            <posx>110</posx>
+            <posy>461</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor>FF00b4db</textcolor>
+            <visible>StringCompare(Control.GetLabel(326),)</visible>
+        </control>
+        <control type="label" id="316">
+            <description>Channel 6 Number</description>
+            <posx>85</posx>
+            <posy>461</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>6</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <control type="image" id="326">
+            <description>Channel 6 Icon</description>
+            <posx>105</posx>
+            <posy>461</posy>
+            <width>225</width>
+            <height>50</height>
+            <align>center</align>
+            <aligny>center</aligny>
+            <aspectratio>keep</aspectratio>
+            <visible>!StringCompare(Control.GetLabel(326),)</visible>
+        </control>
+    </controls>
+</window>
