@@ -1426,7 +1426,7 @@ class ChannelList:
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Building InternetTV")
 
-        self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
+        self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings2.xml'))
         f = open(self.ninstance, "rb")
         context = ET.iterparse(f, events=("start", "end"))
 
