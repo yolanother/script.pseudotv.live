@@ -25,7 +25,7 @@
             <texture></texture>
             <animation effect="fade" start="40" end="40" condition="True">Conditional</animation>
         </control>
-        <!--Background Image -->
+<!--Background Image -->
         <control type="group" id="102">
             <animation effect="fade" time="500">VisibleChange</animation>
             <control type="image">
@@ -36,14 +36,15 @@
                 <height>720</height>
                 <texture>pstvInfoWindow.png</texture>
             </control>
+			
+<!--line 1 -->
             <control type="grouplist">
                 <posx>155</posx>
                 <posy>500</posy>
                 <width>850</width>
                 <height>30</height>
                 <orientation>horizontal</orientation>
-                <itemgap>6</itemgap>
-
+                <itemgap>2</itemgap>
                 <control type="label" id="502">
                     <description>Now watching Label</description>
                     <width>175</width>
@@ -55,14 +56,15 @@
                 </control>
                 <control type="label" id="503">
                     <description>Show Name Label</description>
-                    <width min="5" max="600">auto</width>
+                    <width min="10" max="610">auto</width>
                     <height>30</height>
                     <label>Show Name</label>
                     <font>Font_Bold34</font>
                     <align>left</align>
                     <textcolor>FF00b4db</textcolor>
-                </control>                
-                <control type="label">
+                </control>   
+<!--??-->				
+                <!--<control type="label">
                     <description>Show Name Label</description>
                     <width min="10" max="50">auto</width>
                     <height>30</height>
@@ -70,7 +72,17 @@
                     <font>font_bold20</font>
                     <align>left</align>
                     <textcolor>FF00b4db</textcolor>
+                </control>-->
+				<control type="label">
+                <description>Show Name Label</description>
+                <width>40</width>
+                <height>40</height>
+                <label>•</label>
+                <font>font12</font>
+                <align>left</align>
+                <textcolor>FF00b4db</textcolor>
                 </control>
+
 <!-- 				<control type="label">
 					<description>Show on</description>
 					<width>22</width>
@@ -104,7 +116,7 @@
 				-->
 				<control type="label" id="504">
 					<description>Show Title Label</description>
-					<width min="5" max="600">auto</width>
+					<width min="10" max="610">auto</width>
 					<height>30</height>
 					<label>Show Title</label>
 					<font>Font_Reg28</font>
@@ -113,20 +125,50 @@
 				</control>
 			</control>
 			
-			<control type="label" id="505">
-    			<posx>155</posx>
-                <posy>540</posy>
-                <width>865</width>
-                <height>60</height>
-                <align>left</align>
-                <aligny>top</aligny>
-                <label>Show Description</label>
-                <textcolor>FFFFFFFF</textcolor>
-                <font>font12</font>
-    			<wrapmultiline>true</wrapmultiline>
-    			<autoscroll time="2000" delay="2000" repeat="9000">Skin.HasSetting(AutoScroll)</autoscroll>
-            </control>            
-            <control type="image" id="506">
+<!--line 3 logos-->
+			    <!--hdhomerun.logo-->
+				<control type="image">
+					<description>hdhomerun</description>                
+					<posx>1173</posx>
+					<posy>626</posy>
+                    <width>170</width>
+                    <height>30</height>
+					<colordiffuse>FFFFFFFF</colordiffuse>
+					<aspectratio>keep</aspectratio>
+					<align>center</align>
+					<texture>hdhomerun.png</texture>
+					<visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
+				</control>
+			    <!--hulu.logo-->
+				<control type="image">
+					<description>hulu</description>                
+					<posx>1173</posx>
+					<posy>626</posy>
+                    <width>170</width>
+                    <height>30</height>
+					<colordiffuse>FFFFFFFF</colordiffuse>
+					<aspectratio>keep</aspectratio>
+					<align>center</align>
+					<texture>hulu.png</texture>
+					<visible>[substring(Player.FilenameAndPath,hulu)]</visible>
+				</control>
+				<control type="label" id="505">
+					<description>Show Description</description>
+					<posx>335</posx>
+					<posy>545</posy>
+					<width>635</width>
+                    <height>50</height>
+					<align>left</align>
+					<aligny>top</aligny>
+					<label>Show Description</label>
+					<textcolor>FFFFFFFF</textcolor>
+					<font>font12</font>
+					<wrapmultiline>true</wrapmultiline>
+					<autoscroll time="1" delay="1" repeat="2000">Skin.HasSetting(AutoScroll)</autoscroll>
+				</control>    
+
+            
+			<control type="image" id="506">
                 <description>Channel Logo</description>
                 <posx>10</posx>
                 <posy>490</posy>
@@ -134,7 +176,17 @@
                 <height>125</height>
     			<aspectratio>keep</aspectratio>
             </control>
-            
+			
+<!-- Poster Window --> 			
+			<control type="image" id="508">
+                <texture>skins/default/media/poster.png</texture>
+                <posx>1040</posx>
+                <posy>420</posy>
+                <width  max="200">auto</width>
+                <height  max="300">auto</height>
+    			<aspectratio>scale</aspectratio>
+				<visible>[!substring(Player.FilenameAndPath,hulu) | !VideoPlayer.Content(episode) | !VideoPlayer.Content(movie)]</visible>
+            </control>       
             <control type="image" id="507">
                 <!-- <texture>$INFO[Player.Art(poster)]</texture> -->
                 <texture>$INFO[VideoPlayer.Cover]</texture>
@@ -146,7 +198,7 @@
             </control>
 			<control type="image" id="507">
                 <!-- <texture>$INFO[Player.Art(poster)]</texture> -->
-                <texture>$INFO[Player.Art(poster)]</texture>
+                <texture fallback="poster.png">$INFO[Player.Art(poster)]</texture>
 				<posx>1040</posx>
                 <posy>420</posy>
                 <width  max="200">auto</width>
@@ -154,14 +206,15 @@
     			<aspectratio>scale</aspectratio>
             </control>
             <control type="image" id="508">
-                <texture>$INFO[Player.Art(tvshow.poster)]</texture>
+                <texture fallback="common/fallback.fanart.png">$INFO[Player.Art(tvshow.poster)]</texture>
                 <posx>1040</posx>
                 <posy>420</posy>
                 <width  max="200">auto</width>
                 <height  max="300">auto</height>
     			<aspectratio>scale</aspectratio>
-            </control>
-            
+				<visible>VideoPlayer.Content(episode)</visible>
+            </control>                     
+
 			<!-- <control type="label" id="509">
 				<posx>155</posx>
     			<posy>627</posy>

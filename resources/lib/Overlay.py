@@ -143,7 +143,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.getControl(102).setVisible(False)
         self.background.setVisible(True)
         updateDialog = xbmcgui.DialogProgress()
-        updateDialog.create("PseudoTV", "Initializing")
+        updateDialog.create("PseudoTV Live", "Initializing")
         self.backupFiles(updateDialog)
         ADDON_SETTINGS.loadSettings()
         
@@ -963,7 +963,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         xbmc.executebuiltin("PlayerControl(repeatoff)")
         self.isExiting = True
         updateDialog = xbmcgui.DialogProgress()
-        updateDialog.create("PseudoTV", "Exiting")
+        updateDialog.create("PseudoTV Live", "Exiting")
         
         if CHANNEL_SHARING and self.isMaster:
             updateDialog.update(0, "Exiting", "Removing File Locks")

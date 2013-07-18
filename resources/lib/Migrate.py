@@ -168,7 +168,7 @@ class Migrate:
 
     def initializeChannels(self):
         updatedlg = xbmcgui.DialogProgress()
-        updatedlg.create("PseudoTV", "Initializing")
+        updatedlg.create("PseudoTV Live", "Initializing")
         updatedlg.update(1, "Initializing", "Initial Channel Setup")
         chanlist = ChannelList.ChannelList()
         chanlist.background = True
