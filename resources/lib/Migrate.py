@@ -114,7 +114,7 @@ class Migrate:
         elif presetnum - len(networks) - len(genres) - len(studio) < len(VevoTV):
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "9")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "5400")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "rtmp://vevohp2livefs.fplive.net:1935/vevohp2live-live/ playpath=stream2272000 swfUrl=http://cache.vevo.com/livepassdl.conviva.com/ver/2.64.0.68610/LivePassModuleMain_osmf.swf")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch1/appleman.m3u8")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_3", VevoTV[presetnum - len(networks) - len(genres) - len(VevoTV)])
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_4",  "Sit back and enjoy a 24/7 stream of music videos on VEVO TV.")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rulecount", "1")
