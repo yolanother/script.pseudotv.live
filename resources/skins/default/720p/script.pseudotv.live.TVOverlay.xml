@@ -63,8 +63,8 @@
                     <align>left</align>
                     <textcolor>FF00b4db</textcolor>
                 </control>   
-<!--??-->				
-                <!--<control type="label">
+<!--chan bug?-->				
+                <control type="label">
                     <description>Show Name Label</description>
                     <width min="10" max="50">auto</width>
                     <height>30</height>
@@ -72,7 +72,7 @@
                     <font>font_bold20</font>
                     <align>left</align>
                     <textcolor>FF00b4db</textcolor>
-                </control>-->
+                </control>
 				<control type="label">
                 <description>Show Name Label</description>
                 <width>40</width>
@@ -179,13 +179,13 @@
 			
 <!-- Poster Window --> 			
 			<control type="image" id="508">
-                <texture>skins/default/media/poster.png</texture>
+                <texture>poster.png</texture>
                 <posx>1040</posx>
                 <posy>420</posy>
                 <width  max="200">auto</width>
                 <height  max="300">auto</height>
     			<aspectratio>scale</aspectratio>
-				<visible>[!substring(Player.FilenameAndPath,hulu) | !VideoPlayer.Content(episode) | !VideoPlayer.Content(movie)]</visible>
+				<visible>[substring(Player.FilenameAndPath,hdhomerun) | substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp) | substring(Player.FilenameAndPath,hulu) | substring(Player.FilenameAndPath,rtmp) | substring(Player.FilenameAndPath,http) | substring(Player.FilenameAndPath,upnp) | substring(Player.FilenameAndPath,plugin)] + !VideoPlayer.Content(episode) + !VideoPlayer.Content(movie)</visible>
             </control>       
             <control type="image" id="507">
                 <!-- <texture>$INFO[Player.Art(poster)]</texture> -->
@@ -213,7 +213,7 @@
                 <height  max="300">auto</height>
     			<aspectratio>scale</aspectratio>
 				<visible>VideoPlayer.Content(episode)</visible>
-            </control>                     
+            </control>
 
 			<!-- <control type="label" id="509">
 				<posx>155</posx>

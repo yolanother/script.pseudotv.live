@@ -69,10 +69,10 @@
         <!--PTVlive.Fanart-->
         <control type="image">
             <description>PTVlive</description>
-            <posx>1025</posx>
-            <posy>550</posy>
-            <width>150</width>
-            <height>150</height>
+            <posx>928</posx>
+            <posy>568</posy>
+            <width>350</width>
+            <height>128</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
 			<aspectratio>keep</aspectratio>
             <texture>guide.png</texture>
@@ -81,10 +81,10 @@
 		<!--strm.Fanart-->
         <control type="image">
             <description>PTVlive</description>
-            <posx>1025</posx>
-            <posy>550</posy>
-            <width>150</width>
-            <height>150</height>
+            <posx>928</posx>
+            <posy>568</posy>
+            <width>350</width>
+            <height>128</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
 			<aspectratio>keep</aspectratio>
             <texture>guide.png</texture>
@@ -93,25 +93,63 @@
 		<!--hdhomerun.Fanart-->
         <control type="image">
             <description>hdhomerun</description>
-            <posx>1025</posx>
-            <posy>550</posy>
-            <width>150</width>
-            <height>150</height>
+            <posx>928</posx>
+            <posy>568</posy>
+            <width>350</width>
+            <height>128</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
 			<aspectratio>keep</aspectratio>
-            <texture>hdhomerun.png</texture>
+            <texture>fanart.png</texture>
             <visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
+		</control>			    
+		<!--hdhomerun.logo-->
+		<control type="image">
+			<description>hdhomerun</description>                
+            <posx>800</posx>
+            <posy>525</posy>
+			<width>170</width>
+			<height>30</height>
+			<colordiffuse>FFFFFFFF</colordiffuse>
+			<aspectratio>keep</aspectratio>
+			<align>center</align>
+			<texture>hdhomerun.png</texture>
+			<visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
 		</control>		
+		<!--hulu.Fanart-->
+        <control type="image">
+            <description>hulu</description>
+            <posx>928</posx>
+            <posy>568</posy>
+            <width>350</width>
+            <height>128</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+			<aspectratio>keep</aspectratio>
+            <texture>huluf.png</texture>
+            <visible>[substring(Player.FilenameAndPath,hulu)]</visible>
+		</control>			    			    
+		<!--hulu.logo-->
+		<control type="image">
+			<description>hulu</description>                
+            <posx>800</posx>
+            <posy>525</posy>
+			<width>170</width>
+			<height>30</height>
+			<colordiffuse>FFFFFFFF</colordiffuse>
+			<aspectratio>keep</aspectratio>
+			<align>center</align>
+			<texture>hulu.png</texture>
+			<visible>[substring(Player.FilenameAndPath,hulu)]</visible>
+		</control>
 		<!--tuner.Fanart-->
         <control type="image">
             <description>tuner</description>
-            <posx>1025</posx>
-            <posy>550</posy>
-            <width>150</width>
-            <height>150</height>
+            <posx>928</posx>
+            <posy>568</posy>
+            <width>350</width>
+            <height>128</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
 			<aspectratio>keep</aspectratio>
-            <texture>tuner.png</texture>
+            <texture>poster.png</texture>
             <visible>[substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp)]</visible>
 		</control>
         <!--LEFT/RIGHT art-->

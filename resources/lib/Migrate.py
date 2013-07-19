@@ -47,9 +47,9 @@ class Migrate:
         Globals.ADDON_SETTINGS.setSetting("Version", Globals.VERSION)
         self.log("version is " + curver)
 
-        if curver == "0.0.0":
-            if self.initializeChannels():
-                return True
+        #if curver == "0.0.0":
+            #if self.initializeChannels():
+                # return True
 
         if self.compareVersions(curver, "1.0.2") < 0:
             self.log("Migrating to 1.0.2")
@@ -166,71 +166,71 @@ class Migrate:
         return retval
 
 
-    def initializeChannels(self):
-        updatedlg = xbmcgui.DialogProgress()
-        updatedlg.create("PseudoTV Live", "Initializing")
-        updatedlg.update(1, "Initializing", "Initial Channel Setup")
-        chanlist = ChannelList.ChannelList()
-        chanlist.background = True
-        chanlist.fillTVInfo(True)
-        updatedlg.update(30)
-        chanlist.fillMovieInfo(True)
-        updatedlg.update(60)
-        # Now create TV networks, followed by mixed genres, followed by TV genres, and finally movie genres
-        currentchan = 1
-        mixedlist = []
+    # def initializeChannels(self):
+        # updatedlg = xbmcgui.DialogProgress()
+        # updatedlg.create("PseudoTV", "Initializing")
+        # updatedlg.update(1, "Initializing", "Initial Channel Setup")
+        # chanlist = ChannelList.ChannelList()
+        # chanlist.background = True
+        # chanlist.fillTVInfo(True)
+        # updatedlg.update(30)
+        # chanlist.fillMovieInfo(True)
+        # updatedlg.update(60)
+        # # Now create TV networks, followed by mixed genres, followed by TV genres, and finally movie genres
+        # currentchan = 1
+        # mixedlist = []
 
-        for item in chanlist.showGenreList:
-            curitem = item[0].lower()
+        # for item in chanlist.showGenreList:
+            # curitem = item[0].lower()
 
-            for a in chanlist.movieGenreList:
-                if curitem == a[0].lower():
-                    mixedlist.append([item[0], item[1], a[1]])
-                    break
+            # for a in chanlist.movieGenreList:
+                # if curitem == a[0].lower():
+                    # mixedlist.append([item[0], item[1], a[1]])
+                    # break
 
-        mixedlist.sort(key=lambda x: x[1] + x[2], reverse=True)
-        currentchan = self.initialAddChannels(chanlist.networkList, 1, currentchan)
-        updatedlg.update(70)
+        # mixedlist.sort(key=lambda x: x[1] + x[2], reverse=True)
+        # currentchan = self.initialAddChannels(chanlist.networkList, 1, currentchan)
+        # updatedlg.update(70)
 
-        # Mixed genres
-        if len(mixedlist) > 0:
-            added = 0.0
+        # # Mixed genres
+        # if len(mixedlist) > 0:
+            # added = 0.0
 
-            for item in mixedlist:
-                if item[1] > 2 and item[2] > 1:
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", "5")
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
-                    added += 1.0
-                    currentchan += 1
-                    itemlow = item[0].lower()
+            # for item in mixedlist:
+                # if item[1] > 2 and item[2] > 1:
+                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", "5")
+                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
+                    # added += 1.0
+                    # currentchan += 1
+                    # itemlow = item[0].lower()
 
-                    # Remove that genre from the shows genre list
-                    for i in range(len(chanlist.showGenreList)):
-                        if itemlow == chanlist.showGenreList[i][0].lower():
-                            chanlist.showGenreList.pop(i)
-                            break
+                    # # Remove that genre from the shows genre list
+                    # for i in range(len(chanlist.showGenreList)):
+                        # if itemlow == chanlist.showGenreList[i][0].lower():
+                            # chanlist.showGenreList.pop(i)
+                            # break
 
-                    # Remove that genre from the movie genre list
-                    for i in range(len(chanlist.movieGenreList)):
-                        if itemlow == chanlist.movieGenreList[i][0].lower():
-                            chanlist.movieGenreList.pop(i)
-                            break
+                    # # Remove that genre from the movie genre list
+                    # for i in range(len(chanlist.movieGenreList)):
+                        # if itemlow == chanlist.movieGenreList[i][0].lower():
+                            # chanlist.movieGenreList.pop(i)
+                            # break
 
-                    if added > 10:
-                        break
+                    # if added > 10:
+                        # break
 
-                    updatedlg.update(int(70 + 10.0 / added))
+                    # updatedlg.update(int(70 + 10.0 / added))
 
-        updatedlg.update(80)
-        currentchan = self.initialAddChannels(chanlist.showGenreList, 3, currentchan)
-        updatedlg.update(90)
-        currentchan = self.initialAddChannels(chanlist.movieGenreList, 4, currentchan)
-        updatedlg.close()
+        # updatedlg.update(80)
+        # currentchan = self.initialAddChannels(chanlist.showGenreList, 3, currentchan)
+        # updatedlg.update(90)
+        # currentchan = self.initialAddChannels(chanlist.movieGenreList, 4, currentchan)
+        # updatedlg.close()
 
-        if currentchan > 1:
-            return True
+        # if currentchan > 1:
+            # return True
 
-        return False
+        # return False
 
 
     def initialAddChannels(self, thelist, chantype, currentchan):

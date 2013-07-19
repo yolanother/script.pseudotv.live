@@ -15,7 +15,7 @@ Special thanks to:
 
     - scilz - Internet stream sourcing... 
 
-    - blazin912 - HDhomerun Master/Slave mod, and addon logo
+    - blazin912 - HDhomerun Master/Slave mod.
 
     - mwkurt, XvMMvX, spyder - Forum Help and support.
 
@@ -151,9 +151,9 @@ commercials.
 -------
 Credits
 -------
-    - PseudoTV Live: Lunatixz
-    - PseudoTV: Jason102
-    - Code Additions: Sranshaft, TheOddLinguist
-    - Skins: Sranshaft, Zepfan, Steveb
-    - Preset Images: Jtucker1972
-    - Languages: CyberXaz, Machine-Sanctum
+PseudoTV Live: Lunatixz
+PseudoTV: Jason102
+Code Additions: Sranshaft, TheOddLinguist
+Skins: Sranshaft, Zepfan, Steveb
+Preset Images: Jtucker1972
+Languages: CyberXaz, Machine-Sanctum
