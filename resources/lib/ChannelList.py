@@ -1382,8 +1382,8 @@ class ChannelList:
                         #adjust the duration of the current show
                         if now > startDate and now < stopDate:
                             try:
-                                dur = ((stopDate - startDate).seconds)
-                               # dur = ((stopDate - startDate).seconds) - ((now - startDate).seconds) + 300
+                                #dur = ((stopDate - startDate).seconds)
+                                dur = ((stopDate - startDate).seconds) - ((now - startDate).seconds) + 150
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
                             except:
                                 dur = 3600  #60 minute default
