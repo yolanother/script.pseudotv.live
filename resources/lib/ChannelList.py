@@ -555,15 +555,15 @@ class ChannelList:
         elif chtype == 8: # LiveTV
             self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
             if REAL_SETTINGS.getSetting('IncludeLiveTV') == "true":
-                fileList = self.buildLiveTVFileList(setting1, setting2, channel)
                 #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
-                if REAL_SETTINGS.getSetting('Master') == "true":
-                    setting2 = re.sub(r'\d/tuner\d',"0/tuner0",setting2)
+                if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
                     self.log("Building InternetTV Channel using tuner0")
+                    setting2 = re.sub(r'\d/tuner\d',"0/tuner0",setting2)
                 else:
-                    setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
-                    fileList = self.buildLiveTVFileList(setting1, setting2, channel)
                     self.log("Building InternetTV Channel using tuner1")
+                    setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
+
+                fileList = self.buildLiveTVFileList(setting1, setting2, channel)
         elif chtype == 9: # InternetTV
             self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
             if REAL_SETTINGS.getSetting('IncludeInternetTV') == "true":
