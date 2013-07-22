@@ -1330,16 +1330,17 @@ class ChannelList:
 
         try:
             self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('XMLTV'), 'xmltv.xml'))
+            #self.xmlTvFile = FileAccess.exists(xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('XMLTV'), 'xmltv.xml')))
         except:
             self.log("buildLiveTVFileList Could not determine path the the xmltv file")
             return
 
-        if not os.path.exists(self.xmlTvFile) or os.path.getsize(self.xmlTvFile) < 1:
-            self.log("buildLiveTVFileList XMLTV file was not found or is empty")
-            return
+        #if not os.path.exists(self.xmlTvFile) or os.path.getsize(self.xmlTvFile) < 1:
+            #self.log("buildLiveTVFileList XMLTV file was not found or is empty")
+            #return
             
-        size = os.path.getsize(self.xmlTvFile)
-        f = open(self.xmlTvFile, "rb")
+        #size = os.path.getsize(self.xmlTvFile)
+        f = FileAccess.open(self.xmlTvFile, "rb")
         context = ET.iterparse(f, events=("start", "end"))
         
         event, root = context.next()
