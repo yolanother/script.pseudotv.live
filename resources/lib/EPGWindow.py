@@ -25,7 +25,10 @@ from Playlist import Playlist
 from Globals import *
 from Channel import Channel
 
-
+from sickbeard import *
+from couchpotato import *
+from tvdb import *
+from tmdb import *
 
 class EPGWindow(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
@@ -196,6 +199,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         # a single valid channel.
         curchannel = self.MyOverlayWindow.fixChannel(curchannel - 1, False)
         curchannel = self.MyOverlayWindow.fixChannel(curchannel - 1, False)
+        curchannel = self.MyOverlayWindow.fixChannel(curchannel - 1, False)
         starttime = self.roundToHalfHour(int(starttime))
         self.setTimeLabels(starttime)
         self.shownTime = starttime
@@ -304,7 +308,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
                 # Use the current time and show offset to calculate it
                 # At timedif time, channelShowPosition was playing at channelTimes
                 # The only way this isn't true is if the current channel is curchannel since
-                # it could have been fast forwarded or rewinded (rewound)?
+                # it could have been fast forwarded or rewinded (rewound)?                
                 if curchannel == self.MyOverlayWindow.currentChannel:
                     playlistpos = int(xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition())
                     videotime = xbmc.Player().getTime()

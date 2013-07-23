@@ -34,10 +34,10 @@ from ChannelListThread import ChannelListThread
 from FileAccess import FileLock, FileAccess
 from Migrate import Migrate
 
-#from sickbeard import *
-#from couchpotato import *
-#from tvdb import *
-#from tmdb import *
+from sickbeard import *
+from couchpotato import *
+from tvdb import *
+from tmdb import *
 
 class MyPlayer(xbmc.Player):
     def __init__(self):
@@ -407,30 +407,29 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
 
         # First, check to see if the video is a strm
         if self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[-4:].lower() == 'strm':
-            self.log("Ignoring a stop because of a stream")
+            self.log('CHANNEL: ' + str(channel) + ' Ignoring a stop because of strm')
             self.Player.ignoreNextStop = True
         elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
-            self.log("Ignoring a stop because of a hdhomerun")
+            self.log('CHANNEL: ' + str(channel) + ' Ignoring a stop because of hdhomerun')
             self.Player.ignoreNextStop = True
         elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'plugin':
-            self.log("Ignoring a stop because of a plugin")
+            self.log('CHANNEL: ' + str(channel) + ' Ignoring a stop because of plugin')
             self.Player.ignoreNextStop = True
         elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtmp':
-            self.log("Ignoring a stop because of a rtmp")
+            self.log('CHANNEL: ' + str(channel) + ' Ignoring a stop because of rtmp')
             self.Player.ignoreNextStop = True
         elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'mms':
-            self.log("Ignoring a stop because of a mms")
+            self.log('CHANNEL: ' + str(channel) + ' Ignoring a stop because of mms')
             self.Player.ignoreNextStop = True
         elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtsp':
-            self.log("Ignoring a stop because of a rtsp")
+            self.log('CHANNEL: ' + str(channel) + ' Ignoring a stop because of rtsp')
             self.Player.ignoreNextStop = True
         elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'http':
-            self.log("Ignoring a stop because of a http")
+            self.log('CHANNEL: ' + str(channel) + ' Ignoring a stop because of http')
             self.Player.ignoreNextStop = True
         elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'upnp':
-            self.log("Ignoring a stop because of a upnp")
+            self.log('CHANNEL: ' + str(channel) + ' Ignoring a stop because of upnp')
             self.Player.ignoreNextStop = True
-
 
         self.log("about to mute");
         # Mute the channel before changing
@@ -441,13 +440,18 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.log("playing selected file");
         # set the time offset
         self.channels[self.currentChannel - 1].setAccessTime(curtime)
-
-        if self.channels[self.currentChannel - 1].isPaused:
+        chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_type'))
+                
+        if chtype >= 8:
+            seektime = 0
+            self.log('CHANNEL: ' + str(channel) + ' Disabling seektime for LiveTV, InternetTV')
+        
+        elif self.channels[self.currentChannel - 1].isPaused:
             self.channels[self.currentChannel - 1].setPaused(False)
 
             try:
                 self.Player.seekTime(self.channels[self.currentChannel - 1].showTimeOffset)
-
+                
                 if self.channels[self.currentChannel - 1].mode & MODE_ALWAYSPAUSE == 0:
                     self.Player.pause()
 
@@ -456,6 +460,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                         return
             except:
                 self.log('Exception during seek on paused channel', xbmc.LOGERROR)
+        
         else:
             seektime = self.channels[self.currentChannel - 1].showTimeOffset + timedif + int((time.time() - curtime))
 
@@ -479,23 +484,6 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.runActions(RULES_ACTION_OVERLAY_SET_CHANNEL_END, channel, self.channels[channel - 1])
         #self.api(self.currentChannel)
         self.log('setChannel return')
-
-    # TVDB/TMDB - SICKBEARD/COUCHPOTATO Intergration *Lunatixz
-    #def api(self, channel):
-        # tmdbAPI = TMDB(ADDON_SETTINGS.getSetting('tmdb.apikey'))
-        # tvdbAPI = TVDB(ADDON_SETTINGS.getSetting('tvdb.apikey'))
-        # sbAPI = SickBeard(ADDON_SETTINGS.getSetting('sickbeard.baseurl'),ADDON_SETTINGS.getSetting('sickbeard.apikey'))
-        # cpAPI = CouchPotato(ADDON_SETTINGS.getSetting('couchpotato.baseurl'),ADDON_SETTINGS.getSetting('couchpotato.apikey'))
-        # tvdbid = 0
-		
-        # if tvdbid == 0:
-        # tvdbid = tvdbAPI.getIdByShowName(self.channels[self.currentChannel - 1].getItemTitle(position))
-
-        # sbManaged = 0
-        # if ADDON_SETTINGS.getSetting('sickbeard.enabled') == 'true':
-            # if sbAPI.isShowManaged(tvdbid):
-            # sbManaged = 1
-
 
     def InvalidateChannel(self, channel):
         self.log("InvalidateChannel" + str(channel))
@@ -1082,10 +1070,8 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                                     tottime += self.channels[i].getItemDuration(j)
 
                                 tottime += self.channels[i].showTimeOffset
-                                ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_time', str(int(tottime)))
-                                
+                                ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_time', str(int(tottime)))                                                           
                 self.storeFiles()
-
         updateDialog.close()
         self.background.setVisible(False)
         self.close()
