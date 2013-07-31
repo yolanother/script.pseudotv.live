@@ -49,7 +49,7 @@
                     <description>Now watching Label</description>
                     <width>175</width>
                     <height>30</height>
-                    <label>Now watching</label>
+                    <label>Now watching </label>
                     <font>Font_Bold34</font>
                     <align>center</align>
                     <textcolor>FFFFFFFF</textcolor>
@@ -247,9 +247,9 @@
 			</control>
 			 -->
 			<control type="fadelabel">
-				<posx>830</posx>
-    			<posy>630</posy>
-				 <width>250</width>
+				<posx>825</posx>
+    			<posy>632</posy>
+				 <width>175</width>
     		     <height>8</height>
 				<align>left</align>
 				<font>font12</font>
@@ -259,14 +259,14 @@
                 <label>$INFO[VideoPlayer.mpaa]</label>
 				<label>$INFO[VideoPlayer.TimeRemaining, Remaining: ]</label>
 				<scroll>true</scroll>
-				<scrollspeed>90</scrollspeed>
+				<scrollspeed>70</scrollspeed>
 				<pauseatend>5000</pauseatend>
 				<visible>VideoPlayer.Content(movies)</visible>
 			</control>
 			<control type="fadelabel">
-				<posx>830</posx>
-    			<posy>630</posy>
-				 <width>650</width>i
+				<posx>825</posx>
+    			<posy>632</posy>
+				 <width>175</width>
     		     <height>8</height>
 				<align>left</align>
 				<font>font12</font>
