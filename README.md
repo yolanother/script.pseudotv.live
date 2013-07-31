@@ -2,7 +2,7 @@ PseudoTV Live
 =============
 Channel surfing for your video library, livetv and Internettv...
 
-Find support @ http://forum.xbmc.org/showthread.php?tid=168032&pid=1462508#pid1462508
+Find support @ http://forum.xbmc.org/showthread.php?tid=169032
 
 ------------------
 Special thanks to:
