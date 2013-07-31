@@ -124,9 +124,78 @@
 					<textcolor>FFFFFFFF</textcolor>
 				</control>
 			</control>
-			
+<!--line 2 logos-->
+			<control type="image" >
+                <texture>$INFO[Player.Art(clearlogo)]</texture>
+                <posx>155</posx>
+                <posy>645</posy>
+				<width>635</width>
+                <height>50</height>
+    			<aspectratio>scale</aspectratio>
+            </control>
 <!--line 3 logos-->
-			    <!--hdhomerun.logo-->
+    <control type="grouplist">
+			<posx>150</posx>
+            <posy>630</posy>
+            <width>850</width>
+            <height>30</height>
+			<itemgap>5</itemgap>
+			<orientation>horizontal</orientation>
+            <control type="image">
+				<description>Video rez Image</description>
+				<width>30</width>
+				<height>30</height>
+				<aspectratio>keep</aspectratio>
+				<texture>$INFO[VideoPlayer.VideoResolution,flags\resolution\,.png]</texture>
+				<colordiffuse>white</colordiffuse>
+				<visible>!IsEmpty(VideoPlayer.VideoResolution)</visible>
+			</control>
+			<control type="image">
+				<description>Codec Image</description>
+				<width>30</width>
+				<height>30</height>
+				<aspectratio>keep</aspectratio>
+				<texture>$INFO[VideoPlayer.VideoCodec,flags\source\,.png]</texture>
+				<colordiffuse>white</colordiffuse>
+				<visible>![substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
+			</control>
+			<control type="image">
+				<description>Codec Image</description>
+				<width>30</width>
+				<height>30</height>
+				<aspectratio>keep</aspectratio>
+				<texture>flags\source\divx.png</texture>
+				<colordiffuse>white</colordiffuse>
+				<visible>[substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
+			</control>
+			<control type="image">
+				<description>Aspectratio Image</description>
+				<width>30</width>
+				<height>30</height>
+				<aspectratio>keep</aspectratio>
+				<texture>$INFO[VideoPlayer.VideoAspect,flags\aspectratio\,.png]</texture>
+				<colordiffuse>white</colordiffuse>
+				<visible>!IsEmpty(VideoPlayer.VideoAspect)</visible>
+			</control>
+			<control type="image">
+				<description>Audio Codec Image</description>
+				<width>30</width>
+				<height>30</height>
+				<aspectratio>keep</aspectratio>
+				<texture>$INFO[VideoPlayer.AudioCodec,flags\audio\,.png]</texture>
+				<colordiffuse>white</colordiffuse>
+			</control>
+			<control type="image">
+				<description>Audio Channel Image</description>
+				<width>30</width>
+				<height>30</height>
+				<aspectratio>keep</aspectratio>
+				<texture>$INFO[VideoPlayer.AudioChannels,flags\audio\,.png]</texture>
+				<colordiffuse>white</colordiffuse>
+				<visible>!IsEmpty(VideoPlayer.AudioChannels)</visible>
+			</control>
+		</control>		
+<!--hdhomerun.logo-->
 				<control type="image">
 					<description>hdhomerun</description>                
 					<posx>1173</posx>
