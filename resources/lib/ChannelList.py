@@ -25,7 +25,7 @@ import random
 import httplib
 import base64
 import Globals
-
+import urllib2 
 
 from xml.dom.minidom import parse, parseString
 from xml.etree import ElementTree as ET
@@ -171,7 +171,9 @@ class ChannelList:
                 if len(chsetting1) > 0:
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
-
+            elif chtype == 10:
+                self.makeChannelListFromFeed(channel)
+                    
             if self.forceReset and (chtype != 9999):
                 ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_changed', "True")
 
@@ -568,6 +570,9 @@ class ChannelList:
             self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
             if REAL_SETTINGS.getSetting('IncludeInternetTV') == "true":
                 fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+        elif chtype == 10: # RSSFeed    
+            self.log("Building RSS Feed Channel ")           
+            self.makeChannelListFromPlaylist(channel)       
         else:
             if chtype == 0:
                 if FileAccess.copy(setting1, MADE_CHAN_LOC + os.path.split(setting1)[1]) == False:
@@ -842,7 +847,10 @@ class ChannelList:
                 else:
                     if self.incIceLibrary == True:
                         if match.group(1).replace("\\\\", "\\")[-4:].lower() == 'strm':
+                            self.log("Building Strm Directory " + str(channel))
                             duration = 5400
+                            needsreset = True
+                            makenewlist = True
                     else:
                         duration = self.videoParser.getVideoLength(match.group(1).replace("\\\\", "\\"))
 
@@ -911,6 +919,7 @@ class ChannelList:
         # after the auto reset time has expired resulting in a new channel being created
         # during the next start as well as a auto reset being triggered which moves
         # files from prestage to the cache directory
+        
         # if location == CHANNELS_LOC:
             # cache_file = os.path.join(location, "channel_" + str(channel) + ".m3u")        
             # shutil.copy(cache_file, PRESTAGE_LOC)
@@ -939,7 +948,7 @@ class ChannelList:
         fle = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'sources.xml'))
 
         try:
-            xml = open(fle, "r")
+            xml = FileAccess.open(fle, "r")
         except:
             self.log("getFeedURL: Unable to open the feeds xml file " + fle, xbmc.LOGERROR)
             return ''
@@ -993,7 +1002,7 @@ class ChannelList:
 
     def makeChannelListFromFeed(self, channel):
         fileList = []
-        chname = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_3")
+        chname = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_rule_1_opt_1")
         # get feed URL
         feedURL = self.getFeedURL(chname)
         if len(feedURL) > 0:
@@ -1228,7 +1237,7 @@ class ChannelList:
         self.feedList = []
         fle = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'sources.xml'))
         try:
-            xml = open(fle, "r")
+            xml = FileAccess.open(fle, "r")
         except:
             self.log("fillFeedInfo: Unable to open the feeds xml file " + fle, xbmc.LOGERROR)
             return ''

@@ -26,16 +26,42 @@
     <string id="30024">Include LiveTV</string>
     <string id="30025">Include InternetTV</string>
     <string id="30027">Coming Soon</string>
-    <string id="30028">autoFindLive</string>
+    <string id="30904">Auto Tune</string>
+    <string id="30040">Auto Tune Settings (Coming Soon)</string>
+    <string id="30041">Find TV Networks</string>
+    <string id="30042">Find Movie Studios</string>
+    <string id="30043">Find TV Genres</string>
+    <string id="30044">Find Movie Genres</string>
+    <string id="30045">Find Mix Genres</string>
+    <string id="30046">Find Music Genres</string>
+    <string id="30047">Find Live Channels</string>
+	<string id="30500">LiveTV</string>
+	<string id="30501">xmltv.xml location</string>
+	<string id="30502">InternetTV</string>
     <string id="30029">Enable TVDB</string>
     <string id="30030">TVDB API KEY</string>
     <string id="30031">Enable TVDB Art</string>
     <string id="30032">Enable TMDB</string>
     <string id="30033">TMDB API KEY</string>
     <string id="30034">Enable TMDB Art</string>
-	<string id="30500">LiveTV</string>
-	<string id="30501">xmltv.xml location</string>
-	<string id="30502">InternetTV</string>
+    <string id="30905">Bumpers</string>
+    <string id="30906">Commercials</string>
+    <string id="30907">Trailers</string>
+    <string id="30908">Channel Settings</string>
+    <string id="30909">Bumper Settings (Coming Soon)</string>
+    <string id="30910">Commercial Settings</string>
+    <string id="30911">Trailer Settings</string>
+    <string id="30912">Bumpers are short videos TV stations play between shows</string>
+    <string id="30913">Enable Bumpers</string>
+    <string id="30914">Folder where bumper videos are</string>
+    <string id="30915">Select Bumpers Folder</string>
+    <string id="30916">If Auto, TV Time will determine how often</string>
+    <string id="30917"># of Bumpers to Show Between Shows</string>
+    <string id="30918">If Auto, set the maximum number to show between shows</string>
+    <string id="30919">Maximum Number of Bumpers</string>
+    <string id="30920">Organize bumpers by channel name, e.g.</string>
+    <string id="30921">C:\Bumpers\CBS</string>
+    <string id="30922">C:\Bumpers\FOX</string>
 	   		   - 
 	  
           

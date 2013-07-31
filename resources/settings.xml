@@ -35,7 +35,6 @@
     </category>
 
 	<category label="30027">
-		<setting id="autoFindLive" type="bool" label="30028" default="false"/>
 		<setting id="tvdb.enabled" label="30029" type="bool" default="false" />
         <setting id="tvdb.apikey" label="30030" visible="eq(-1,true)" type="text" default="01F0668B2FC765B9" />
         <setting id="tvdb.showart" label="30031" visible="eq(-2,true)" type="bool" default="false" />
@@ -43,4 +42,34 @@
         <setting id="tmdb.apikey" label="30033" visible="eq(-1,true)" type="text" default="c974c461a9767defec862674bf6c704e"/>
         <setting id="tmdb.showart" label="30034" visible="eq(-2,true)" type="bool" default="false" />
 	</category>
+    <category label="30904">
+    	<setting type="lsep"/>
+    	<setting label="30040" type="lsep"/>
+      	<setting id="autoFindNetworks" type="bool" label="30041" default="false"/>
+      	<setting id="autoFindStudios" type="bool" label="30042" default="false"/>
+      	<setting id="autoFindTVGenres" type="bool" label="30043" default="false"/>
+      	<setting id="autoFindMovieGenres" type="bool" label="30044" default="false"/>
+      	<setting id="autoFindMixGenres" type="bool" label="30045" default="false"/>
+      	<setting id="autoFindMusicGenres" type="bool" label="30046" default="false"/>
+      	<setting id="autoFindLive" type="bool" label="30047" default="false"/>
+        <setting type="sep"/>
+    	<setting label="30054" type="lsep"/>
+        <setting id="limit" type="enum" label="30055" values="50|100|250" default="0"/>
+    </category>
+    <category label="30905">
+        <setting label="30909" type="lsep"/>
+        <setting type="sep"/>
+        <setting label="30912" type="text" enable="true"/>
+        <setting label="30913" id="bumpers" type="bool" default="false" />
+        <setting label="30914" type="text" visible="eq(-1,true)" enable="true"/>
+        <setting label="30915" id="bumpersfolder" type="folder" visible="eq(-2,true)" default="" />
+        <setting label="30916" type="text" visible="eq(-3,true) + !eq(-1,)" enable="true"/>
+        <setting label="30917" id="numbumpers" type="enum" visible="eq(-4,true) + !eq(-2,)" values="Auto|1|2|3|4|5" default="0"/>
+        <setting label="30918" type="text" visible="eq(-5,true) + !eq(-3,) + eq(-1,0)" enable="true"/>
+        <setting label="30919" id="maxbumpers" type="enum" visible="eq(-6,true) + !eq(-4,) + eq(-2,0)" values="1|2|3|4|5" default="0"/>
+        <setting type="sep"/>
+        <setting label="30920" type="text" visible="eq(-8,true)" enable="true"/>
+        <setting label="30921" type="text" visible="eq(-9,true)" enable="true"/>
+        <setting label="30922" type="text" visible="eq(-10,true)" enable="true"/>
+    </category>
 </settings>
