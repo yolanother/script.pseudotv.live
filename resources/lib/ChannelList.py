@@ -848,10 +848,11 @@ class ChannelList:
                     duration = self.videoParser.getVideoLength(match.group(1).replace("\\\\", "\\"))
 
                     if duration == 0 and self.incIceLibrary == True:
-                        self.log("Building Strm Directory Channel")
-                        duration = 5400
-                        needsreset = True
-                        makenewlist = True
+                        if match.group(1).replace("\\\\", "\\")[-4:].lower() == 'strm':
+                            self.log("Building Strm Directory Channel")
+                            duration = 5400
+                            needsreset = True
+                            makenewlist = True
                     
                     if duration > 0:
                         filecount += 1
