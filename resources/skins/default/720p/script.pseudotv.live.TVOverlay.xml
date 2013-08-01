@@ -44,7 +44,7 @@
                 <width>850</width>
                 <height>30</height>
                 <orientation>horizontal</orientation>
-                <itemgap>2</itemgap>
+                <itemgap>5</itemgap>
                 <control type="label" id="502">
                     <description>Now watching Label</description>
                     <width>175</width>
@@ -54,16 +54,39 @@
                     <align>center</align>
                     <textcolor>FFFFFFFF</textcolor>
                 </control>
+    <!--Show Title-->           
                 <control type="label" id="503">
-                    <description>Show Name Label</description>
-                    <width min="10" max="610">auto</width>
+                    <description>Show title Label</description>
+                    <width min="5" max="650">auto</width>
                     <height>30</height>
-                    <label>Show Name</label>
+                    <label>Show title</label>
                     <font>Font_Bold34</font>
                     <align>left</align>
                     <textcolor>FF00b4db</textcolor>
                 </control>   
-<!--chan bug?-->				
+    <!--Show Title Spacer-->
+                <control type="label">
+                    <description>Show Name Label</description>
+                    <width>10</width>
+                    <height>30</height>
+                    <label>•</label>
+                    <font>font12</font>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <textcolor>FF00b4db</textcolor>
+                    <visible>!VideoPlayer.Content(movie)</visible>
+                </control>
+    <!--Show Title Details-->
+                <control type="label" id="504">
+                    <description>Show Title detail</description>
+                    <width min="15" max="800">auto</width>
+                    <height>30</height>
+                    <label>Show Title detail</label>
+                    <font>Font_Reg28</font>
+                    <align>left</align>
+                    <textcolor>FFFFFFFF</textcolor>
+                </control>
+    <!--chan bug?-->				
                 <control type="label">
                     <description>Show Name Label</description>
                     <width min="10" max="50">auto</width>
@@ -73,132 +96,201 @@
                     <align>left</align>
                     <textcolor>FF00b4db</textcolor>
                 </control>
-				<control type="label">
-                <description>Show Name Label</description>
-                <width>40</width>
-                <height>40</height>
-                <label>•</label>
-                <font>font12</font>
-                <align>left</align>
-                <textcolor>FF00b4db</textcolor>
-                </control>
+            </control>
+<!--<control type="label">
+<description>Show Name Label</description>
+<width>40</width>
+<height>40</height>
+<label>•</label>
+<font>font12</font>
+<align>left</align>
+<textcolor>FF00b4db</textcolor>
+</control> -->
 
-<!-- 				<control type="label">
-					<description>Show on</description>
-					<width>22</width>
-					<height>30</height>
-					<label>on</label>
-					<font>font13</font>
-					<align>left</align>
-					<textcolor>FFFFFFFF</textcolor>
-				</control>
-				<control type="label" id="300">
-					<description>Channel Name</description>
-					<width min="5" max="600">auto</width>
-					<height>30</height>
-					<label>Channel Name</label>
-					<font>font13</font>
-					<align>left</align>
-					<aligny>center</aligny>
-					<textcolor>FFFFFFFF</textcolor>
-				</control> -->
-				<!-- TVDB/TMDB ID *Lunatixz -->
-				<!--
-				<control type="label" id="500">
-					<description>Show tvid Label</description>
-					<width min="5" max="100">auto</width>
-					<height>30</height>
-					<label></label>
-					<font>font_bold20</font>
-					<align>left</align>
-					<textcolor>FF00b4db</textcolor>
-				</control>  
-				-->
-				<control type="label" id="504">
-					<description>Show Title Label</description>
-					<width min="10" max="610">auto</width>
-					<height>30</height>
-					<label>Show Title</label>
-					<font>Font_Reg28</font>
-					<align>left</align>
-					<textcolor>FFFFFFFF</textcolor>
-				</control>
-			</control>
-<!--line 2 logos-->
-			<control type="image" >
+<!--<control type="label">
+<description>Show on</description>
+<width>22</width>
+<height>30</height>
+<label>on</label>
+<font>font13</font>
+<align>left</align>
+<textcolor>FFFFFFFF</textcolor>
+</control>
+<control type="label" id="300">
+<description>Channel Name</description>
+<width min="5" max="600">auto</width>
+<height>30</height>
+<label>Channel Name</label>
+<font>font13</font>
+<align>left</align>
+<aligny>center</aligny>
+<textcolor>FFFFFFFF</textcolor>
+</control> -->
+<!-- TVDB/TMDB ID *Lunatixz -->
+<!--
+<control type="label" id="500">
+<description>Show tvid Label</description>
+<width min="5" max="100">auto</width>
+<height>30</height>
+<label></label>
+<font>font_bold20</font>
+<align>left</align>
+<textcolor>FF00b4db</textcolor>
+</control>-->
+
+<!--line 2 logos-->            
+            <control type="image" >
                 <texture>$INFO[Player.Art(clearlogo)]</texture>
                 <posx>155</posx>
-                <posy>645</posy>
-				<width>635</width>
-                <height>50</height>
-    			<aspectratio>scale</aspectratio>
+                <posy>540</posy>
+                <width>170</width>
+                <height>75</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
             </control>
+            <control type="image" >
+                <texture>$INFO[Player.Art(clearart)]</texture>
+                <posx>155</posx>
+                <posy>540</posy>
+                <width>170</width>
+                <height>75</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+                <visible>!$INFO[Player.Art(clearlogo)]"</visible>
+            </control>            
+            <control type="image" >
+                <texture>$INFO[Player.Art(tvshow.clearlogo)]</texture>
+                <posx>155</posx>
+                <posy>540</posy>
+                <width>170</width>
+                <height>75</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+            </control>
+            <control type="image" >
+                <texture>$INFO[Player.Art(tvshow.clearart)]</texture>
+                <posx>155</posx>
+                <posy>540</posy>
+                <width>170</width>
+                <height>75</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+                <visible>!$INFO[Player.Art(tvshow.clearlogo)]"</visible>
+            </control>
+            <control type="label" id="505">
+                <description>Show Description</description>
+                <posx>335</posx>
+                <posy>540</posy>
+                <width min="635" max="645">auto</width>
+                <height>50</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <label>Show Description</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <font>font12</font>
+                <wrapmultiline>true</wrapmultiline>
+                <autoscroll time="1000" delay="1000" repeat="2000">Skin.HasSetting(AutoScroll)</autoscroll>
+            </control>    
 <!--line 3 logos-->
-    <control type="grouplist">
-			<posx>150</posx>
-            <posy>630</posy>
+        <control type="grouplist">
+            <posx>155</posx>
+            <posy>625</posy>
             <width>850</width>
             <height>30</height>
-			<itemgap>5</itemgap>
-			<orientation>horizontal</orientation>
+            <itemgap>5</itemgap>
+            <orientation>horizontal</orientation>
             <control type="image">
-				<description>Video rez Image</description>
-				<width>30</width>
-				<height>30</height>
-				<aspectratio>keep</aspectratio>
-				<texture>$INFO[VideoPlayer.VideoResolution,flags\resolution\,.png]</texture>
-				<colordiffuse>white</colordiffuse>
-				<visible>!IsEmpty(VideoPlayer.VideoResolution)</visible>
-			</control>
-			<control type="image">
-				<description>Codec Image</description>
-				<width>30</width>
-				<height>30</height>
-				<aspectratio>keep</aspectratio>
-				<texture>$INFO[VideoPlayer.VideoCodec,flags\source\,.png]</texture>
-				<colordiffuse>white</colordiffuse>
-				<visible>![substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
-			</control>
-			<control type="image">
-				<description>Codec Image</description>
-				<width>30</width>
-				<height>30</height>
-				<aspectratio>keep</aspectratio>
-				<texture>flags\source\divx.png</texture>
-				<colordiffuse>white</colordiffuse>
-				<visible>[substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
-			</control>
-			<control type="image">
-				<description>Aspectratio Image</description>
-				<width>30</width>
-				<height>30</height>
-				<aspectratio>keep</aspectratio>
-				<texture>$INFO[VideoPlayer.VideoAspect,flags\aspectratio\,.png]</texture>
-				<colordiffuse>white</colordiffuse>
-				<visible>!IsEmpty(VideoPlayer.VideoAspect)</visible>
-			</control>
-			<control type="image">
-				<description>Audio Codec Image</description>
-				<width>30</width>
-				<height>30</height>
-				<aspectratio>keep</aspectratio>
-				<texture>$INFO[VideoPlayer.AudioCodec,flags\audio\,.png]</texture>
-				<colordiffuse>white</colordiffuse>
-			</control>
-			<control type="image">
-				<description>Audio Channel Image</description>
-				<width>30</width>
-				<height>30</height>
-				<aspectratio>keep</aspectratio>
-				<texture>$INFO[VideoPlayer.AudioChannels,flags\audio\,.png]</texture>
-				<colordiffuse>white</colordiffuse>
-				<visible>!IsEmpty(VideoPlayer.AudioChannels)</visible>
-			</control>
-		</control>		
+                <description>Video rez Image</description>
+                <width>30</width>
+                <height>30</height>
+                <aspectratio>keep</aspectratio>
+                <texture>$INFO[VideoPlayer.VideoResolution,flags\resolution\,.png]</texture>
+                <colordiffuse>white</colordiffuse>
+                <visible>!IsEmpty(VideoPlayer.VideoResolution)</visible>
+            </control>
+            <control type="image">
+                <description>Codec Image</description>
+                <width>30</width>
+                <height>30</height>
+                <aspectratio>keep</aspectratio>
+                <texture>$INFO[VideoPlayer.VideoCodec,flags\source\,.png]</texture>
+                <colordiffuse>white</colordiffuse>
+                <visible>![substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
+            </control>
+            <control type="image">
+                <description>Codec Image</description>
+                <width>30</width>
+                <height>30</height>
+                <aspectratio>keep</aspectratio>
+                <texture>flags\source\divx.png</texture>
+                <colordiffuse>white</colordiffuse>
+                <visible>[substring(VideoPlayer.VideoCodec,div,left) | stringcompare(VideoPlayer.VideoCodec,dx50)]</visible>
+            </control>
+            <control type="image">
+                <description>Aspectratio Image</description>
+                <width>30</width>
+                <height>30</height>
+                <aspectratio>keep</aspectratio>
+                <texture>$INFO[VideoPlayer.VideoAspect,flags\aspectratio\,.png]</texture>
+                <colordiffuse>white</colordiffuse>
+                <visible>!IsEmpty(VideoPlayer.VideoAspect)</visible>
+            </control>
+            <control type="image">
+                <description>Audio Codec Image</description>
+                <width>30</width>
+                <height>30</height>
+                <aspectratio>keep</aspectratio>
+                <texture>$INFO[VideoPlayer.AudioCodec,flags\audio\,.png]</texture>
+                <colordiffuse>white</colordiffuse>
+            </control>
+            <control type="image">
+                <description>Audio Channel Image</description>
+                <width>30</width>
+                <height>30</height>
+                <aspectratio>keep</aspectratio>
+                <texture>$INFO[VideoPlayer.AudioChannels,flags\audio\,.png]</texture>
+                <colordiffuse>white</colordiffuse>
+                <visible>!IsEmpty(VideoPlayer.AudioChannels)</visible>
+            </control>
+            <control type="fadelabel">
+                <posy>545</posy>
+                <width>645</width>
+                <height>30</height>
+                <align>left</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[VideoPlayer.Genre]</label>
+                <label>$INFO[VideoPlayer.RatingAndVotes,[COLOR bcicon]$LOCALIZE[31095]:[/COLOR] ]$INFO[VideoPlayer.Top250,[COLOR bcicon] $LOCALIZE[13409][/COLOR] # ]</label>
+                <label>$INFO[VideoPlayer.mpaa]</label>
+                <label>$INFO[VideoPlayer.TimeRemaining, Remaining: ]</label>
+                <scroll>true</scroll>
+                <scrollspeed>70</scrollspeed>
+                <pauseatend>5000</pauseatend>
+                <visible>VideoPlayer.Content(movies)</visible>
+            </control>
+                <control type="fadelabel">
+                <posy>545</posy>
+                <width>645</width>
+                <height>30</height>
+                <align>left</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[VideoPlayer.Premiered, First aired: ]</label>
+                <label>$INFO[Player.Duration, Duration: ]</label>
+                <label>$INFO[Player.TimeRemaining, Remaining: ]</label>
+                <label>$INFO[PlayerPlayer.FinishTime, Finish By: ]</label>
+                <scroll>true</scroll>
+                <scrollspeed>70</scrollspeed>
+                <pauseatend>5000</pauseatend>
+                <visible>VideoPlayer.Content(episodes)</visible>
+            </control>
+        </control>                
 <!--hdhomerun.logo-->
 				<control type="image">
 					<description>hdhomerun</description>                
-					<posx>1173</posx>
+					<posx>1175</posx>
 					<posy>626</posy>
                     <width>170</width>
                     <height>30</height>
@@ -211,7 +303,7 @@
 			    <!--hulu.logo-->
 				<control type="image">
 					<description>hulu</description>                
-					<posx>1173</posx>
+					<posx>1175</posx>
 					<posy>626</posy>
                     <width>170</width>
                     <height>30</height>
@@ -221,20 +313,7 @@
 					<texture>hulu.png</texture>
 					<visible>[substring(Player.FilenameAndPath,hulu)]</visible>
 				</control>
-				<control type="label" id="505">
-					<description>Show Description</description>
-					<posx>335</posx>
-					<posy>545</posy>
-					<width>635</width>
-                    <height>50</height>
-					<align>left</align>
-					<aligny>top</aligny>
-					<label>Show Description</label>
-					<textcolor>FFFFFFFF</textcolor>
-					<font>font12</font>
-					<wrapmultiline>true</wrapmultiline>
-					<autoscroll time="1" delay="1" repeat="2000">Skin.HasSetting(AutoScroll)</autoscroll>
-				</control>    
+
 
             
 			<control type="image" id="506">
@@ -246,109 +325,41 @@
     			<aspectratio>keep</aspectratio>
             </control>
 			
-<!-- Poster Window --> 			
-			<control type="image" id="508">
+<!-- Poster Window --> 
+<!--              <control type="image" id="507">
                 <texture>poster.png</texture>
                 <posx>1040</posx>
                 <posy>420</posy>
                 <width  max="200">auto</width>
                 <height  max="300">auto</height>
-    			<aspectratio>scale</aspectratio>
-				<visible>[substring(Player.FilenameAndPath,hdhomerun) | substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp) | substring(Player.FilenameAndPath,hulu) | substring(Player.FilenameAndPath,rtmp) | substring(Player.FilenameAndPath,http) | substring(Player.FilenameAndPath,upnp) | substring(Player.FilenameAndPath,plugin)] + !VideoPlayer.Content(episode) + !VideoPlayer.Content(movie)</visible>
-            </control>       
-            <control type="image" id="507">
-                <!-- <texture>$INFO[Player.Art(poster)]</texture> -->
-                <texture>$INFO[VideoPlayer.Cover]</texture>
-				<posx>1040</posx>
-                <posy>420</posy>
-                <width  max="200">auto</width>
-                <height  max="300">auto</height>
-    			<aspectratio>scale</aspectratio>
-            </control>
-			<control type="image" id="507">
-                <!-- <texture>$INFO[Player.Art(poster)]</texture> -->
-                <texture fallback="poster.png">$INFO[Player.Art(poster)]</texture>
-				<posx>1040</posx>
-                <posy>420</posy>
-                <width  max="200">auto</width>
-                <height  max="300">auto</height>
-    			<aspectratio>scale</aspectratio>
-            </control>
-            <control type="image" id="508">
-                <texture fallback="common/fallback.fanart.png">$INFO[Player.Art(tvshow.poster)]</texture>
+                <aspectratio>scale</aspectratio>
+                <visible>substring(Player.FilenameAndPath,hdhomerun) | substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp) | substring(Player.FilenameAndPath,hulu) | substring(Player.FilenameAndPath,rtmp) | substring(Player.FilenameAndPath,http) | substring(Player.FilenameAndPath,upnp) | substring(Player.FilenameAndPath,plugin)</visible>
+            </control>  -->          
+           <control type="image" id="507">
+                <texture fallback="poster.png">$INFO[VideoPlayer.Cover]</texture>
                 <posx>1040</posx>
                 <posy>420</posy>
                 <width  max="200">auto</width>
                 <height  max="300">auto</height>
-    			<aspectratio>scale</aspectratio>
-				<visible>VideoPlayer.Content(episode)</visible>
+                <aspectratio>scale</aspectratio>
             </control>
-
-			<!-- <control type="label" id="509">
-				<posx>155</posx>
-    			<posy>627</posy>
-				<width  max="800">auto</width>
-    		    <height>30</height>
-				<align>left</align>
-				<font>font12</font>
-				<textcolor>FFFFFFFF</textcolor>
-				<label>$INFO[VideoPlayer.NextTitle]</label>
-			</control> -->
-			<!-- <control type="image" id="999">
-				<description>Rating</description>
-				<posx>60</posx>
-    			<posy>627</posy>
-				<width>60</width>
-    		    <height>60</height>
-				<align>left</align>
-				<aspectratio>keep</aspectratio>
-				<texture fallback="flags/rating/MPAA_NR_Certificate_US.png">$VAR[RatingFlagVar,flags/rating/,.png]</texture>
-			</control> -->
-			<!-- <control type="image" id="999">
-				<description>Resolution</description>
-				<posx>20</posx>
-    			<posy>627</posy>
-				<width  max="800">auto</width>
-    		    <height>50</height>
-				<align>center</align>
-				<aspectratio>keep</aspectratio>
-				<texture fallback="flags/source/defaultscreen.png">$INFO[VideoPlayer.VideoResolution,flags/resolution/,.png]</texture>
-			</control>
-			 -->
-			<control type="fadelabel">
-				<posx>825</posx>
-    			<posy>632</posy>
-				 <width>175</width>
-    		     <height>8</height>
-				<align>left</align>
-				<font>font12</font>
-				<textcolor>FFFFFFFF</textcolor>
-                <label>$INFO[VideoPlayer.Genre]</label>
-                <label>$INFO[VideoPlayer.RatingAndVotes,[COLOR bcicon]$LOCALIZE[31095]:[/COLOR] ]$INFO[VideoPlayer.Top250,[COLOR bcicon] $LOCALIZE[13409][/COLOR] # ]</label>
-                <label>$INFO[VideoPlayer.mpaa]</label>
-				<label>$INFO[VideoPlayer.TimeRemaining, Remaining: ]</label>
-				<scroll>true</scroll>
-				<scrollspeed>70</scrollspeed>
-				<pauseatend>5000</pauseatend>
-				<visible>VideoPlayer.Content(movies)</visible>
-			</control>
-			<control type="fadelabel">
-				<posx>825</posx>
-    			<posy>632</posy>
-				 <width>175</width>
-    		     <height>8</height>
-				<align>left</align>
-				<font>font12</font>
-				<textcolor>FFFFFFFF</textcolor>
-				<label>$INFO[VideoPlayer.Premiered, First aired: ]</label>
-				<label>$INFO[Player.Duration, Duration: ]</label>
-            	<label>$INFO[Player.TimeRemaining, Remaining: ]</label>
-				<label>$INFO[PlayerPlayer.FinishTime, Finish By: ]</label>
-            <scroll>true</scroll>
-            <scrollspeed>70</scrollspeed>
-            <pauseatend>5000</pauseatend>
-            <visible>VideoPlayer.Content(episodes)</visible>
-        </control>
+            <control type="image">
+                 <texture>$INFO[Player.Art(poster)]</texture>
+                <posx>1040</posx>
+                <posy>420</posy>
+                <width  max="200">auto</width>
+                <height  max="300">auto</height>
+                <aspectratio>scale</aspectratio>
+            </control>      
+            <control type="image">
+                <texture>$INFO[Player.Art(tvshow.poster)]</texture>
+                <posx>1040</posx>
+                <posy>420</posy>
+                <width  max="200">auto</width>
+                <height  max="300">auto</height>
+                <aspectratio>scale</aspectratio>
+            </control> 
+            
         <control type="image" id="506">
             <description>Channel Logo2</description>
             <posx>160</posx>
@@ -357,39 +368,39 @@
             <height>75</height>
             <aspectratio>keep</aspectratio>
         </control>
-       <!--Time/Weather-->    
-        <!--<control type="label">
+        <control type="label">
             <description>Time</description>
-            <posx>50</posx>
-            <posy>60</posy>
+            <posx>17</posx>
+            <posy>5</posy>
             <width min="40" max="100">auto</width>
             <height>30</height>
             <label>$INFO[System.Time]</label>
-            <font>font25</font>
-            <align>center</align>
+            <font>font12</font>
+            <align>left</align>
             <textcolor>FFFFFFFF</textcolor>
-        </control>-->  
-        <!--Weather-->
-        <!--<control type="image">
-            <posx>178</posx>
-            <posy>42</posy>
-            <width>60</width>
-            <height>60</height>
-            <aspectratio align="center">keep</aspectratio>
-            <info>Window(weather).Property(Current.ConditionIcon)</info>
-        </control>-->  
-        <!--<control type="label" id="513">
+        </control>
+        <control type="label" id="513">
             <description>Weather</description>
-            <posx>50</posx>
-            <posy>60</posy>
+            <posx>17</posx>
+            <posy>30</posy>
             <width min="40" max="100">auto</width>
             <height>30</height>
-            <label>$INFO[Window(weather).Property(Current.Temperature)] $INFO[System.TemperatureUnits]</label>
-            <font>Font_Reg10</font>
-            <align>center</align>
+            <label>$INFO[Weather.Temperature]</label>
+            <font>font12</font>
+            <align>left</align>
             <textcolor>FFFFFFFF</textcolor>
-            <visible>!Window(weather).Property(Current.ConditionIcon)</visible>
-        </control>-->
+        </control>
+        <control type="label" id="512">
+            <description>Weather</description>
+            <posx>17</posx>
+            <posy>55</posy>
+            <width min="40" max="200">auto</width>
+            <height>30</height>
+            <label>$INFO[Weather.Conditions]</label>
+            <font>font12</font>
+            <align>left</align>
+            <textcolor>FFFFFFFF</textcolor>
+            </control>
         </control>
     </controls>
 </window>

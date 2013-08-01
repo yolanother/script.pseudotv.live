@@ -30,44 +30,6 @@
             <align>center</align>
             <textcolor>C0C0C0C0</textcolor>
         </control>
-<!--default.landscape Now Playing-->
-<!--         <control type="image">
-            <description>Fanart</description>
-            <posx>955</posx>
-            <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture fallback="fanart.png">$INFO[Player.Art(fanart)]</texture>
-            <aspectratio aligny="center">keep</aspectratio>
-        </control>        --> 
-<!--Movie.landscape Now Playing-->
-        <control type="image">
-            <description>Fanart</description>
-            <posx>955</posx>
-            <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture fallback="fanart.png">$INFO[Player.Art(landscape)]</texture>
-            <aspectratio aligny="center">keep</aspectratio>
-			<visible>VideoPlayer.Content(movie)</visible>
-        </control>
-<!--TV.Fanart Now Playing-->
-        <control type="image">
-            <description>Fanart</description>
-            <posx>955</posx>
-            <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture fallback="fanart.png">$INFO[Player.Art(tvshow.landscape)]</texture>
-            <aspectratio aligny="center">keep</aspectratio>
-			<visible>VideoPlayer.Content(episode)</visible>
-        </control>        
 <!--PTVlive.Fanart-->
         <control type="image">
             <description>PTVlive</description>
@@ -80,20 +42,8 @@
             <texture>guide.png</texture>
             <visible>[substring(Player.FilenameAndPath,http) | substring(Player.FilenameAndPath,rtmp | substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp)]</visible>
 		</control>
-<!--strm.Fanart-->
-        <control type="image">
-            <description>PTVlive</description>
-            <posx>928</posx>
-            <posy>568</posy>
-            <width>350</width>
-            <height>128</height>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-			<aspectratio>keep</aspectratio>
-            <texture>guide.png</texture>
-            <visible>[!VideoPlayer.Content(movies) | !VideoPlayer.Content(episode] + substring(Player.FilenameAndPath,strm)</visible>
-		</control>
 <!--hdhomerun.Fanart-->
-        <control type="image">
+<!--         <control type="image">
             <description>hdhomerun</description>
             <posx>928</posx>
             <posy>568</posy>
@@ -103,22 +53,9 @@
 			<aspectratio>keep</aspectratio>
             <texture>fanart.png</texture>
             <visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
-		</control>			    
-<!--hdhomerun.logo-->
-		<control type="image">
-			<description>hdhomerun</description>                
-            <posx>800</posx>
-            <posy>525</posy>
-			<width>170</width>
-			<height>30</height>
-			<colordiffuse>FFFFFFFF</colordiffuse>
-			<aspectratio>keep</aspectratio>
-			<align>center</align>
-			<texture>hdhomerun.png</texture>
-			<visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
-		</control>		
+		</control>  -->       
 <!--hulu.Fanart-->
-        <control type="image">
+<!--         <control type="image">
             <description>hulu</description>
             <posx>928</posx>
             <posy>568</posy>
@@ -127,33 +64,56 @@
             <colordiffuse>FFFFFFFF</colordiffuse>
 			<aspectratio>keep</aspectratio>
             <texture>huluf.png</texture>
-            <visible>[substring(Player.FilenameAndPath,hulu)]</visible>
-		</control>			    			    
-<!--hulu.logo-->
-		<control type="image">
-			<description>hulu</description>                
-            <posx>800</posx>
-            <posy>525</posy>
-			<width>170</width>
-			<height>30</height>
-			<colordiffuse>FFFFFFFF</colordiffuse>
-			<aspectratio>keep</aspectratio>
-			<align>center</align>
-			<texture>hulu.png</texture>
-			<visible>[substring(Player.FilenameAndPath,hulu)]</visible>
-		</control>
-<!--tuner.Fanart-->
+            <visible>[substring(Player.FilenameAndPath,hulu) + IsEmpty(Player.Art(tvshow.thumb)) + IsEmpty(Player.Art(tvshow.landscape))]</visible>
+		</control>   -->     
+<!--Movie.landscape Now Playing-->
         <control type="image">
-            <description>tuner</description>
-            <posx>928</posx>
-            <posy>568</posy>
-            <width>350</width>
-            <height>128</height>
+            <description>Fanart</description>
+            <posx>955</posx>
+            <posy>570</posy>
+            <width>285</width>
+            <height>125</height>
+            <align>center</align>
             <colordiffuse>FFFFFFFF</colordiffuse>
-			<aspectratio>keep</aspectratio>
-            <texture>poster.png</texture>
-            <visible>[substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp)]</visible>
-		</control>
+            <texture fallback="fanart.png">$INFO[Player.Art(fanart)]</texture>
+            <aspectratio aligny="center">keep</aspectratio>
+        </control>        
+        <control type="image">
+            <description>Fanart</description>
+            <posx>955</posx>
+            <posy>570</posy>
+            <width>285</width>
+            <height>125</height>
+            <align>center</align>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>$INFO[Player.Art(landscape)]</texture>
+            <aspectratio aligny="center">keep</aspectratio>
+        </control>
+<!--TV.landscape Now Playing-->
+        <control type="image">
+            <description>Fanart</description>
+            <posx>955</posx>
+            <posy>570</posy>
+            <width>285</width>
+            <height>125</height>
+            <align>center</align>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>$INFO[Player.Art(tvshow.fanart)]</texture>
+            <aspectratio aligny="center">keep</aspectratio>
+        </control>        
+        <control type="image">
+            <description>Fanart</description>
+            <posx>955</posx>
+            <posy>570</posy>
+            <width>285</width>
+            <height>125</height>
+            <align>center</align>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>$INFO[Player.Art(tvshow.landscape)]</texture>
+            <aspectratio aligny="center">keep</aspectratio>
+        </control>
+       
+        
 <!--LEFT/RIGHT art-->
         <control type="image">
             <description>left</description>
@@ -627,6 +587,45 @@
             <aligny>center</aligny>
             <aspectratio>keep</aspectratio>
             <visible>!StringCompare(Control.GetLabel(326),)</visible>
-        </control>
-    </controls>
+        </control>   
+<!--hdhomerun.logo-->
+    <control type="image">
+        <description>hdhomerun</description>                
+        <posx>800</posx>
+        <posy>525</posy>
+        <width>170</width>
+        <height>30</height>
+        <colordiffuse>FFFFFFFF</colordiffuse>
+        <aspectratio>keep</aspectratio>
+        <align>center</align>
+        <texture>hdhomerun.png</texture>
+        <visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
+    </control>                    
+    <!--hulu.logo-->
+    <control type="image">
+        <description>hulu</description>                
+        <posx>800</posx>
+        <posy>525</posy>
+        <width>170</width>
+        <height>30</height>
+        <colordiffuse>FFFFFFFF</colordiffuse>
+        <aspectratio>keep</aspectratio>
+        <align>center</align>
+        <texture>hulu.png</texture>
+        <visible>[substring(Player.FilenameAndPath,hulu)]</visible>
+    </control>
+
+<!--     <control type="image">
+        <description>NavFlagEpg Image</description>
+        <posy>625</posy>
+        <posx>800</posx>
+        <width>200</width>
+        <height>30</height>
+        <align>right</align>
+        <aligny>center</aligny>
+        <colordiffuse>FFFFFFFF</colordiffuse>
+        <aspectratio>keep</aspectratio>
+        <texture>NavFlagEpg.png</texture>
+    </control> -->
+</controls>
 </window>
