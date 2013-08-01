@@ -845,15 +845,14 @@ class ChannelList:
                 if(match.group(1).endswith("/") or match.group(1).endswith("\\")):
                     fileList.extend(self.createDirectoryPlaylist(match.group(1).replace("\\\\", "\\")))
                 else:
-                    if self.incIceLibrary == True:
-                        if match.group(1).replace("\\\\", "\\")[-4:].lower() == 'strm':
-                            self.log("Building Strm Directory " + str(channel))
-                            duration = 5400
-                            needsreset = True
-                            makenewlist = True
-                    else:
-                        duration = self.videoParser.getVideoLength(match.group(1).replace("\\\\", "\\"))
+                    duration = self.videoParser.getVideoLength(match.group(1).replace("\\\\", "\\"))
 
+                    if duration == 0 and self.incIceLibrary == True:
+                        self.log("Building Strm Directory Channel")
+                        duration = 5400
+                        needsreset = True
+                        makenewlist = True
+                    
                     if duration > 0:
                         filecount += 1
 
