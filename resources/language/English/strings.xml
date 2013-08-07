@@ -25,6 +25,8 @@
     <string id="30023">Channel Change Delay(in seconds)</string>
     <string id="30024">Include LiveTV</string>
     <string id="30025">Include InternetTV</string>
+    <string id="30026">Include YoutubeTV</string>
+    <string id="30099">Requires Youtube addon</string>
     <string id="30027">Coming Soon</string>
     <string id="30904">Auto Tune</string>
     <string id="30040">Auto Tune Settings (Coming Soon)</string>

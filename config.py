@@ -31,7 +31,7 @@ from resources.lib.FileAccess import FileAccess
 from resources.lib.Migrate import Migrate
 
 
-NUMBER_CHANNEL_TYPES = 9
+NUMBER_CHANNEL_TYPES = 10
 
 
 

@@ -570,8 +570,9 @@ class ChannelList:
             if REAL_SETTINGS.getSetting('IncludeInternetTV') == "true":
                 fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
         elif chtype == 10: # Youtube
-            fileList = self.createYoutubePlaylist(setting1, setting2, channel)
-            # israndom = True       
+            if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
+                self.log("Building YoutubeTV Channel " + setting1 + " " + setting2 + "...")
+                fileList = self.createYoutubePlaylist(setting1, setting2, channel)
         else:
             if chtype == 0:
                 if FileAccess.copy(setting1, MADE_CHAN_LOC + os.path.split(setting1)[1]) == False:
@@ -1944,7 +1945,6 @@ class ChannelList:
                         os.makedirs(os.path.join(path, showtitle))
                 
                     #Build tvshow.nfo xml tree
-                    self.log("createYoutubePlaylist, youtubechannel," + showtitle + 'tvshow.nfo')
                     flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 'tvshow.nfo')
                     fle = FileAccess.open(flename, "w")
                     fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
@@ -1956,8 +1956,7 @@ class ChannelList:
                     fle.write('</tvshow>')            
                     fle.close()
                     
-                    # Build the episode.nfo xml tree
-                    self.log("createYoutubePlaylist, youtubechannel," + showtitle + ' episode.nfo')         
+                    # Build the episode.nfo xml tree     
                     flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
                     fle1 = FileAccess.open(flename1, "w")
                     fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
@@ -1973,8 +1972,7 @@ class ChannelList:
                     fle1.write('</episodedetails>')            
                     fle1.close()
                     
-                    #Build the episode.strm xml tree
-                    self.log("createYoutubePlaylist, youtubechannel," + showtitle + ' episode.strm')      
+                    #Build the episode.strm xml tree    
                     flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
                     fle2 = FileAccess.open(flename2, "w")
                     fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
@@ -2055,7 +2053,6 @@ class ChannelList:
                         os.makedirs(os.path.join(path, showtitle))
                 
                     #Build tvshow.nfo xml tree
-                    self.log("createYoutubePlaylist, youtubeplaylist," + showtitle + 'tvshow.nfo')
                     flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 'tvshow.nfo')
                     fle = FileAccess.open(flename, "w")
                     fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
@@ -2067,8 +2064,7 @@ class ChannelList:
                     fle.write('</tvshow>')            
                     fle.close()
                     
-                    # Build the episode.nfo xml tree
-                    self.log("createYoutubePlaylist, youtubeplaylist," + showtitle + ' episode.nfo')         
+                    # Build the episode.nfo xml tree        
                     flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
                     fle1 = FileAccess.open(flename1, "w")
                     fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
@@ -2084,8 +2080,7 @@ class ChannelList:
                     fle1.write('</episodedetails>')            
                     fle1.close()
                     
-                    #Build the episode.strm xml tree
-                    self.log("createYoutubePlaylist, youtubeplaylist," + showtitle + ' episode.strm')      
+                    #Build the episode.strm xml tree   
                     flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
                     fle2 = FileAccess.open(flename2, "w")
                     fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
@@ -2115,7 +2110,7 @@ class ChannelList:
 
                 for i in range(len(feed['entries'])):
                 
-                    showtitle = feed.channel.author_detail['name']
+                    showtitle = feed.channel.title
                     showtitle = showtitle.replace(":", "")
                     genre = (feed.entries[0].tags[1]['term'])
                     thumburl = feed.entries[i].media_thumbnail[0]['url']
@@ -2165,7 +2160,6 @@ class ChannelList:
                         os.makedirs(os.path.join(path, showtitle))
                 
                     #Build tvshow.nfo xml tree
-                    self.log("createYoutubePlaylist, subscriptions," + showtitle + 'tvshow.nfo')
                     flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 'tvshow.nfo')
                     fle = FileAccess.open(flename, "w")
                     fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
@@ -2177,8 +2171,7 @@ class ChannelList:
                     fle.write('</tvshow>')            
                     fle.close()
                     
-                    # Build the episode.nfo xml tree
-                    self.log("createYoutubePlaylist, subscriptions," + showtitle + ' episode.nfo')         
+                    # Build the episode.nfo xml tree      
                     flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
                     fle1 = FileAccess.open(flename1, "w")
                     fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
@@ -2194,8 +2187,7 @@ class ChannelList:
                     fle1.write('</episodedetails>')            
                     fle1.close()
                     
-                    #Build the episode.strm xml tree
-                    self.log("createYoutubePlaylist, subscriptions," + showtitle + ' episode.strm')      
+                    #Build the episode.strm xml tree     
                     flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
                     fle2 = FileAccess.open(flename2, "w")
                     fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
@@ -2217,9 +2209,6 @@ class ChannelList:
                 showcount += 1
                 
             root.clear()
-            
-        if showcount == 0:
-            self.log("createYoutubePlaylist  CHANNEL: " + str(self.settingChannel) + " 0 SHOWS FOUND")
 
         return showList   
 
