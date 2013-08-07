@@ -26,6 +26,7 @@ import httplib
 import base64
 import Globals
 import urllib2 
+import feedparser
 
 from xml.dom.minidom import parse, parseString
 from xml.etree import ElementTree as ET
@@ -171,8 +172,6 @@ class ChannelList:
                 if len(chsetting1) > 0:
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
-            elif chtype == 10:
-                self.makeChannelListFromFeed(channel)
                     
             if self.forceReset and (chtype != 9999):
                 ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_changed', "True")
@@ -570,9 +569,9 @@ class ChannelList:
             self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
             if REAL_SETTINGS.getSetting('IncludeInternetTV') == "true":
                 fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
-        elif chtype == 10: # RSSFeed    
-            self.log("Building RSS Feed Channel ")           
-            self.makeChannelListFromPlaylist(channel)       
+        elif chtype == 10: # Youtube
+            self.createYoutubePlaylist(setting1, setting2, channel)
+            # israndom = True       
         else:
             if chtype == 0:
                 if FileAccess.copy(setting1, MADE_CHAN_LOC + os.path.split(setting1)[1]) == False:
@@ -1864,6 +1863,128 @@ class ChannelList:
             self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + " 0 SHOWS FOUND")
 
         return showList
+        
+    def createYoutubePlaylist(self, setting1, setting2, channel):
+        self.log("createYoutubePlaylist ")
+               
+        if self.background == False:
+            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing YoutubeTV")
+
+        if setting2 == '1': #youtubechannel
+            self.log("createYoutubePlaylist, youtubechannel ")
+            youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?max-results=50&playlist=bottom'
+                
+            feed = feedparser.parse(youtubechannel)
+            path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'channel')
+
+            for i in range(len(feed['entries'])):
+                
+                showtitle = feed.channel.author_detail['name']
+                showtitle = showtitle.replace(":", "")
+                genre = (feed.entries[0].tags[1]['term'])
+                thumburl = feed.entries[i].media_thumbnail[0]['url']
+                #Time when the episode was published
+                time = (feed.entries[i].published_parsed)
+                time = str(time)
+                time = time.replace("time.struct_time", "")            
+                
+                #Some channels release more than one episode daily.  This section converts the mm/dd/hh to season=mm episode=dd+hh
+                showseason = [word for word in time.split() if word.startswith('tm_mon=')]
+                showseason = str(showseason)
+                showseason = showseason.replace("['tm_mon=", "")
+                showseason = showseason.replace(",']", "")
+                showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
+                showepisodenum = str(showepisodenum)
+                showepisodenum = showepisodenum.replace("['tm_mday=", "")
+                showepisodenum = showepisodenum.replace(",']", "")
+                showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
+                showepisodenuma = str(showepisodenuma)
+                showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
+                showepisodenuma = showepisodenuma.replace(",']", "")
+                
+                eptitle = feed.entries[i].title
+                eptitle = re.sub('[!@#$/:]', '', eptitle)
+                eptitle = str(eptitle)
+                eptitle = re.sub("[\W]+", " ", eptitle.strip())    
+                summary = feed.entries[i].summary
+                summary = uni(summary)
+                summary = re.sub("[\W]+", " ", summary.strip())
+                runtime = feed.entries[i].media_content[0]['duration']
+                runtime = int(runtime)
+                runtime = round(runtime/60.0)
+                runtime = int(runtime)
+
+                if runtime >= 1:
+                    duration = runtime
+                else:
+                    duration = 90
+                
+                duration = round(duration*60.0)
+                duration = int(duration)
+                url = feed.entries[i].media_content[0]['url']
+                url = url.replace("http://www.youtube.com/v/", "")
+                url = url.replace("?version=3&f=user_uploads&app=youtube_gdata", "")
+                
+                if not os.path.exists(os.path.join(path, showtitle)):
+                    os.makedirs(os.path.join(path, showtitle))
+            
+                #Build tvshow.nfo xml tree
+                self.log("createYoutubePlaylist, youtubechannel," + showtitle + 'tvshow.nfo')
+                flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 'tvshow.nfo')
+                fle = FileAccess.open(flename, "w")
+                fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                fle.write('<tvshow>\n')
+                fle.write('<title>' + showtitle + '</title>\n')
+                fle.write('<genre>' + genre + '</genre>\n')
+                fle.write('<studio>Youtube</studio>\n')              
+                fle.write('<id>-1</id>\n')  
+                fle.write('</tvshow>')            
+                fle.close()
+                
+                # Build the episode.nfo xml tree
+                self.log("createYoutubePlaylist, youtubechannel," + showtitle + ' episode.nfo')         
+                flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
+                fle1 = FileAccess.open(flename1, "w")
+                fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                fle1.write('<episodedetails>\n')
+                fle1.write('<title>' + eptitle + '</title>\n')
+                fle1.write('<genre>' + genre + '</genre>\n')
+                fle1.write('<season>1</season>\n')
+                fle1.write('<plot>' + summary + '</plot>\n')
+                fle1.write('<thumb>' + thumburl + '</thumb>\n')
+                fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
+                fle1.write('<studio>Youtube</studio>\n')              
+                fle1.write('<id>-1</id>\n')  
+                fle1.write('</episodedetails>')            
+                fle1.close()
+                
+                #Build the episode.strm xml tree
+                self.log("createYoutubePlaylist, youtubechannel," + showtitle + ' episode.strm')      
+                flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
+                fle2 = FileAccess.open(flename2, "w")
+                fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
+                fle2.close()
+                        
+                # Build M3U
+
+                self.log("createYoutubePlaylist, youtubechannel," + showtitle + ' m3u Playlist')  
+                tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url
+                tmpstr = tmpstr[:250]
+                tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+
+                fle3 = FileAccess.open(CHANNELS_LOC + "channel_" + str(channel) + ".m3u", "w")
+                fle3.write('#EXTINF' + tmpstr)
+                fle3.close()
+
+                    
+        # elif setting2 == '2': #youtubeplaylist 
+            # self.log("createYoutubePlaylist, youtubeplaylist ") 
+            # youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/'+setting1+'?start-index=1&max-results=50'
+        # else: #subscriptions 
+            # self.log("createYoutubePlaylist, subscriptions ") 
+            # youtubechannel = 'http://gdata.youtube.com/feeds/api/users/'+setting1+'/newsubscriptionvideos?max-results=50'
+             
+            
 
     # Run rules for a channel
     def runActions(self, action, channel, parameter):
