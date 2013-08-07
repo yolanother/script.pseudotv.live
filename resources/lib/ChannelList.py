@@ -1921,10 +1921,12 @@ class ChannelList:
                     eptitle = feed.entries[i].title
                     eptitle = re.sub('[!@#$/:]', '', eptitle)
                     eptitle = uni(eptitle)
-                    eptitle = re.sub("[\W]+", " ", eptitle.strip())    
+                    eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
+                    eptitle = eptitle[:200]                    
                     summary = feed.entries[i].summary
                     summary = uni(summary)
                     summary = re.sub("[\W]+", " ", summary.strip())
+                    summary = summary[:250]
                     runtime = feed.entries[i].media_content[0]['duration']
                     runtime = int(runtime)
                     runtime = round(runtime/60.0)
@@ -1982,8 +1984,8 @@ class ChannelList:
 
                     inSet = True
                     istvshow = True
-                    tmpstr = str(duration) + ',' + showtitle + "//" + "Youtube" + "//" + eptitle + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                    tmpstr = tmpstr[:250]
+                    tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                    tmpstr = tmpstr[:500]
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                     
                     showList.append(tmpstr)
@@ -2029,10 +2031,12 @@ class ChannelList:
                     eptitle = feed.entries[i].title
                     eptitle = re.sub('[!@#$/:]', '', eptitle)
                     eptitle = uni(eptitle)
-                    eptitle = re.sub("[\W]+", " ", eptitle.strip())    
+                    eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
+                    eptitle = eptitle[:200]                       
                     summary = feed.entries[i].summary
                     summary = uni(summary)
                     summary = re.sub("[\W]+", " ", summary.strip())
+                    summary = summary[:250]  
                     runtime = feed.entries[i].media_content[0]['duration']
                     runtime = int(runtime)
                     runtime = round(runtime/60.0)
@@ -2090,8 +2094,8 @@ class ChannelList:
 
                     inSet = True
                     istvshow = True
-                    tmpstr = str(duration) + ',' + showtitle + "//" + "Youtube" + "//" + eptitle + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                    tmpstr = tmpstr[:250]
+                    tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                    tmpstr = tmpstr[:500]
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                     
                     showList.append(tmpstr)
@@ -2136,10 +2140,12 @@ class ChannelList:
                     eptitle = feed.entries[i].title
                     eptitle = re.sub('[!@#$/:]', '', eptitle)
                     eptitle = uni(eptitle)
-                    eptitle = re.sub("[\W]+", " ", eptitle.strip())    
+                    eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
+                    eptitle = eptitle[:200]                       
                     summary = feed.entries[i].summary
                     summary = uni(summary)
                     summary = re.sub("[\W]+", " ", summary.strip())
+                    summary = summary[:250]                    
                     runtime = feed.entries[i].media_content[0]['duration']
                     runtime = int(runtime)
                     runtime = round(runtime/60.0)
@@ -2197,8 +2203,8 @@ class ChannelList:
 
                     inSet = True
                     istvshow = True
-                    tmpstr = str(duration) + ',' + showtitle + "//" + "Youtube" + "//" + eptitle + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                    tmpstr = tmpstr[:250]
+                    tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                    tmpstr = tmpstr[:500]
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                     
                     showList.append(tmpstr)
