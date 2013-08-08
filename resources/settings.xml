@@ -27,25 +27,26 @@
     
     <category label="30022">
         <setting id="ChannelDelay" type="enum" label="30023" default="0" values="None|0.25|0.5|0.75|1.0|1.25|1.5|1.75|2.0"/>
+<!--         <setting id="tvdb.enabled" label="30029" type="bool" default="false" />
+        <setting id="tvdb.apikey" label="30030" visible="eq(-1,true)" type="text" default="01F0668B2FC765B9" />
+        <setting id="tvdb.showart" label="30031" visible="eq(-2,true)" type="bool" default="false" />
+		<setting id="tmdb.enabled" label="30032" type="bool" default="false" />
+        <setting id="tmdb.apikey" label="30033" visible="eq(-1,true)" type="text" default="c974c461a9767defec862674bf6c704e"/>
+        <setting id="tmdb.showart" label="30034" visible="eq(-2,true)" type="bool" default="false" /> -->
+    </category>
+
+   <category label="30201">
 		<setting id="LiveTV" label="30500" type="lsep" />
         <setting id="IncludeLiveTV" type="bool" label="30024" default="false"/>
 		<setting id="XMLTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30501" default="" />
 		<setting id="InternetTV" label="30502" type="lsep" />
         <setting id="IncludeInternetTV" type="bool" label="30025" default="true"/>
         <setting id="IncludeYoutubeTV" type="bool" label="30026" default="true"/>
-        <setting subsetting="true" label="30099" visible="eq(-1,true)" type="lsep"/>/>
-    	
+        <setting id="IncludeYoutubeTVstrms" type="bool" visible="eq(-1,true)" label="30027" default="false"/>
+        <setting subsetting="true" label="30028" visible="eq(-2,true)" type="lsep"/>/>
     </category>
 
-	<category label="30027">
-		<setting id="tvdb.enabled" label="30029" type="bool" default="false" />
-        <setting id="tvdb.apikey" label="30030" visible="eq(-1,true)" type="text" default="01F0668B2FC765B9" />
-        <setting id="tvdb.showart" label="30031" visible="eq(-2,true)" type="bool" default="false" />
-		<setting id="tmdb.enabled" label="30032" type="bool" default="false" />
-        <setting id="tmdb.apikey" label="30033" visible="eq(-1,true)" type="text" default="c974c461a9767defec862674bf6c704e"/>
-        <setting id="tmdb.showart" label="30034" visible="eq(-2,true)" type="bool" default="false" />
-	</category>
-    <category label="30904">
+<!--     <category label="30904">
     	<setting type="lsep"/>
     	<setting label="30040" type="lsep"/>
       	<setting id="autoFindNetworks" type="bool" label="30041" default="false"/>
@@ -58,8 +59,8 @@
         <setting type="sep"/>
     	<setting label="30054" type="lsep"/>
         <setting id="limit" type="enum" label="30055" values="50|100|250" default="0"/>
-    </category>
-    <category label="30905">
+    </category> -->
+<!--     <category label="30905">
         <setting label="30909" type="lsep"/>
         <setting type="sep"/>
         <setting label="30912" type="text" enable="true"/>
@@ -74,5 +75,5 @@
         <setting label="30920" type="text" visible="eq(-8,true)" enable="true"/>
         <setting label="30921" type="text" visible="eq(-9,true)" enable="true"/>
         <setting label="30922" type="text" visible="eq(-10,true)" enable="true"/>
-    </category>
+    </category> -->
 </settings>

@@ -26,9 +26,11 @@
     <string id="30024">Include LiveTV</string>
     <string id="30025">Include InternetTV</string>
     <string id="30026">Include YoutubeTV</string>
-    <string id="30099">Requires Youtube addon</string>
-    <string id="30027">Coming Soon</string>
-    <string id="30904">Auto Tune</string>
+    <string id="30027">Optionally Generate Youtube Strms/NFOs</string>
+    <string id="30028">Requires Youtube addon</string>
+    <string id="30030">Coming Soon</string>
+    <string id="30201">Live Features</string>
+<!--     <string id="30904">Auto Tune</string>
     <string id="30040">Auto Tune Settings (Coming Soon)</string>
     <string id="30041">Find TV Networks</string>
     <string id="30042">Find Movie Studios</string>
@@ -36,11 +38,11 @@
     <string id="30044">Find Movie Genres</string>
     <string id="30045">Find Mix Genres</string>
     <string id="30046">Find Music Genres</string>
-    <string id="30047">Find Live Channels</string>
+    <string id="30047">Find Live Channels</string> -->
 	<string id="30500">LiveTV</string>
 	<string id="30501">xmltv.xml location</string>
 	<string id="30502">InternetTV</string>
-    <string id="30029">Enable TVDB</string>
+<!--     <string id="30029">Enable TVDB</string>
     <string id="30030">TVDB API KEY</string>
     <string id="30031">Enable TVDB Art</string>
     <string id="30032">Enable TMDB</string>
@@ -65,12 +67,6 @@
     <string id="30921">C:\Bumpers\CBS</string>
     <string id="30922">C:\Bumpers\FOX</string>
     <string id="30054">Channel Limit Settings</string>
-    <string id="30055">Number of Episodes/Movies Per Channel</string>
-	   		   - 
-	  
-          
-          
-          
-         
-	  
+    <string id="30055">Number of Episodes/Movies Per Channel</string> -->
+
 </strings>
