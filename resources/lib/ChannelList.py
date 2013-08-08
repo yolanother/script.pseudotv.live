@@ -168,7 +168,7 @@ class ChannelList:
                 if FileAccess.exists(xbmc.translatePath(chsetting1)):
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
-            elif chtype <= 9:
+            elif chtype <= 10:
                 if len(chsetting1) > 0:
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
