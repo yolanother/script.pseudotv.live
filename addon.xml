@@ -11,7 +11,7 @@
         <import addon="script.favourites" version="3.2.4"/>
         <import addon="script.playlists" version="0.1.1"/>
         <import addon="script.artwork.downloader" version="12.0.2"/>
-  </requires>
+    </requires>
 
 	<extension point="xbmc.python.script"
         defaultresolution="720p"
@@ -23,15 +23,18 @@
 		<minversion>35647</minversion>
 		<summary lang="en">Channel surfing for your video library</summary>
 		<description lang="en">PseudoTV acts similar to normal broadcast or cable TV, complete with multiple preset and user-defined channels and an EPG.
-		Special thanks to:
-							XBMC - Foundation
-							jason102, angrycamel, bradvido88 - Core Code and Inspriation.
-							thedarkonaut, tman12 - Skinning ideas and core code.
-							scilz	 - Internet stream sourcing... 
-							blazin912	 - HDhomerun Master/Slave mod.
-							mwkurt, XvMMvX, spyder - Forum Help and support.
-							badkarma, Vidar, Or121 - Alpha testers (if I forgot you PM me)
-					FU List:
-							geebs61, redhalo - Two forum douchebags!</description>
+            Special thanks to:
+            - XBMC - Foundation
+            - jason102, angrycamel, bradvido88 - Core Code and inspiration.
+            - thedarkonaut, tman12 - Skinning ideas and core code.
+            - peppy6582 - RSS/Youtube parsing core code.
+            - scilz - Internet stream sourcing... 
+            - blazin912 - HDhomerun Master/Slave mod.
+            - mwkurt, XvMMvX, spyder - Forum Help and support.
+            - badkarma, Vidar, Or121 - Alpha testers (if I forgot you PM me)
+            
+            FU List:
+            - geebs61, redhalo - Two forum douchebags!
+        </description>
 	</extension>
 </addon>

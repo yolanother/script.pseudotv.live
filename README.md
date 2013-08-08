@@ -9,9 +9,11 @@ Special thanks to:
 ------------------
     - XBMC - Foundation
 
-    - jason102, angrycamel, bradvido88 - Core Code and Inspriation.
+    - jason102, angrycamel, bradvido88 - Core Code and inspiration.
 
     - thedarkonaut, tman12 - Skinning ideas and core code.
+    
+    - peppy6582 - RSS/Youtube parsing core code.
 
     - scilz - Internet stream sourcing... 
 
