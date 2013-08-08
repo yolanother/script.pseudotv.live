@@ -526,6 +526,8 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             return "LiveTV"
         elif chantype == 9:
             return "InternetTV"
+        elif chantype == 10:
+            return "YoutubeTV"
         elif chantype == 9999:
             return "None"
 
@@ -612,6 +614,8 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
                 newlabel = channame + " LiveTV"
             elif chantype == 9:
                 newlabel = channame + " InternetTV"
+            elif chantype == 10:
+                newlabel = channame + " YoutubeTV"
             elif chantype == 7:
                 if chansetting1[-1] == '/' or chansetting1[-1] == '\\':
                     newlabel = os.path.split(chansetting1[:-1])[1]
