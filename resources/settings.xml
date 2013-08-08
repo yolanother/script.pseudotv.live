@@ -32,7 +32,7 @@
 		<setting id="XMLTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30501" default="" />
 		<setting id="InternetTV" label="30502" type="lsep" />
         <setting id="IncludeInternetTV" type="bool" label="30025" default="true"/>
-        <setting id="IncludeYoutubeTV" type="bool" label="30026" default="false"/>
+        <setting id="IncludeYoutubeTV" type="bool" label="30026" default="true"/>
         <setting subsetting="true" label="30099" visible="eq(-1,true)" type="lsep"/>/>
     	
     </category>
