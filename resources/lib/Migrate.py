@@ -25,6 +25,7 @@ import ChannelList
 
 
 class Migrate:
+
     def log(self, msg, level = xbmc.LOGDEBUG):
         Globals.log('Migrate: ' + msg, level)
 
@@ -47,9 +48,9 @@ class Migrate:
         Globals.ADDON_SETTINGS.setSetting("Version", Globals.VERSION)
         self.log("version is " + curver)
 
-        #if curver == "0.0.0":
-            #if self.initializeChannels():
-                # return True
+        if curver == "0.0.0":
+            if self.initializeChannels():
+                return True   
 
         if self.compareVersions(curver, "1.0.2") < 0:
             self.log("Migrating to 1.0.2")
@@ -77,62 +78,46 @@ class Migrate:
                     self.addPreset(i + 1, currentpreset)
                     currentpreset += 1
 
-        # Migrate serial mode to rules
-        if self.compareVersions(curver, "2.0.0") < 0:
-            self.log("Migrating to 2.0.0")
+        # # Migrate serial mode to rules
+        # if self.compareVersions(curver, "2.0.0") < 0:
+            # self.log("Migrating to 2.0.0")
 
-            for i in range(999):
-                try:
-                    if Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_type") == '6':
-                        if Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_2") == "6":
-                            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rulecount", "2")
-                            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rule_1_id", "8")
-                            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rule_2_id", "9")
-                            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_2", "4")
-                except:
-                    pass
+            # for i in range(999):
+                # try:
+                    # if Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_type") == '6':
+                        # if Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_2") == "6":
+                            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rulecount", "2")
+                            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rule_1_id", "8")
+                            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rule_2_id", "9")
+                            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_2", "4")
+                # except:
+                    # pass
 
-        return True
+        # return True
 
 
     def addPreset(self, channel, presetnum):
-        networks = ['AMC', 'CBS', 'NBS', 'FOX', 'ABC', 'TBS', 'FX', 'HBO', 'Showtime']
-        genres = ['Animation', 'Action']
-        studio = ['GK Films']
-        VevoTV = ['VevoTV']
-        SkyTV = ['SKY NEWS HD']
-
-        if presetnum < len(networks):
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", networks[presetnum])
-        elif presetnum - len(networks) < len(genres):
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "5")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", genres[presetnum - len(networks)])
-        elif presetnum - len(networks) - len(genres) < len(studio):
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "2")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", studio[presetnum - len(networks) - len(genres)])
-        elif presetnum - len(networks) - len(genres) - len(studio) < len(VevoTV):
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "9")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "5400")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "rtmp://vevohp2livefs.fplive.net:1935/vevohp2live-live/ playpath=stream2272000 swfUrl=http://cache.vevo.com/livepassdl.conviva.com/ver/2.64.0.68610/LivePassModuleMain_osmf.swf")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_3", VevoTV[presetnum - len(networks) - len(genres) - len(VevoTV)])
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_4",  "Sit back and enjoy a 24/7 stream of music videos on VEVO TV.")
+        BBCWW = ['BBCWW']
+        Trailers = ['movieclips']
+        
+        if presetnum < len(BBCWW):
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "10")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "BBCWorldwide")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "1")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rulecount", "1")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_changed", "true")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_time", "0")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_id", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "VevoTV")
-        elif presetnum - len(networks) - len(genres) - len(studio) - len(VevoTV) < len(SkyTV):
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "9")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "5400")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "http://fw01.livem3u8.me.totiptv.com/live//31b003ab7e7749a798fe00424e3dd9ff.m3u8?bitrate=800")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_4", "Analysis and top stories from business, politics, entertainment and more")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "BBC Worldwide")
+        elif presetnum - len(BBCWW) < len(Trailers):
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "10")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "movieclips")
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "1")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rulecount", "1")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_changed", "true")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_time", "0")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_id", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "SKY NEWS HD")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_3", SkyTV[presetnum - len(networks) - len(genres) - len(VevoTV) - len(SkyTV)])
+            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "Trailers")
 
     def compareVersions(self, version1, version2):
         retval = 0
@@ -166,72 +151,73 @@ class Migrate:
         return retval
 
 
-    # def initializeChannels(self):
-        # updatedlg = xbmcgui.DialogProgress()
-        # updatedlg.create("PseudoTV", "Initializing")
-        # updatedlg.update(1, "Initializing", "Initial Channel Setup")
-        # chanlist = ChannelList.ChannelList()
-        # chanlist.background = True
-        # chanlist.fillTVInfo(True)
-        # updatedlg.update(30)
-        # chanlist.fillMovieInfo(True)
-        # updatedlg.update(60)
-        # # Now create TV networks, followed by mixed genres, followed by TV genres, and finally movie genres
-        # currentchan = 1
-        # mixedlist = []
+    def initializeChannels(self):
+    
+        updatedlg = xbmcgui.DialogProgress()
+        updatedlg.create("PseudoTV", "Initializing")
+        updatedlg.update(1, "Initializing", "Initial Channel Setup")
+        chanlist = ChannelList.ChannelList()
+        chanlist.background = True
+        chanlist.fillTVInfo(True)
+        updatedlg.update(30)
+        chanlist.fillMovieInfo(True)
+        updatedlg.update(60)
+        # Now create TV networks, followed by mixed genres, followed by TV genres, and finally movie genres
+        currentchan = 1
+        mixedlist = []
 
-        # for item in chanlist.showGenreList:
-            # curitem = item[0].lower()
+        for item in chanlist.showGenreList:
+            curitem = item[0].lower()
 
-            # for a in chanlist.movieGenreList:
-                # if curitem == a[0].lower():
-                    # mixedlist.append([item[0], item[1], a[1]])
-                    # break
+            for a in chanlist.movieGenreList:
+                if curitem == a[0].lower():
+                    mixedlist.append([item[0], item[1], a[1]])
+                    break
 
-        # mixedlist.sort(key=lambda x: x[1] + x[2], reverse=True)
-        # currentchan = self.initialAddChannels(chanlist.networkList, 1, currentchan)
-        # updatedlg.update(70)
+        mixedlist.sort(key=lambda x: x[1] + x[2], reverse=True)
+        currentchan = self.initialAddChannels(chanlist.networkList, 1, currentchan)
+        updatedlg.update(70)
 
-        # # Mixed genres
-        # if len(mixedlist) > 0:
-            # added = 0.0
+        # Mixed genres
+        if len(mixedlist) > 0:
+            added = 0.0
 
-            # for item in mixedlist:
-                # if item[1] > 2 and item[2] > 1:
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", "5")
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
-                    # added += 1.0
-                    # currentchan += 1
-                    # itemlow = item[0].lower()
+            for item in mixedlist:
+                if item[1] > 2 and item[2] > 1:
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", "5")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
+                    added += 1.0
+                    currentchan += 1
+                    itemlow = item[0].lower()
 
-                    # # Remove that genre from the shows genre list
-                    # for i in range(len(chanlist.showGenreList)):
-                        # if itemlow == chanlist.showGenreList[i][0].lower():
-                            # chanlist.showGenreList.pop(i)
-                            # break
+                    # Remove that genre from the shows genre list
+                    for i in range(len(chanlist.showGenreList)):
+                        if itemlow == chanlist.showGenreList[i][0].lower():
+                            chanlist.showGenreList.pop(i)
+                            break
 
-                    # # Remove that genre from the movie genre list
-                    # for i in range(len(chanlist.movieGenreList)):
-                        # if itemlow == chanlist.movieGenreList[i][0].lower():
-                            # chanlist.movieGenreList.pop(i)
-                            # break
+                    # Remove that genre from the movie genre list
+                    for i in range(len(chanlist.movieGenreList)):
+                        if itemlow == chanlist.movieGenreList[i][0].lower():
+                            chanlist.movieGenreList.pop(i)
+                            break
 
-                    # if added > 10:
-                        # break
+                    if added > 10:
+                        break
 
-                    # updatedlg.update(int(70 + 10.0 / added))
+                    updatedlg.update(int(70 + 10.0 / added))
 
-        # updatedlg.update(80)
-        # currentchan = self.initialAddChannels(chanlist.showGenreList, 3, currentchan)
-        # updatedlg.update(90)
-        # currentchan = self.initialAddChannels(chanlist.movieGenreList, 4, currentchan)
-        # updatedlg.close()
+        updatedlg.update(80)
+        currentchan = self.initialAddChannels(chanlist.showGenreList, 3, currentchan)
+        updatedlg.update(90)
+        currentchan = self.initialAddChannels(chanlist.movieGenreList, 4, currentchan)
+        updatedlg.close()
 
-        # if currentchan > 1:
-            # return True
+        if currentchan > 1:
+            return True
 
-        # return False
-
+        return False
+    
 
     def initialAddChannels(self, thelist, chantype, currentchan):
         if len(thelist) > 0:

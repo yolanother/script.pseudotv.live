@@ -124,6 +124,32 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
     # override the doModal function so we can setup everything first
     def onInit(self):
         self.log('onInit')
+        
+        if REAL_SETTINGS.getSetting("Autotune") == "true" and REAL_SETTINGS.getSetting("Warning") == "true":
+            self.log('Autotune onInit')
+            # delete settings2.xml
+            settingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.xml'))
+            nsettingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.bak.xml'))
+            
+            if FileAccess.exists(settingsFile):
+                try:
+                    FileAccess.rename(settingsFile, nsettingsFile)
+                    self.log('Autotune Settings2 Backup Complete')
+                    try:
+                        if FileAccess.exists(nsettingsFile) and FileAccess.exists(settingsFile):
+                            FileAccess.remove(settingsFile)
+                            self.log('Autotune Settings2 Deleted')
+                            
+                        if FileAccess.exists(nsettingsFile):
+                            needsreset = True
+                            makenewlist = True
+                            if self.initializeChannels():
+                                self.log('Autotune initializeChannels')
+                                return True
+                    except:
+                        self.log("Unable to rename " + str(settingsFile))       
+                except:
+                    self.log("Unable to delete " + str(settingsFile))   
 
         if FileAccess.exists(GEN_CHAN_LOC) == False:
             try:

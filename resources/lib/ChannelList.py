@@ -1384,7 +1384,7 @@ class ChannelList:
             self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('XMLTV'), 'xmltv.xml'))
             #self.xmlTvFile = FileAccess.exists(xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('XMLTV'), 'xmltv.xml')))
         except:
-            self.log("buildLiveTVFileList Could not determine path the the xmltv file")
+            self.log("buildLiveTVFileList, Could not determine path the the xmltv file")
             return
 
         #if not os.path.exists(self.xmlTvFile) or os.path.getsize(self.xmlTvFile) < 1:
@@ -1480,7 +1480,12 @@ class ChannelList:
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Building InternetTV")
 
-        self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
+        try:
+            self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
+        except:
+            self.log("buildInternetTVFileList, Could not find settings.xml")
+            return   
+            
         f = open(self.ninstance, "rb")
         context = ET.iterparse(f, events=("start", "end"))
 
@@ -1511,7 +1516,7 @@ class ChannelList:
                     if setting1 >= 1:
                         try:
                             dur = setting1
-                            self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
+                            self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + ", " + title + "  DUR: " + str(dur))
                         except:
                             dur = 5400  #90 minute default
                             self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
@@ -1525,27 +1530,28 @@ class ChannelList:
                     showList.append(tmpstr)
                 else:
                     if inSet == True:
-                        self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + "  DONE")
+                        self.log("buildInternetTVFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                         break
                 showcount += 1
                     
             root.clear()
-                
-        if showcount == 0:
-            self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + " 0 SHOWS FOUND")
 
         return showList
         
     def createYoutubePlaylist(self, setting1, setting2, channel):
-        self.log("createYoutubePlaylist ")
         showList = []
         seasoneplist = []
         showcount = 0
                
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing YoutubeTV")
-
-        self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
+        
+        try:
+            self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
+        except:
+            self.log("createYoutubePlaylist, Could not find settings.xml")
+            return 
+        
         f = open(self.ninstance, "rb")
         context = ET.iterparse(f, events=("start", "end"))
         
@@ -1558,7 +1564,7 @@ class ChannelList:
                 break
                 
             if event == "end" and setting2 == '1': #youtubechannel
-                self.log("createYoutubePlaylist, youtubechannel ")
+                self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Channel")
                 youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?max-results=50&playlist=bottom'
                     
                 feed = feedparser.parse(youtubechannel)
@@ -1613,6 +1619,7 @@ class ChannelList:
                         duration = runtime
                     else:
                         duration = 90
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                     
                     duration = round(duration*60.0)
                     duration = int(duration)
@@ -1672,17 +1679,18 @@ class ChannelList:
                     tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
                     tmpstr = tmpstr[:500]
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                    self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                     
                     showList.append(tmpstr)
                 else:
                     if inSet == True:
-                        self.log("createYoutubePlaylist  CHANNEL: " + str(self.settingChannel) + "  DONE")
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                         break
                 showcount += 1
 
                 
             elif event == "end" and setting2 == '2': #youtubeplaylist 
-                self.log("createYoutubePlaylist, youtubeplaylist ")
+                self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist")
                 youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     
                 feed = feedparser.parse(youtubechannel)
@@ -1737,6 +1745,7 @@ class ChannelList:
                         duration = runtime
                     else:
                         duration = 90
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                     
                     duration = round(duration*60.0)
                     duration = int(duration)
@@ -1797,16 +1806,17 @@ class ChannelList:
                     tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
                     tmpstr = tmpstr[:500]
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                    self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                     
                     showList.append(tmpstr)
                 else:
                     if inSet == True:
-                        self.log("createYoutubePlaylist  CHANNEL: " + str(self.settingChannel) + "  DONE")
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                         break
                 showcount += 1
                 
             elif event == "end" and setting2 == '3': #subscriptions 
-                self.log("createYoutubePlaylist, subscriptions ")
+                self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription")
                 youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?max-results=50'
                     
                 feed = feedparser.parse(youtubechannel)
@@ -1861,6 +1871,7 @@ class ChannelList:
                         duration = runtime
                     else:
                         duration = 90
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                     
                     duration = round(duration*60.0)
                     duration = int(duration)
@@ -1921,17 +1932,18 @@ class ChannelList:
                     tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
                     tmpstr = tmpstr[:500]
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                    self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                     
                     showList.append(tmpstr)
                 else:
                     if inSet == True:
-                        self.log("createYoutubePlaylist  CHANNEL: " + str(self.settingChannel) + "  DONE")
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                         break
                 showcount += 1
                 
             root.clear()
 
-        return showList   
+        return showList
 
 
     def buildRSSFileList(self, setting1, setting2, channel):
@@ -2005,7 +2017,7 @@ class ChannelList:
                         showList.append(tmpstr)
                     else:
                         if inSet == True:
-                            self.log("buildRSSFileList  CHANNEL: " + str(self.settingChannel) + "  DONE")
+                            self.log("buildRSSFileList  CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
                     showcount += 1
                     
