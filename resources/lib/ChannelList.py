@@ -1599,11 +1599,11 @@ class ChannelList:
                     summary = re.sub("[\W]+", " ", summary.strip())
                     summary = summary[:200]
                     
-                    if hasattr(feed.entries[i], 'media_content'):
-                        runtime = feed.entries[i].media_content[0]['duration']
+                    # if hasattr(feed.entries[i], 'media_content'):
+                        # runtime = feed.entries[i].media_content[0]['duration']
 
-                    else:
-                        runtime = feed.entries[i].yt_duration['seconds']
+                    # else:
+                    runtime = feed.entries[i].yt_duration['seconds']
                         
                     runtime = int(runtime)
                     runtime = round(runtime/60.0)
@@ -1617,15 +1617,15 @@ class ChannelList:
                     duration = round(duration*60.0)
                     duration = int(duration)
                     
-                    if hasattr(feed.entries[i], 'media_content'):
-                        url = feed.entries[i].media_content[0]['url']
-                        url = url.replace("http://www.youtube.com/v/", "")
-                        url = url.replace("?version=3&f=user_uploads&app=youtube_gdata", "")
-                    else:
-                        url = feed.entries[i].media_player['url']
-                        url = url.replace("http://www.youtube.com/watch?v=", "")
-                        url = url.replace("&feature=youtube_gdata_player", "")                                            
-                    
+                    # if hasattr(feed.entries[i], 'media_content'):
+                        # url = feed.entries[i].media_content[0]['url']
+                        # url = url.replace("http://www.youtube.com/v/", "")
+                        # url = url.replace("&feature=youtube_gdata_player", "")     
+                    # else:
+                    url = feed.entries[i].media_player['url']
+                    url = url.replace("http://www.youtube.com/watch?v=", "")
+                    url = url.replace("&feature=youtube_gdata_player", "")                                            
+                
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
                         self.log("Building YoutubeTV Channel Strms ")
                     
@@ -1723,11 +1723,11 @@ class ChannelList:
                     summary = re.sub("[\W]+", " ", summary.strip())
                     summary = summary[:200]
                     
-                    if hasattr(feed.entries[i], 'media_content'):
-                        runtime = feed.entries[i].media_content[0]['duration']
+                    # if hasattr(feed.entries[i], 'media_content'):
+                        # runtime = feed.entries[i].media_content[0]['duration']
 
-                    else:
-                        runtime = feed.entries[i].yt_duration['seconds']
+                    # else:
+                    runtime = feed.entries[i].yt_duration['seconds']
                         
                     runtime = int(runtime)
                     runtime = round(runtime/60.0)
@@ -1741,15 +1741,15 @@ class ChannelList:
                     duration = round(duration*60.0)
                     duration = int(duration)
                     
-                    if hasattr(feed.entries[i], 'media_content'):
-                        url = feed.entries[i].media_content[0]['url']
-                        url = url.replace("http://www.youtube.com/v/", "")
-                        url = url.replace("?version=3&f=playlists&app=youtube_gdata", "")
+                    # if hasattr(feed.entries[i], 'media_content'):
+                        # url = feed.entries[i].media_content[0]['url']
+                        # url = url.replace("http://www.youtube.com/v/", "")
+                        # url = url.replace("?version=3&f=playlists&app=youtube_gdata", "")
                         
-                    else:
-                        url = feed.entries[i].media_player['url']
-                        url = url.replace("http://www.youtube.com/watch?v=", "")
-                        url = url.replace("&feature=youtube_gdata_player", "")    
+                    # else:
+                    url = feed.entries[i].media_player['url']
+                    url = url.replace("http://www.youtube.com/watch?v=", "")
+                    url = url.replace("?version=3&f=playlists&app=youtube_gdata", "")
                                             
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrm') == "true":
                         self.log("Building YoutubeTV Playlist Strms ")
@@ -1847,11 +1847,11 @@ class ChannelList:
                     summary = re.sub("[\W]+", " ", summary.strip())
                     summary = summary[:200]
                     
-                    if hasattr(feed.entries[i], 'media_content'):
-                        runtime = feed.entries[i].media_content[0]['duration']
+                    # if hasattr(feed.entries[i], 'media_content'):
+                        # runtime = feed.entries[i].media_content[0]['duration']
 
-                    else:
-                        runtime = feed.entries[i].yt_duration['seconds']
+                    # else:
+                    runtime = feed.entries[i].yt_duration['seconds']
                         
                     runtime = int(runtime)
                     runtime = round(runtime/60.0)
@@ -1865,15 +1865,15 @@ class ChannelList:
                     duration = round(duration*60.0)
                     duration = int(duration)
                     
-                    if hasattr(feed.entries[i], 'media_content'):
-                        url = feed.entries[i].media_content[0]['url']
-                        url = url.replace("http://www.youtube.com/v/", "")
-                        url = url.replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
+                    # if hasattr(feed.entries[i], 'media_content'):
+                        # url = feed.entries[i].media_content[0]['url']
+                        # url = url.replace("http://www.youtube.com/v/", "")
+                        # url = url.replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
                     
-                    else:
-                        url = feed.entries[i].media_player['url']
-                        url = url.replace("http://www.youtube.com/watch?v=", "")
-                        url = url.replace("&feature=youtube_gdata_player", "")    
+                    # else:
+                    url = feed.entries[i].media_player['url']
+                    url = url.replace("http://www.youtube.com/watch?v=", "")
+                    url = url.replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
                     
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrm') == "true":
                         self.log("Building YoutubeTV Subscription Strms ")
