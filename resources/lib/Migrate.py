@@ -31,49 +31,56 @@ class Migrate:
 
 
     def migrate(self):
-        self.log("migration")
+        self.log("migration")    
+        chanlist = ChannelList.ChannelList()
+        chanlist.background = True
+        chanlist.forceReset = True
+        settingsFile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings2.xml'))
         
         if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning") == "true":
             self.log("initializeChannels")
             if self.initializeChannels():
                 return True           
         else:
-            for i in range(200):
-                self.log("addPlaylist")
-                if os.path.exists(xbmc.translatePath('special://profile/playlists/video') + '/Channel_' + str(i + 1) + '.xsp'):
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_type", "0")
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_1", "special://profile/playlists/video/Channel_" + str(i + 1) + ".xsp")
-                elif os.path.exists(xbmc.translatePath('special://profile/playlists/mixed') + '/Channel_' + str(i + 1) + '.xsp'):
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_type", "0")
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_1", "special://profile/playlists/mixed/Channel_" + str(i + 1) + ".xsp")
+            if FileAccess.exists(settingsFile):
+                return False
+            else:
+                for i in range(200):
+                    self.log("addPlaylist")
+                    if os.path.exists(xbmc.translatePath('special://profile/playlists/video') + '/Channel_' + str(i + 1) + '.xsp'):
+                        Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_type", "0")
+                        Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_1", "special://profile/playlists/video/Channel_" + str(i + 1) + ".xsp")
+                    elif os.path.exists(xbmc.translatePath('special://profile/playlists/mixed') + '/Channel_' + str(i + 1) + '.xsp'):
+                        Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_type", "0")
+                        Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_1", "special://profile/playlists/mixed/Channel_" + str(i + 1) + ".xsp")
 
-            currentpreset = 0
+                currentpreset = 0
 
-            for i in range(Globals.TOTAL_FILL_CHANNELS):
-                chantype = 9999
+                for i in range(Globals.TOTAL_FILL_CHANNELS):
+                    chantype = 9999
 
-                try:
-                    chantype = int(Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_type"))
-                except:
-                    pass
+                    try:
+                        chantype = int(Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_type"))
+                    except:
+                        pass
 
-                if chantype == 9999:
-                    self.log("addPreset")
-                    self.addPreset(i + 1, currentpreset)
-                    currentpreset += 1
+                    if chantype == 9999:
+                        self.log("addPreset")
+                        self.addPreset(i + 1, currentpreset)
+                        currentpreset += 1
 
-            for i in range(999):
-                try:
-                    if Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_type") == '6':
-                        if Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_2") == "6":
-                            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rulecount", "2")
-                            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rule_1_id", "8")
-                            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rule_2_id", "9")
-                            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_2", "4")
-                except:
-                    pass
+                for i in range(999):
+                    try:
+                        if Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_type") == '6':
+                            if Globals.ADDON_SETTINGS.getSetting("Channel_" + str(i + 1) + "_2") == "6":
+                                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rulecount", "2")
+                                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rule_1_id", "8")
+                                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_rule_2_id", "9")
+                                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_2", "4")
+                    except:
+                        pass
 
-        return True
+            return True
 
 
     def addPreset(self, channel, presetnum):
