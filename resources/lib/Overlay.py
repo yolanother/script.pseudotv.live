@@ -34,10 +34,6 @@ from ChannelListThread import ChannelListThread
 from FileAccess import FileLock, FileAccess
 from Migrate import Migrate
 
-#from sickbeard import *
-#from couchpotato import *
-#from tvdb import *
-#from tmdb import *
 
 class MyPlayer(xbmc.Player):
     def __init__(self):
@@ -127,29 +123,20 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         
         if REAL_SETTINGS.getSetting("Autotune") == "true" and REAL_SETTINGS.getSetting("Warning") == "true":
             self.log('Autotune onInit')
-            # delete settings2.xml
+            #Backup and Delete old settings2.xml before autotune runs.
             settingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.xml'))
             nsettingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.bak.xml'))
             
-            if FileAccess.exists(settingsFile):
-                try:
-                    FileAccess.rename(settingsFile, nsettingsFile)
-                    self.log('Autotune Settings2 Backup Complete')
-                    try:
-                        if FileAccess.exists(nsettingsFile) and FileAccess.exists(settingsFile):
-                            FileAccess.remove(settingsFile)
-                            self.log('Autotune Settings2 Deleted')
-                            
-                        if FileAccess.exists(nsettingsFile):
-                            needsreset = True
-                            makenewlist = True
-                            if self.initializeChannels():
-                                self.log('Autotune initializeChannels')
-                                return True
-                    except:
-                        self.log("Unable to rename " + str(settingsFile))       
-                except:
-                    self.log("Unable to delete " + str(settingsFile))   
+            if FileAccess.exists(settingsFile) and FileAccess.exists(nsettingsFile):
+                os.remove(nsettingsFile)
+                self.log('Autotune, Deleted Old Backup') 
+            elif FileAccess.exists(settingsFile):
+                FileAccess.rename(settingsFile, nsettingsFile)
+                
+                if FileAccess.exists(nsettingsFile):
+                    self.log('Autotune, Settings2 Backup Complete')                
+                else:
+                    self.log('Autotune, Settings2 Backup Failed')
 
         if FileAccess.exists(GEN_CHAN_LOC) == False:
             try:

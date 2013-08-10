@@ -33,10 +33,18 @@
     <string id="30904">AutoTune</string>
     <string id="30040">AutoTune Settings (Coming Soon)</string>
     <string id="30041">Enable Autotune</string>
-    <string id="30042">Enabling Autotune will delete your pre-existing Channels, are you sure?</string>
+    <string id="30042">Enabling Autotune will delete your pre-existing channels, are you sure?</string>
     <string id="30043">Find TV Channels</string>
     <string id="30044">Find Movie Channels</string>
     <string id="30045">Find Mixed Channels</string>
+    <string id="30046">Find TV Genre Channels</string>
+    <string id="30047">Find Movie Genre Channels</string>
+    <string id="30048">Find Music Channels</string>
+    <string id="30049">Find LiveTV Channels</string>
+    <string id="30050">Find InternetTV Channels</string>
+    <string id="30051">Restore Pre-Autotune Channels</string>
+    <string id="30052">Restoring Pre-Autotune Channels will delete your current channels, are you sure?</string>
+    
 	<string id="30500">LiveTV</string>
 	<string id="30501">xmltv.xml location</string>
 	<string id="30502">InternetTV</string>

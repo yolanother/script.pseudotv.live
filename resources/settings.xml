@@ -41,9 +41,8 @@
 		<setting id="XMLTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30501" default="" />
 		<setting id="InternetTV" label="30502" type="lsep" />
         <setting id="IncludeInternetTV" type="bool" label="30025" default="true"/>
-        <setting id="IncludeYoutubeTV" type="bool" label="30026" default="true"/>
+        <setting id="IncludeYoutubeTV" type="bool" label="30026" enable="System.HasAddon(plugin.video.youtube)" default="true"/>
         <setting id="IncludeYoutubeTVstrms" type="bool" visible="eq(-1,true)" label="30027" default="false"/>
-        <setting subsetting="true" label="30028" visible="eq(-2,true)" type="lsep"/>/>
     </category>
 
     <category label="30904">
@@ -53,7 +52,14 @@
       	<setting id="Warning" type="bool" label="30042" visible="eq(-1,true)" default="false"/>
       	<setting id="AutotuneTV" type="bool" label="30043" visible="eq(-1,true)" default="false"/>
       	<setting id="AutotuneMovie" type="bool" label="30044" visible="eq(-2,true)" default="false"/>
-      	<setting id="AutotuneMixed" type="bool" label="30045" visible="eq(-3,true)" default="false"/>
+      	<setting id="AutotuneMixed" type="bool" label="30045" visible="eq(-1,true) + eq(-2,true)" default="false"/>
+        <setting id="AutotuneTVGenre" type="bool" label="30046" visible="eq(-1,true) + !eg(-4,true)" default="false"/>
+        <setting id="AutotuneMovieGenre" type="bool" label="30047" visible="eq(-2,true) + !eg(-5,true)" default="false"/>
+        <setting id="AutotuneMusic" type="bool" label="30048" visible="eq(-6,true)" default="false"/>
+      	<setting id="AutotuneLiveTV" type="bool" label="30049" visible="eq(-7,true)" default="false"/>
+      	<setting id="AutotuneInternetTV" type="bool" label="30050" visible="eq(-8,true)" default="false"/>
+      	<setting id="Restore" type="bool" label="30051" visible="!eq(-10,true)" default="false"/>
+      	<setting id="Warning2" type="bool" label="30052" visible="eq(-1,true)" default="false"/>
     </category>
 <!--     <category label="30905">
         <setting label="30909" type="lsep"/>
