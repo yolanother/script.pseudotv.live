@@ -314,7 +314,7 @@ class ChannelList:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
             #force rebuild of livetv channels every load
-            if chtype >= 8:
+            if chtype >= 8 and chtype <= 11:
                 needsreset = True
                 makenewlist = True
                 
@@ -1831,7 +1831,7 @@ class ChannelList:
                     url = url.replace("http://www.youtube.com/watch?v=", "")
                     url = url.replace("?version=3&f=playlists&app=youtube_gdata", "")
                                             
-                    if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrm') == "true":
+                    if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
                         self.log("Building YoutubeTV Playlist Strms ")
                     
                         if not os.path.exists(os.path.join(path, showtitle)):
@@ -1957,7 +1957,7 @@ class ChannelList:
                     url = url.replace("http://www.youtube.com/watch?v=", "")
                     url = url.replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
                     
-                    if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrm') == "true":
+                    if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
                         self.log("Building YoutubeTV Subscription Strms ")
                     
                         if not os.path.exists(os.path.join(path, showtitle)):
@@ -2113,7 +2113,7 @@ class ChannelList:
                     duration = round(duration*60.0)
                     duration = int(duration)
                     
-                    if REAL_SETTINGS.getSetting('IncludeRSSstrm') == "true":
+                    if REAL_SETTINGS.getSetting('IncludeRSSstrms') == "true":
                         self.log("buildRSSFileList, Building RSS Strms ")
                 
                         if not os.path.exists(os.path.join(path, showtitle)):
