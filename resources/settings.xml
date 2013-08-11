@@ -45,6 +45,8 @@
         <setting id="IncludeInternetTV" type="bool" label="30056" default="true"/>
         <setting id="IncludeYoutubeTV" type="bool" label="30057" enable="System.HasAddon(plugin.video.youtube)" default="true"/>
         <setting id="IncludeYoutubeTVstrms" subsetting="true" type="bool" visible="eq(-1,true)" label="30058" default="false"/>
+        <setting id="IncludeRSS" type="bool" label="30059" default="true"/>
+        <setting id="IncludeRSSstrms" subsetting="true" type="bool" visible="eq(-1,true)" label="30060" default="false"/>
     </category>
 
     <category label="30070">

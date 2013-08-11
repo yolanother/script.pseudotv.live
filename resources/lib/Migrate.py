@@ -33,7 +33,7 @@ class Migrate:
     def migrate(self):
         self.log("migration")    
         chanlist = ChannelList.ChannelList()
-        chanlist.background = True
+        chanlist.background = False
         chanlist.forceReset = True
         settingsFile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings2.xml'))
         
@@ -52,7 +52,10 @@ class Migrate:
                         Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_1", "special://profile/playlists/video/Channel_" + str(i + 1) + ".xsp")
                     elif os.path.exists(xbmc.translatePath('special://profile/playlists/mixed') + '/Channel_' + str(i + 1) + '.xsp'):
                         Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_type", "0")
-                        Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_1", "special://profile/playlists/mixed/Channel_" + str(i + 1) + ".xsp")
+                        Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_1", "special://profile/playlists/mixed/Channel_" + str(i + 1) + ".xsp") 
+                    elif os.path.exists(xbmc.translatePath('special://profile/playlists/music') + '/Channel_' + str(i + 1) + '.xsp'):
+                        Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_type", "0")
+                        Globals.ADDON_SETTINGS.setSetting("Channel_" + str(i + 1) + "_1", "special://profile/playlists/music/Channel_" + str(i + 1) + ".xsp")
 
                 currentpreset = 0
 
@@ -91,20 +94,10 @@ class Migrate:
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "10")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "BBCWorldwide")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rulecount", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_changed", "true")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_time", "0")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_id", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "BBC Worldwide")
         elif presetnum - len(BBCWW) < len(Trailers):
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "10")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "movieclips")
             Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rulecount", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_changed", "true")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_time", "0")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_id", "1")
-            Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "Trailers")
 
 
     def initializeChannels(self):
@@ -113,7 +106,7 @@ class Migrate:
             updatedlg.create("PseudoTV", "Initializing")
             updatedlg.update(1, "Initializing", "Autotune Channel Setup")
             chanlist = ChannelList.ChannelList()
-            chanlist.background = True
+            chanlist.background = False
             chanlist.forceReset = True
             
             if Globals.REAL_SETTINGS.getSetting("AutotuneTV") == "true":

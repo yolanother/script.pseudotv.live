@@ -46,6 +46,7 @@ class ChannelList:
         self.mixedGenreList = []
         self.showGenreList = []
         self.movieGenreList = []
+        self.musicGenreList = []
         self.showList = []
         self.channels = []
         self.videoParser = VideoParser()
@@ -573,10 +574,14 @@ class ChannelList:
             if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
                 self.log("Building YoutubeTV Channel " + setting1 + " using type " + setting2 + "...")
                 fileList = self.createYoutubePlaylist(setting1, setting2, channel)
-        elif chtype == 11: # RSS
-            if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
+        elif chtype == 11: # RSS/iTunes/feedburner/Podcast
+            if REAL_SETTINGS.getSetting('IncludeRSS') == "true":
                 self.log("Building RSS Feed " + setting1 + " using type " + setting2 + "...")
                 fileList = self.buildRSSFileList(setting1, setting2, channel)
+        # elif chtype == 12: # Music
+            # if REAL_SETTINGS.getSetting('fillMusicInfo') == "true":
+                # self.log("Building Music Channel" + setting1 + " using type " + setting2 + "...")
+                # fileList = self.fillMusicInfo(setting1, setting2, channel)
         else:
             if chtype == 0:
                 if FileAccess.copy(setting1, MADE_CHAN_LOC + os.path.split(setting1)[1]) == False:
@@ -701,13 +706,34 @@ class ChannelList:
         elif chtype == 6:
             if len(self.showList) == 0:
                 self.fillTVInfo()
-
             return self.createShowPlaylist(setting1, setting2)
+        elif int(chtype) == 12:
+            if len(self.musicGenreList) == 0:
+                self.fillMusicInfo()
+            return self.createMusicPlaylist(setting1, setting3)    
 
         self.log('makeTypePlaylists invalid channel type: ' + str(chtype))
         return ''
 
 
+    def createMusicPlaylist(self, genre, pltype, channelname):
+        self.log("createMusicPlaylist")
+        limit = 1000
+        pltype = "songs"
+        genre = genre.lower()
+        flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
+        try:
+            fle = FileAccess.open(flename, "w")
+        except:
+            self.Error('Unable to open the cache file ' + flename, xbmc.LOGERROR)
+            return ''
+        self.writeXSPHeader(fle, pltype, channelname, 'all')
+        genre = self.cleanString(genre)
+        fle.write('    <rule field="genre" operator="is">' + genre + '</rule>\n')
+        self.writeXSPFooter(fle, limit, "random")
+        fle.close()
+        return flename
+    
     def createNetworkPlaylist(self, network):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Network_' + network + '.xsp')
 
@@ -941,7 +967,52 @@ class ChannelList:
         newstr = newstr.replace('&lt;', '<')
         return uni(newstr)
         
+    
+    def fillMusicInfo(self):
+        self.log("fillMusicInfo")
+        json_query = '{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"fields":["genre"]}, "id": 1}'
         
+        if self.background == False:
+            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "adding videos", "reading TV data")
+
+        json_folder_detail = xbmc.executeJSONRPC(json_query)
+        detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
+        
+        for f in detail:
+            if self.threadPause() == False:
+                del self.musicGenreList[:]
+                return
+                
+            if USING_FRODO:
+                match = re.search('"genre" *: *"(.*?)",', f)
+            else:
+                match = re.search('"genre" *: *"(.*?)",', f)
+ 
+            genres = ''
+            
+            if match:
+                if USING_FRODO:
+                    genres = match.group(1).split('/')
+                else: 
+                    genres = match.group(1)
+                
+                genres = genres.strip('"').strip()
+                found = False                  
+                    
+                for genre in genres:
+                    found = False
+                    curgenre = genre.lower().strip()
+
+                    for g in self.musicGenreList:
+                        if curgenre == g.lower():
+                            found = True
+                            break
+
+                    if found == False:
+                        self.musicGenreList.append(genre.strip())
+
+        self.musicGenreList.sort(key=lambda x: x.lower()) 
+     
     def fillTVInfo(self, sortbycount = False):
         self.log("fillTVInfo")
         json_query = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"fields":["studio", "genre"]}, "id": 1}'
@@ -1953,7 +2024,7 @@ class ChannelList:
         showcount = 0
                
         if self.background == False:
-            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing YoutubeTV")
+            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing RSS")
 
         self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
         f = open(self.ninstance, "rb")
@@ -1967,64 +2038,140 @@ class ChannelList:
                 del showList[:]
                 break
                 
-                if event == "end" and setting2 == '1': #RSS
-                    self.log("buildRSSFileList, RSS ")
+            if event == "end" and setting2 == '1': #RSS
+                self.log("buildRSSFileList, RSS ")
+            
+                rssfeed = setting1
+                feed = feedparser.parse(rssfeed)
+                path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'rss' + '/')
+
+                for i in range(len(feed['entries'])):
                 
-                    RSS = setting1
-                    feed = feedparser.parse(RSS)
-                   
-                    for i in range(len(feed['entries'])):
+                    showtitle = feed.channel.title
+                    showtitle = showtitle.replace(":", "")
+                    eptitle = feed.entries[i].title
+                    eptitle = eptitle.replace("/", "-")
+                    eptitle = eptitle.replace(":", " ")
+                    eptitle = eptitle.replace("\"", "")
+                    eptitle = eptitle.replace("?", "")
+                    eptitle = uni(eptitle)
+                    thumburl = feed.channel.image['url']
+                    studio = feed.entries[i].author_detail['name']
                     
-                        showtitle = feed.channel.title
-                        showtitle = showtitle.replace(":", "")
-                        genre = (feed.entries[0].tags[1]['term'])
-                        thumburl = feed.entries[i].media_thumbnail[0]['url']
-                        #Time when the episode was published
-                        time = (feed.entries[i].published_parsed)
-                        time = str(time)
-                        time = time.replace("time.struct_time", "")            
-                        
-                        eptitle = feed.entries[i].title
-                        eptitle = re.sub('[!@#$/:]', '', eptitle)
-                        eptitle = uni(eptitle)
-                        eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
-                        eptitle = eptitle[:200]                       
-                        summary = feed.entries[i].summary
-                        summary = uni(summary)
-                        summary = re.sub("[\W]+", " ", summary.strip())
-                        summary = summary[:200]                    
-                        runtime = feed.entries[i].media_content[0]['duration']
-                        runtime = int(runtime)
-                        runtime = round(runtime/60.0)
-                        runtime = int(runtime)
-
-                        if runtime >= 1:
-                            duration = runtime
-                        else:
-                            duration = 90
-                        
-                        duration = round(duration*60.0)
-                        duration = int(duration)
-                        url = feed.entries[i].media_content[0]['url']
-                        
-                        # Build M3U
-                        inSet = True
-                        istvshow = True
-                        tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + summary + '\n' + url + '\n'
-                        tmpstr = tmpstr[:500]
-                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        
-                        showList.append(tmpstr)
+                    if not '<p>' in feed.entries[i].summary_detail.value:
+                        epdesc = feed.entries[i]['summary_detail']['value']
+                        head, sep, tail = epdesc.partition('<div class="feedflare">')
+                        epdesc = head
                     else:
-                        if inSet == True:
-                            self.log("buildRSSFileList  CHANNEL: " + str(self.settingChannel) + ", DONE")
-                            break
-                    showcount += 1
-                    
-                root.clear()
+                        epdesc = feed.entries[i]['subtitle']
+                        print (2)
+                    if 'media_content' in feed.entries[i]:
+                        url = feed.entries[i].media_content[0]['url']
+                    else:
+                        url = feed.entries[i].links[1]['href']
+                        
+                    runtimex = feed.entries[i]['itunes_duration']
+                    summary = feed.channel.subtitle
+                    summary = summary.replace(":", "")
 
-            return showList   
-    
+                    genre = feed.channel.tags[0]['term']
+                    genre = uni(genre)
+
+                    time = (feed.entries[i].published_parsed)
+                    time = str(time)
+                    time = time.replace("time.struct_time", "")
+                
+                    showseason = [word for word in time.split() if word.startswith('tm_mon=')]
+                    showseason = str(showseason)
+                    showseason = showseason.replace("['tm_mon=", "")
+                    showseason = showseason.replace(",']", "")
+                    showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
+                    showepisodenum = str(showepisodenum)
+                    showepisodenum = showepisodenum.replace("['tm_mday=", "")
+                    showepisodenum = showepisodenum.replace(",']", "")
+                    showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
+                    showepisodenuma = str(showepisodenuma)
+                    showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
+                    showepisodenuma = showepisodenuma.replace(",']", "")  
+                    
+                    if len(runtimex) > 4:
+                        runtime = runtimex.split(':')[-2]
+                        runtimel = runtimex.split(':')[-3]
+                        runtime = int(runtime)
+                        runtimel = int(runtimel)
+                        runtime = runtime + (runtimel*60)
+                    if not len(runtimex) > 4:
+                        runtimex = int(runtimex)
+                        runtime = round(runtimex/60.0)
+                        runtime = int(runtime)
+                        
+                    if runtime >= 1:
+                        duration = runtime
+                    else:
+                        duration = 90
+                    
+                    duration = round(duration*60.0)
+                    duration = int(duration)
+                    
+                    if REAL_SETTINGS.getSetting('IncludeRSSstrm') == "true":
+                        self.log("buildRSSFileList, Building RSS Strms ")
+                
+                        if not os.path.exists(os.path.join(path, showtitle)):
+                            os.makedirs(os.path.join(path, showtitle))
+                    
+                        #Build tvshow.nfo xml tree
+                        flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 'tvshow.nfo')
+                        fle = FileAccess.open(flename, "w")
+                        fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                        fle.write('<tvshow>\n')
+                        fle.write('<title>' + showtitle + '</title>\n')
+                        fle.write('<genre>' + genre + '</genre>\n')
+                        fle.write('<studio>' + studio + '</studio>\n')              
+                        fle.write('<id>-1</id>\n')  
+                        fle.write('</tvshow>')            
+                        fle.close()
+                        
+                        # Build the episode.nfo xml tree      
+                        flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
+                        fle1 = FileAccess.open(flename1, "w")
+                        fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                        fle1.write('<episodedetails>\n')
+                        fle1.write('<title>' + eptitle + '</title>\n')
+                        fle1.write('<genre>' + genre + '</genre>\n')
+                        fle1.write('<season>1</season>\n')
+                        fle1.write('<plot>' + epdesc + '</plot>\n')
+                        fle1.write('<thumb>' + thumburl + '</thumb>\n')
+                        fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
+                        fle1.write('<studio>' + studio + '</studio>\n')              
+                        fle1.write('<id>-1</id>\n')  
+                        fle1.write('</episodedetails>')            
+                        fle1.close()
+                        
+                        #Build the episode.strm xml tree     
+                        flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
+                        fle2 = FileAccess.open(flename2, "w")
+                        fle2.write(url)
+                        fle2.close()
+                        
+                    # Build M3U
+                    inSet = True
+                    istvshow = True
+                    tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + epdesc + '\n' + url + '\n'
+                    tmpstr = tmpstr[:500]
+                    tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                    self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                    
+                    showList.append(tmpstr)
+                else:
+                    if inSet == True:
+                        self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                        break
+                showcount += 1
+                
+            root.clear()
+
+        return showList
+
     
     # Run rules for a channel
     def runActions(self, action, channel, parameter):
