@@ -2,8 +2,8 @@
 <addons>
   <addon id="repo.lunatixz" name="Lunatixz Repo" version="1.0.0" provider-name="Lunatixz">
     <extension point="xbmc.addon.repository" name="Lunatixz">
-    <info>https://raw.github.com/Lunatixz/script.pseudotv.live/master/addons.xml</info>
-    <checksum>https://github.com/Lunatixz/script.pseudotv.live.git/addons.xml.md5</checksum>
+    <info>https://github.com/Lunatixz/script.pseudotv.live/master/addons.xml</info>
+    <checksum>https://github.com/Lunatixz/script.pseudotv.live/master/addons.xml.md5</checksum>
     <datadir zip="true">https://github.com/Lunatixz/script.pseudotv.live</datadir>
     </extension>
     <extension point="xbmc.addon.metadata">
@@ -11,4 +11,44 @@
     <platform>all</platform>
     </extension>
   </addon>
+
+<addon
+    id="script.pseudotv.live"
+	version="0.1.1"
+	name="PseudoTV Live"
+	provider-name="Lunatixz">
+
+	<requires>
+		<import addon="xbmc.python" version="2.0"/>
+        <import addon="plugin.video.youtube" version="4.0.0"/>
+        <import addon="script.favourites" version="3.2.4"/>
+        <import addon="script.playlists" version="0.1.1"/>
+        <import addon="script.artwork.downloader" version="12.0.2"/>
+    </requires>
+
+	<extension point="xbmc.python.script"
+        defaultresolution="720p"
+        defaultresolutionwide="720p"
+		library="default.py"/>
+
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+		<minversion>35647</minversion>
+		<summary lang="en">Channel surfing for your video library</summary>
+		<description lang="en">PseudoTV acts similar to normal broadcast or cable TV, complete with multiple preset and user-defined channels and an EPG.
+            Special thanks to:
+            - XBMC - Foundation
+            - jason102, angrycamel, bradvido88 - Core Code and inspiration.
+            - thedarkonaut, tman12 - Skinning ideas and core code.
+            - peppy6582 - RSS/Youtube parsing core code.
+            - scilz - Internet stream sourcing...
+            - blazin912 - HDhomerun Master/Slave mod.
+            - mwkurt, XvMMvX, spyder - Forum Help and support.
+            - badkarma, Vidar, Or121 - Alpha testers (if I forgot you PM me)
+
+            FU List:
+            - geebs61, redhalo - Two forum douchebags!
+        </description>
+	</extension>
+</addon>
 </addons>
