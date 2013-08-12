@@ -34,36 +34,43 @@
     
     <category label="30040">
         <setting id="ChannelDelay" type="enum" label="30041" default="0" values="None|0.25|0.5|0.75|1.0|1.25|1.5|1.75|2.0"/>
+        <setting type="action" label="30042" action="RunScript($CWD/defrag.py)"/>
     </category>
 
    <category label="30050">
-		<setting id="LiveTV" label="30052" type="lsep" />
-        <setting id="IncludeLiveTV" type="bool" label="30053" default="false"/>
-		<setting id="XMLTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30054" default="" />
-        <setting id="InternetTV" label="30055" type="lsep" />
        	<setting id="IncludeIceLib" type="bool" label="30051" default="true"/>
-        <setting id="IncludeInternetTV" type="bool" label="30056" default="true"/>
-        <setting id="IncludeYoutubeTV" type="bool" label="30057" enable="System.HasAddon(plugin.video.youtube)" default="true"/>
-        <setting id="IncludeYoutubeTVstrms" subsetting="true" type="bool" visible="eq(-1,true)" label="30058" default="false"/>
-        <setting id="IncludeRSS" type="bool" label="30059" default="true"/>
-        <setting id="IncludeRSSstrms" subsetting="true" type="bool" visible="eq(-1,true)" label="30060" default="false"/>
+        <setting id="IncludeLiveTV" type="bool" label="30052" default="false"/>
+		<setting id="xmltv" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30053" default="" />
+		<setting id="IncludeInternetTV" type="bool" label="30054" default="true"/>
+        <setting id="IncludeYoutubeTV" type="bool" label="30055" enable="System.HasAddon(plugin.video.youtube)" default="true"/>
+        <setting id="IncludeYoutubeTVstrms" subsetting="true" type="bool" visible="eq(-1,true)" label="30056" default="false"/>
+        <setting id="IncludeRSS" type="bool" label="30057" default="true"/>
+        <setting id="IncludeRSSstrms" subsetting="true" type="bool" visible="eq(-1,true)" label="30058" default="false"/>
     </category>
 
     <category label="30070">
     	<setting label="30071" type="lsep"/>
       	<setting id="Autotune" type="bool" label="30072" default="false"/>
-      	<setting id="Warning" type="bool" subsetting="true" label="30073" visible="eq(-1,true)" default="false"/>
-      	<setting id="AutotuneTV" type="bool" label="30074" visible="eq(-1,true)" default="false"/>
-      	<setting id="AutotuneMovie" type="bool" label="30075" visible="eq(-2,true)" default="false"/>
+      	<setting id="ATClean" type="bool" subsetting="true" label="30073" visible="eq(-1,true)" default="false"/>
+      	<setting id="AutotuneTV" type="bool" label="30074" visible="eq(-2,true)" default="false"/>
+      	<setting id="AutotuneMovie" type="bool" label="30075" visible="eq(-3,true)" default="false"/>
       	<setting id="AutotuneMixed" type="bool" subsetting="true" label="30076" visible="eq(-1,true) + eq(-2,true)" default="false"/>
-        <setting id="AutotuneTVGenre" type="bool" subsetting="true" label="30077" visible="eq(-1,true) + !eg(-4,true)" default="false"/>
-        <setting id="AutotuneMovieGenre" type="bool" subsetting="true" label="30078" visible="eq(-2,true) + !eg(-5,true)" default="false"/>
-        <setting id="AutotuneMusic" type="bool" label="30079" visible="eq(-6,true)" default="false"/>
-      	<setting id="AutotuneLiveTV" type="bool" label="30080" visible="eq(-7,true)" default="false"/>
-      	<setting id="AutotuneInternetTV" type="bool" label="30081" visible="eq(-8,true)" default="false"/>
-      	<setting id="Restore" type="bool" label="30082" visible="!eq(-10,true)" default="false"/>
-      	<setting id="Warning2" type="bool" subsetting="true" label="30083" visible="eq(-1,true)" default="false"/>
-    	<setting label="30084" type="lsep" visible="!eq(-12,false)" />
+        <setting id="AutotuneTVGenre" type="bool" subsetting="true" label="30077" visible="eq(-1,true)" default="false"/>
+        <setting id="AutotuneMovieGenre" type="bool" subsetting="true" label="30078" visible="eq(-2,true)" default="false"/>
+        <setting id="AutotuneMusic" type="bool" label="30079" visible="eq(-7,true)" default="false"/>
+      	<setting id="AutotuneLiveTV" type="bool" label="30080" visible="eq(-8,true)" default="false"/>
+      	<setting id="xLiveTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30081" default="" />
+        <setting id="AutotuneInternetTV" type="bool" label="30082" visible="eq(-10,true)" default="false"/>
+      	<setting id="xInternetTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30083" default="" />
+        <setting id="AutotuneLivestream" type="bool" label="30084" visible="eq(-12,true)" default="false"/>
+        <setting id="xLivestream" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30085" default="" />
+        <setting id="AutotuneYoutube" type="bool" label="30086" visible="eq(-14,true)" default="false"/>
+      	<setting id="xYoutube" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30087" default="" />
+        <setting id="AutotuneRSS" type="bool" label="30088" visible="eq(-16,true)" default="false"/>
+        <setting id="xRSS" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30089" default="" />
+        <setting id="Restore" type="bool" label="30090" visible="!eq(-18,true)" default="false"/>
+      	<setting id="Warning2" type="bool" subsetting="true" label="30091" visible="eq(-1,true)" default="false" action="RunScript($CWD/restore.py)"/> />
+    	<setting label="30092" type="lsep" visible="!eq(-20,false)" />
     </category>
     
     <category label="30998">

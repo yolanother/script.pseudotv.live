@@ -31,13 +31,13 @@ class Migrate:
 
 
     def migrate(self):
-        self.log("migration")    
+        self.log("migrate")
+        settingsFile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings2.xml'))    
         chanlist = ChannelList.ChannelList()
         chanlist.background = False
         chanlist.forceReset = True
-        settingsFile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings2.xml'))
         
-        if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning") == "true":
+        if Globals.REAL_SETTINGS.getSetting("Autotune") == "true":
             self.log("initializeChannels")
             if self.initializeChannels():
                 return True           
@@ -106,19 +106,20 @@ class Migrate:
             updatedlg.create("PseudoTV", "Initializing")
             updatedlg.update(1, "Initializing", "Autotune Channel Setup")
             chanlist = ChannelList.ChannelList()
-            chanlist.background = False
+            chanlist.background = True
             chanlist.forceReset = True
             
             if Globals.REAL_SETTINGS.getSetting("AutotuneTV") == "true":
                 self.log('Autotune, fillTVInfo')
-                Globals.REAL_SETTINGS.setSetting('AutotuneTV', "False")
                 chanlist.fillTVInfo(True)
                 updatedlg.update(30)
+                Globals.REAL_SETTINGS.setSetting('AutotuneTV', "False")
+                
             elif Globals.REAL_SETTINGS.getSetting("AutotuneMovie") == "true":
                 self.log('Autotune, AutotuneMovie')
                 chanlist.fillMovieInfo(True)
-                Globals.REAL_SETTINGS.setSetting('AutotuneMovie', "False")
                 updatedlg.update(60)
+                Globals.REAL_SETTINGS.setSetting('AutotuneMovie', "False")
             
             # Now create TV networks, followed by mixed genres, followed by TV genres, and finally movie genres
             currentchan = 1
@@ -133,7 +134,6 @@ class Migrate:
                         break
 
             mixedlist.sort(key=lambda x: x[1] + x[2], reverse=True)
-            updatedlg.update(2, "Auto Tune","Searching for TV Channels","")
             currentchan = self.initialAddChannels(chanlist.networkList, 1, currentchan)
             updatedlg.update(70)
 
@@ -145,8 +145,16 @@ class Migrate:
                     if item[1] > 2 and item[2] > 1:
                         Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", "5")
                         Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
+                        
+                        # if Globals.REAL_SETTINGS.getSetting("AutotuneMixed") == "true":
+                            # self.log('Autotune, AutotuneMixed')
+                            # Globals.REAL_SETTINGS.setSetting('AutotuneMixed', "False")
                         added += 1.0
                         currentchan += 1
+                        # else:    
+                            # added += 0.0
+                            # currentchan += 0
+                            
                         itemlow = item[0].lower()
 
                         # Remove that genre from the shows genre list
@@ -166,13 +174,25 @@ class Migrate:
 
                     updatedlg.update(int(70 + 10.0 / added))
 
-            updatedlg.update(80)
+            updatedlg.update(80)                        
+                    
+            # if Globals.REAL_SETTINGS.getSetting("AutotuneTVGenre") == "true":
+                # self.log('Autotune, AutotuneTVGenre')
             currentchan = self.initialAddChannels(chanlist.showGenreList, 3, currentchan)
+            Globals.REAL_SETTINGS.setSetting('AutotuneTVGenre', "False")
             updatedlg.update(90)
+                            
+            # elif Globals.REAL_SETTINGS.getSetting("AutotuneMovieGenre") == "true":
+                # self.log('Autotune, AutotuneMovieGenre')
             currentchan = self.initialAddChannels(chanlist.movieGenreList, 4, currentchan)
+            Globals.REAL_SETTINGS.setSetting('AutotuneMovieGenre', "False")
+            # currentchan = chanlist.fillLivestreamFileList, 5, currentchan)
+            # Globals.REAL_SETTINGS.setSetting('AutotuneLivestream', "False")
+            updatedlg.update(90)
+                
             updatedlg.close()
             Globals.REAL_SETTINGS.setSetting('Autotune', "False")
-            Globals.REAL_SETTINGS.setSetting('Warning', "False")
+            Globals.REAL_SETTINGS.setSetting('ATClean', "False")
 
             if currentchan > 1:
                 return True

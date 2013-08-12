@@ -30,6 +30,7 @@ import feedparser
 
 from xml.dom.minidom import parse, parseString
 from xml.etree import ElementTree as ET
+from urllib import unquote
 
 from Playlist import Playlist
 from Globals import *
@@ -554,34 +555,29 @@ class ChannelList:
         if chtype == 7:
             fileList = self.createDirectoryPlaylist(setting1)
             israndom = True
-        elif chtype == 8: # LiveTV
+        elif chtype == 8 and REAL_SETTINGS.getSetting('IncludeLiveTV') == "true": # LiveTV
             self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
-            if REAL_SETTINGS.getSetting('IncludeLiveTV') == "true":
-                #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
-                if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
-                    self.log("Building LiveTV using tuner0")
-                    setting2 = re.sub(r'\d/tuner\d',"0/tuner0",setting2)
-                else:
-                    self.log("Building LiveTV using tuner1")
-                    setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
-
-                fileList = self.buildLiveTVFileList(setting1, setting2, channel)
-        elif chtype == 9: # InternetTV
+            #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
+            if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
+                self.log("Building LiveTV using tuner0")
+                setting2 = re.sub(r'\d/tuner\d',"0/tuner0",setting2)
+            else:
+                self.log("Building LiveTV using tuner1")
+                setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
+                
+            fileList = self.buildLiveTVFileList(setting1, setting2, channel)
+        elif chtype == 9 and REAL_SETTINGS.getSetting('IncludeInternetTV') == "true": # InternetTV
             self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
-            if REAL_SETTINGS.getSetting('IncludeInternetTV') == "true":
-                fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
-        elif chtype == 10: # Youtube
-            if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
-                self.log("Building YoutubeTV Channel " + setting1 + " using type " + setting2 + "...")
-                fileList = self.createYoutubePlaylist(setting1, setting2, channel)
-        elif chtype == 11: # RSS/iTunes/feedburner/Podcast
-            if REAL_SETTINGS.getSetting('IncludeRSS') == "true":
-                self.log("Building RSS Feed " + setting1 + " using type " + setting2 + "...")
-                fileList = self.buildRSSFileList(setting1, setting2, channel)
-        # elif chtype == 12: # Music
-            # if REAL_SETTINGS.getSetting('fillMusicInfo') == "true":
-                # self.log("Building Music Channel" + setting1 + " using type " + setting2 + "...")
-                # fileList = self.fillMusicInfo(setting1, setting2, channel)
+            fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel) 
+        elif chtype == 10 and REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true": # Youtube
+            self.log("Building YoutubeTV Channel " + setting1 + " using type " + setting2 + "...")
+            fileList = self.createYoutubePlaylist(setting1, setting2, channel)
+        elif chtype == 11 and REAL_SETTINGS.getSetting('IncludeRSS') == "true": # RSS/iTunes/feedburner/Podcast
+            self.log("Building RSS Feed " + setting1 + " using type " + setting2 + "...")
+            fileList = self.buildRSSFileList(setting1, setting2, channel)
+        # elif chtype == 12 and REAL_SETTINGS.getSetting('fillMusicInfo') == "true": # Music
+            # self.log("Building Music Channel" + setting1 + " using type " + setting2 + "...")
+            # fileList = self.fillMusicInfo(setting1, setting2, channel)
         else:
             if chtype == 0:
                 if FileAccess.copy(setting1, MADE_CHAN_LOC + os.path.split(setting1)[1]) == False:
@@ -1452,7 +1448,7 @@ class ChannelList:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing LiveTV")
 
         try:
-            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('XMLTV'), 'xmltv.xml'))
+            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), 'xmltv.xml'))
             #self.xmlTvFile = FileAccess.exists(xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('XMLTV'), 'xmltv.xml')))
         except:
             self.log("buildLiveTVFileList, Could not determine path the the xmltv file")
@@ -1479,6 +1475,7 @@ class ChannelList:
                 if elem.tag == "programme" and REAL_SETTINGS.getSetting('IncludeLiveTV') == "true":
                     channel = elem.get("channel")
                     title = elem.findtext('title')
+                    url = unquote(setting2)
                     if setting1 == channel:
                         inSet = True
                         description = elem.findtext("desc")
@@ -1524,7 +1521,7 @@ class ChannelList:
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
                                 raise
 
-                        tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + '\n' + setting2
+                        tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + '\n' + url
 
                         tmpstr = tmpstr[:500]
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
@@ -1547,10 +1544,10 @@ class ChannelList:
         showList = []
         seasoneplist = []
         showcount = 0
-        
+            
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Building InternetTV")
-
+   
         try:
             self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
         except:
@@ -1572,6 +1569,7 @@ class ChannelList:
                 if REAL_SETTINGS.getSetting('IncludeInternetTV') == "true":
                     inSet = True
                     title = setting3
+                    url = unquote(setting2)
                     description = setting4
                     iconElement = elem.find("icon")
                     icon = None
@@ -1593,7 +1591,7 @@ class ChannelList:
                             self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                             raise
 
-                    tmpstr = str(dur) + ',' + title + "//" + "InternetTV" + "//" + description + '\n' + setting2
+                    tmpstr = str(dur) + ',' + title + "//" + "InternetTV" + "//" + description + '\n' + url
 
                     tmpstr = tmpstr[:500]
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
@@ -1608,6 +1606,7 @@ class ChannelList:
             root.clear()
 
         return showList
+
         
     def createYoutubePlaylist(self, setting1, setting2, channel):
         showList = []

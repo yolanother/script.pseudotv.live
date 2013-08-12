@@ -121,18 +121,18 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
     def onInit(self):
         self.log('onInit')
         
-        if REAL_SETTINGS.getSetting("Autotune") == "true" and REAL_SETTINGS.getSetting("Warning") == "true":
+        if REAL_SETTINGS.getSetting("Autotune") == "true":
             self.log('Autotune onInit')
-            #Backup and Delete old settings2.xml before autotune runs.
             settingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.xml'))
             nsettingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.bak.xml'))
+            #Backup and Delete old settings2.xml before autotune runs.
             
-            if FileAccess.exists(settingsFile) and FileAccess.exists(nsettingsFile):
+            if FileAccess.exists(settingsFile) and FileAccess.exists(nsettingsFile) and REAL_SETTINGS.getSetting("ATClean") == "true":
                 os.remove(nsettingsFile)
                 self.log('Autotune, Deleted Old Backup') 
-            elif FileAccess.exists(settingsFile):
+            elif FileAccess.exists(settingsFile) and REAL_SETTINGS.getSetting("ATClean") == "true":
                 FileAccess.rename(settingsFile, nsettingsFile)
-                
+
                 if FileAccess.exists(nsettingsFile):
                     self.log('Autotune, Settings2 Backup Complete')                
                 else:
@@ -418,7 +418,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 self.channels[self.currentChannel - 1].addShowPosition(1)
                 self.channels[self.currentChannel - 1].setShowTime(0)
 
-        # First, check to see if the video is a strm
+        # First, check to see if the video is a...
         if self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[-4:].lower() == 'strm':
             self.log("Ignoring a stop because of a strm")
             self.Player.ignoreNextStop = True
@@ -493,23 +493,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         #self.api(self.currentChannel)
         self.log('setChannel return')
 
-    # TVDB/TMDB - SICKBEARD/COUCHPOTATO Intergration *Lunatixz
-    #def api(self, channel):
-        # tmdbAPI = TMDB(ADDON_SETTINGS.getSetting('tmdb.apikey'))
-        # tvdbAPI = TVDB(ADDON_SETTINGS.getSetting('tvdb.apikey'))
-        # sbAPI = SickBeard(ADDON_SETTINGS.getSetting('sickbeard.baseurl'),ADDON_SETTINGS.getSetting('sickbeard.apikey'))
-        # cpAPI = CouchPotato(ADDON_SETTINGS.getSetting('couchpotato.baseurl'),ADDON_SETTINGS.getSetting('couchpotato.apikey'))
-        # tvdbid = 0
-		
-        # if tvdbid == 0:
-        # tvdbid = tvdbAPI.getIdByShowName(self.channels[self.currentChannel - 1].getItemTitle(position))
-
-        # sbManaged = 0
-        # if ADDON_SETTINGS.getSetting('sickbeard.enabled') == 'true':
-            # if sbAPI.isShowManaged(tvdbid):
-            # sbManaged = 1
-
-
+        
     def InvalidateChannel(self, channel):
         self.log("InvalidateChannel" + str(channel))
 
@@ -521,6 +505,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.invalidatedChannelCount += 1
 
         if self.invalidatedChannelCount > 3:
+            # self.setChannel(self.fixChannel(channel + 2)) # attempt to fix exiting on invalid channel
             self.Error("Exceeded 3 invalidated channels. Exiting.")
             return
 
