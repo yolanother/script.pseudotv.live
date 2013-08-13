@@ -315,7 +315,7 @@ class ChannelList:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
             #force rebuild of livetv channels every load
-            if chtype >= 8 and chtype <= 11:
+            if chtype >= 8 and chtype <= 9:
                 needsreset = True
                 makenewlist = True
                 
@@ -555,6 +555,7 @@ class ChannelList:
         if chtype == 7:
             fileList = self.createDirectoryPlaylist(setting1)
             israndom = True
+            
         elif chtype == 8 and REAL_SETTINGS.getSetting('IncludeLiveTV') == "true": # LiveTV
             self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
             #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
@@ -566,18 +567,23 @@ class ChannelList:
                 setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
                 
             fileList = self.buildLiveTVFileList(setting1, setting2, channel)
+            
         elif chtype == 9 and REAL_SETTINGS.getSetting('IncludeInternetTV') == "true": # InternetTV
             self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
             fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel) 
+            
         elif chtype == 10 and REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true": # Youtube
             self.log("Building YoutubeTV Channel " + setting1 + " using type " + setting2 + "...")
             fileList = self.createYoutubePlaylist(setting1, setting2, channel)
+            
         elif chtype == 11 and REAL_SETTINGS.getSetting('IncludeRSS') == "true": # RSS/iTunes/feedburner/Podcast
             self.log("Building RSS Feed " + setting1 + " using type " + setting2 + "...")
             fileList = self.buildRSSFileList(setting1, setting2, channel)
+            
         # elif chtype == 12 and REAL_SETTINGS.getSetting('fillMusicInfo') == "true": # Music
             # self.log("Building Music Channel" + setting1 + " using type " + setting2 + "...")
             # fileList = self.fillMusicInfo(setting1, setting2, channel)
+            
         else:
             if chtype == 0:
                 if FileAccess.copy(setting1, MADE_CHAN_LOC + os.path.split(setting1)[1]) == False:
@@ -703,6 +709,7 @@ class ChannelList:
             if len(self.showList) == 0:
                 self.fillTVInfo()
             return self.createShowPlaylist(setting1, setting2)
+            
         elif int(chtype) == 12:
             if len(self.musicGenreList) == 0:
                 self.fillMusicInfo()
@@ -1700,7 +1707,9 @@ class ChannelList:
                         # url = url.replace("&feature=youtube_gdata_player", "")     
                     # else:
                     url = feed.entries[i].media_player['url']
-                    url = url.replace("http://www.youtube.com/watch?v=", "")
+                    url = url.replace("http://", "")
+                    url = url.replace("https://", "")
+                    url = url.replace("www.youtube.com/watch?v=", "")
                     url = url.replace("&feature=youtube_gdata_player", "")                                            
                 
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
@@ -1744,19 +1753,20 @@ class ChannelList:
                         fle2.close()
                                 
                     # Build M3U
-                    inSet = True
-                    istvshow = True
-                    tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                    tmpstr = tmpstr[:500]
-                    tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                    self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
-                    
-                    showList.append(tmpstr)
-                else:
-                    if inSet == True:
-                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
-                        break
-                showcount += 1
+                    if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
+                        inSet = True
+                        istvshow = True
+                        tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                        tmpstr = tmpstr[:500]
+                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        
+                        showList.append(tmpstr)
+                    else:
+                        if inSet == True:
+                            self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            break
+                    showcount += 1
 
                 
             elif event == "end" and setting2 == '2': #youtubeplaylist 
@@ -1827,8 +1837,11 @@ class ChannelList:
                         
                     # else:
                     url = feed.entries[i].media_player['url']
-                    url = url.replace("http://www.youtube.com/watch?v=", "")
-                    url = url.replace("?version=3&f=playlists&app=youtube_gdata", "")
+                    url = url.replace("http://", "")
+                    url = url.replace("https://", "")
+                    url = url.replace("www.youtube.com/watch?v=", "")
+                    url = url.replace("www.youtube.com/watch?v=", "")
+                    url = url.replace("&feature=youtube_gdata_player", "")  
                                             
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
                         self.log("Building YoutubeTV Playlist Strms ")
@@ -1871,19 +1884,20 @@ class ChannelList:
                         fle2.close()
                             
                     # Build M3U
-                    inSet = True
-                    istvshow = True
-                    tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                    tmpstr = tmpstr[:500]
-                    tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                    self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
-                    
-                    showList.append(tmpstr)
-                else:
-                    if inSet == True:
-                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
-                        break
-                showcount += 1
+                    if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
+                        inSet = True
+                        istvshow = True
+                        tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                        tmpstr = tmpstr[:500]
+                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        
+                        showList.append(tmpstr)
+                    else:
+                        if inSet == True:
+                            self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            break
+                    showcount += 1
                 
             elif event == "end" and setting2 == '3': #subscriptions 
                 self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription")
@@ -1953,7 +1967,9 @@ class ChannelList:
                     
                     # else:
                     url = feed.entries[i].media_player['url']
-                    url = url.replace("http://www.youtube.com/watch?v=", "")
+                    url = url.replace("http://", "")
+                    url = url.replace("https://", "")
+                    url = url.replace("www.youtube.com/watch?v=", "")
                     url = url.replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
                     
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
@@ -1997,19 +2013,20 @@ class ChannelList:
                         fle2.close()
                             
                     # Build M3U
-                    inSet = True
-                    istvshow = True
-                    tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                    tmpstr = tmpstr[:500]
-                    tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                    self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
-                    
-                    showList.append(tmpstr)
-                else:
-                    if inSet == True:
-                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
-                        break
-                showcount += 1
+                    if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
+                        inSet = True
+                        istvshow = True
+                        tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                        tmpstr = tmpstr[:500]
+                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                        self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        
+                        showList.append(tmpstr)
+                    else:
+                        if inSet == True:
+                            self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            break
+                    showcount += 1
                 
             root.clear()
 
@@ -2153,19 +2170,20 @@ class ChannelList:
                         fle2.close()
                         
                     # Build M3U
-                    inSet = True
-                    istvshow = True
-                    tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + epdesc + '\n' + url + '\n'
-                    tmpstr = tmpstr[:500]
-                    tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                    self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
-                    
-                    showList.append(tmpstr)
-                else:
-                    if inSet == True:
-                        self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
-                        break
-                showcount += 1
+                    if REAL_SETTINGS.getSetting('IncludeRSS') == "true":
+                        inSet = True
+                        istvshow = True
+                        tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + epdesc + '\n' + url + '\n'
+                        tmpstr = tmpstr[:500]
+                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                        self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        
+                        showList.append(tmpstr)
+                    else:
+                        if inSet == True:
+                            self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            break
+                    showcount += 1
                 
             root.clear()
 
