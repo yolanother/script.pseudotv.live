@@ -80,7 +80,7 @@ class ChannelList:
         self.findMaxChannels()
 
         if self.forceReset:
-            REAL_SETTINGS.setSetting('ForceChannelReset', "False")
+            REAL_SETTINGS.setSetting('ForceChannelReset', "false")
             self.forceReset = False
 
         try:
@@ -179,7 +179,7 @@ class ChannelList:
                     self.enteredChannelCount += 1
                     
             if self.forceReset and (chtype != 9999):
-                ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_changed', "True")
+                ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_changed', "true")
 
         self.log('findMaxChannels return ' + str(self.maxChannels))
 
@@ -315,12 +315,22 @@ class ChannelList:
         self.runActions(RULES_ACTION_START, channel, self.channels[channel - 1])
 
         try:
-            needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
+            needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'true'
             
-            #force rebuild of livetv channels every load
-            if chtype >= 8 and chtype <= 9:
+            #disable force rebuild of livetv channels w/ TVDB and TMDB on every load
+            if (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true') and chtype == 8:
+                self.log("Disable LiveTV Force rebuild")
+                needsreset = False
+                makenewlist = False
+            elif (REAL_SETTINGS.getSetting('tvdb.enabled') == 'false' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'false') and chtype == 8:
+                self.log("LiveTV Force rebuild")
                 needsreset = True
                 makenewlist = True
+            
+            # #force rebuild of other channels every load
+            # if chtype == 9:
+                # needsreset = True
+                # makenewlist = True
                 
             if needsreset:
                 self.channels[channel - 1].isSetup = False
@@ -411,7 +421,7 @@ class ChannelList:
                         ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_time', '0')
 
                         if needsreset:
-                            ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_changed', 'False')
+                            ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_changed', 'false')
                             self.channels[channel - 1].isSetup = True
 
         self.runActions(RULES_ACTION_BEFORE_CLEAR, channel, self.channels[channel - 1])
@@ -1541,8 +1551,10 @@ class ChannelList:
                         try:
                             if elem.find("new") != None:
                                 new = 1
+                                self.log('new')
                             else:
                                 new = 0
+                                self.log('old')
                         except:
                             new = 0
                             pass
@@ -1569,7 +1581,7 @@ class ChannelList:
                             tvdbid = tvdbAPI.getIdByZap2it(dd_progid)
                             #Sometimes GetSeriesByRemoteID does not find by Zap2it so we use the series name as backup
                             if tvdbid == 0:
-                                tvdbid = tvdbAPI.getIdByShowName(uni(elem.findtext('title')))
+                                tvdbid = tvdbAPI.getIdByShowName(elem.findtext('title'))
 
                             if tvdbid > 0:
                                 #Date element holds the original air date of the program
@@ -1604,15 +1616,16 @@ class ChannelList:
                         if REAL_SETTINGS.getSetting('sickbeard.enabled') == 'true':
                             if sbAPI.isShowManaged(tvdbid):
                                 sbManaged = 1
+                                self.log('sbManaged = yes')
                         
                         #Rob Newton - 20130130 - Check for movie being managed by CouchPotato
                         cpManaged = 0
                         #if REAL_SETTINGS.getSetting('couchpotato.enabled') == 'true':
                         #    if cpAPI.isMovieManaged(imdbid):
                         #        cpManaged = 1
+                        #        self.log('cpManaged = yes')
                         
-                        # result = Program(channel, uni(elem.findtext('title')), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, None, icon, tvdbid, imdbid, episodeId, seasonNumber, episodeNumber, category, new, sbManaged, cpManaged)
-                        self.log('new %r')
+                        #result = 'Program'(channel, uni(elem.findtext('title')), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, None, icon, tvdbid, imdbid, episodeId, seasonNumber, episodeNumber, category, new, sbManaged, cpManaged)             
                         
                         now = datetime.datetime.now()
                         stopDate = self.parseXMLTVDate(elem.get('stop'))
@@ -1621,6 +1634,7 @@ class ChannelList:
                         #skip old shows that have already ended
                         if now > stopDate:
                             self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
+                            self.log("Unaired = " + str(new) + " tvdbid - " + str(tvdbid) + " imdbid - " + str(imdbid) + " episodeId - " + str(episodeId) + " seasonNumber - " + str(seasonNumber) + " episodeNumber - " + str(episodeNumber) + " category - " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
                             continue
                         
                         #adjust the duration of the current show
@@ -1629,6 +1643,7 @@ class ChannelList:
                                 #dur = ((stopDate - startDate).seconds)
                                 dur = ((stopDate - startDate).seconds) - ((now - startDate).seconds) + 150
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
+                                self.log("Unaired = " + str(new) + " tvdbid - " + str(tvdbid) + " imdbid - " + str(imdbid) + " episodeId - " + str(episodeId) + " seasonNumber - " + str(seasonNumber) + " episodeNumber - " + str(episodeNumber) + " category - " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
@@ -1639,12 +1654,13 @@ class ChannelList:
                             try:
                                 dur = (stopDate - startDate).seconds
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  UPCOMING: " + title + "  DUR: " + str(dur))
+                                self.log("Unaired = " + str(new) + " tvdbid - " + str(tvdbid) + " imdbid - " + str(imdbid) + " episodeId - " + str(episodeId) + " seasonNumber - " + str(seasonNumber) + " episodeNumber - " + str(episodeNumber) + " category - " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
                                 raise
 
-                        tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + '\n' + url
+                        tmpstr = str(dur) + ',' + title + "//" + str(seasonNumber) + "x" + str(episodeNumber) + " - LiveTV" + "//" + description + '\n' + url
 
                         tmpstr = tmpstr[:500]
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
