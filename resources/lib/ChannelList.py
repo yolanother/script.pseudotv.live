@@ -37,7 +37,10 @@ from Globals import *
 from Channel import Channel
 from VideoParser import VideoParser
 from FileAccess import FileLock, FileAccess
-
+from sickbeard import *
+from couchpotato import *
+from tvdb import *
+from tmdb import *
 
 
 class ChannelList:
@@ -1449,7 +1452,12 @@ class ChannelList:
     def buildLiveTVFileList(self, setting1, setting2, channel):
         showList = []
         seasoneplist = []
-        showcount = 0
+        showcount = 0    
+        tmdbAPI = TMDB(REAL_SETTINGS.getSetting('tmdb.apikey'))
+        tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
+        sbAPI = SickBeard(REAL_SETTINGS.getSetting('sickbeard.baseurl'),REAL_SETTINGS.getSetting('sickbeard.apikey'))
+        cpAPI = CouchPotato(REAL_SETTINGS.getSetting('couchpotato.baseurl'),REAL_SETTINGS.getSetting('couchpotato.apikey'))
+        elements_parsed = 0
         
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing LiveTV")
@@ -1493,10 +1501,118 @@ class ChannelList:
                             icon = iconElement.get("src")
                         if not description:
                             if not subtitle:
-                                description = title
+                                description = '(NO_DESCRIPTION)'
                             else:
                                 description = subtitle 
-                        istvshow = True
+
+                        #Rob Newton - 20130127 - Parse the category of the program
+                        movie = False
+                        category = 'Normal'
+                        categories = ''
+                        categoryList = elem.findall("category")
+                        for cat in categoryList:
+                            categories += ', ' + cat.text
+                            if cat.text == 'Movie':
+                                movie = True
+                                category = cat.text
+                            elif cat.text == 'Sports':
+                                category = cat.text
+                            elif cat.text == 'Children':
+                                category = 'Kids'
+                            elif cat.text == 'Kids':
+                                category = cat.text
+                            elif cat.text == 'News':
+                                category = cat.text
+                            elif cat.text == 'Comedy':
+                                category = cat.text
+                            elif cat.text == 'Drama':
+                                category = cat.text
+                            # else:
+                                # istvshow = True
+                        
+                        #Trim prepended comma and space (considered storing all categories, but one is ok for now)
+                        categories = categories[2:]
+                        
+                        #If the movie flag was set, it should override the rest (ex: comedy and movie sometimes come together)
+                        if movie:
+                            category = 'Movie'
+                        
+                        #Rob Newton - 20130127 - Read the "new" boolean for this program and store as 1 or 0 for the db
+                        try:
+                            if elem.find("new") != None:
+                                new = 1
+                            else:
+                                new = 0
+                        except:
+                            new = 0
+                            pass
+                        
+                        #Rob Newton - 20130127 - Decipher the TVDB ID by using the Zap2it ID in dd_progid
+                        tvdbid = 0
+                        episodeId = 0
+                        seasonNumber = 0
+                        episodeNumber = 0
+                        
+                        if not movie and REAL_SETTINGS.getSetting('tvdb.enabled') == 'true':
+                            dd_progid = ''
+                            episodeNumList = elem.findall("episode-num")
+                            for epNum in episodeNumList:
+                                if epNum.attrib["system"] == 'dd_progid':
+                                    dd_progid = epNum.text
+                        
+                    
+                            self.log('dd_progid %s' % dd_progid)
+
+                            #The Zap2it ID is the first part of the string delimited by the dot
+                            #  Ex: <episode-num system="dd_progid">MV00044257.0000</episode-num>
+                            dd_progid = dd_progid.split('.',1)[0]
+                            tvdbid = tvdbAPI.getIdByZap2it(dd_progid)
+                            #Sometimes GetSeriesByRemoteID does not find by Zap2it so we use the series name as backup
+                            if tvdbid == 0:
+                                tvdbid = tvdbAPI.getIdByShowName(uni(elem.findtext('title')))
+
+                            if tvdbid > 0:
+                                #Date element holds the original air date of the program
+                                airdateStr = elem.findtext('date')
+                                if airdateStr != None:
+                                    try:
+                                        #Change date format into the byAirDate lookup format (YYYY-MM-DD)
+                                        t = time.strptime(airdateStr, '%Y%m%d')
+                                        airDateTime = datetime.datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
+                                        airdate = airDateTime.strftime('%Y-%m-%d')
+                                        
+                                        #Only way to get a unique lookup is to use TVDB ID and the airdate of the episode
+                                        episode = ElementTree.fromstring(tvdbAPI.getEpisodeByAirdate(tvdbid, airdate))
+                                        episode = episode.find("Episode")
+                                        episodeId = episode.findtext("id")
+                                        seasonNumber = episode.findtext("SeasonNumber")
+                                        episodeNumber = episode.findtext("EpisodeNumber")
+                                    except:
+                                        pass
+                        
+                        #Rob Newton - 20130131 - Lookup the movie info from TMDB
+                        imdbid = 0
+                        if movie and REAL_SETTINGS.getSetting('tmdb.enabled') == 'true':
+                            #Date element holds the original air date of the program
+                            movieYear = elem.findtext('date')
+                            movieInfo = tmdbAPI.getMovie(uni(elem.findtext('title')), movieYear)
+                            imdbid = movieInfo['imdb_id']
+                            moviePosterUrl = tmdbAPI.getPosterUrl(movieInfo['poster_path'])
+                        
+                        #Rob Newton - 20130130 - Check for show being managed by SickBeard
+                        sbManaged = 0
+                        if REAL_SETTINGS.getSetting('sickbeard.enabled') == 'true':
+                            if sbAPI.isShowManaged(tvdbid):
+                                sbManaged = 1
+                        
+                        #Rob Newton - 20130130 - Check for movie being managed by CouchPotato
+                        cpManaged = 0
+                        #if REAL_SETTINGS.getSetting('couchpotato.enabled') == 'true':
+                        #    if cpAPI.isMovieManaged(imdbid):
+                        #        cpManaged = 1
+                        
+                        # result = Program(channel, uni(elem.findtext('title')), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, None, icon, tvdbid, imdbid, episodeId, seasonNumber, episodeNumber, category, new, sbManaged, cpManaged)
+                        self.log('new %r')
                         
                         now = datetime.datetime.now()
                         stopDate = self.parseXMLTVDate(elem.get('stop'))
@@ -1840,8 +1956,8 @@ class ChannelList:
                     url = url.replace("http://", "")
                     url = url.replace("https://", "")
                     url = url.replace("www.youtube.com/watch?v=", "")
-                    url = url.replace("www.youtube.com/watch?v=", "")
-                    url = url.replace("&feature=youtube_gdata_player", "")  
+                    url = url.replace("&feature=youtube_gdata_player", "")
+                    url = url.replace("?version=3&f=playlists&app=youtube_gdata", "")  
                                             
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
                         self.log("Building YoutubeTV Playlist Strms ")

@@ -30,7 +30,13 @@
 		<setting id="tmdb.enabled" label="30033" type="bool" default="false" />
         <setting id="tmdb.apikey" subsetting="true" label="30034" visible="eq(-1,true)" type="text" default="c974c461a9767defec862674bf6c704e"/>
         <setting id="tmdb.showart" subsetting="true" label="30035" visible="eq(-2,true)" type="bool" default="false" />
-    </category>
+        <setting id="sickbeard.enabled" label="30036" type="bool" default="false" />
+        <setting id="sickbeard.baseurl" subsetting="true" label="30037" visible="eq(-1,true)" type="text" default="http://localhost:8081"/>
+        <setting id="sickbeard.apikey" subsetting="true" label="30038" visible="eq(-2,true)" type="text" default="cf6a9873e3f6dd25abbb654c7e362d9d"/>
+        <setting id="couchpotato.enabled" label="30039" type="bool" default="false" />
+        <setting id="couchpotato.baseurl" subsetting="true" label="30037" visible="eq(-1,true)" type="text" default="http://localhost:5050"/>
+        <setting id="couchpotato.apikey" subsetting="true" label="30038" visible="eq(-2,true)" type="text" default="71e9ea6a3e16430389450eb88e93a8a1"/>
+   </category>
     
     <category label="30040">
         <setting id="ChannelDelay" type="enum" label="30041" default="0" values="None|0.25|0.5|0.75|1.0|1.25|1.5|1.75|2.0"/>

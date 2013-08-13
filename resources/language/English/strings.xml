@@ -26,7 +26,11 @@
     <string id="30032">Enable TVDB Art</string>
     <string id="30033">Enable TMDB</string>
     <string id="30034">TMDB API KEY</string>
-    <string id="30035">Enable TMDB Art</string>        
+    <string id="30035">Enable TMDB Art</string>    
+    <string id="30036">Enable SickBeard</string>
+    <string id="30039">Enable CouchPotato</string>
+    <string id="30037">Base URL (including port)</string>
+    <string id="30038">API Key</string>      
 <string id="30040">Tweaks</string>
     <string id="30041">Channel Change Delay(in seconds)</string>
     <string id="30042">Optimize Configurations (defrag settings2.xml)</string>
