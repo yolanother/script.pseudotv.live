@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-  <addon id="repo.lunatixz" name="Lunatixz Repo" version="1.0.0" provider-name="Lunatixz">
-    <extension point="xbmc.addon.repository" name="Lunatixz">
-    <info>https://raw.github.com/Lunatixz/script.pseudotv.live/master/addons.xml</info>
-    <checksum>https://raw.github.com/Lunatixz/script.pseudotv.live/master/addons.xml.md5</checksum>
-    <datadir zip="true">https://raw.github.com/Lunatixz/script.pseudotv.live/master</datadir>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-    <summary lang="en">PseudoTV Live</summary>
-    <platform>all</platform>
-    </extension>
-  </addon>
-
 <addon
     id="script.pseudotv.live"
 	version="0.1.2"
