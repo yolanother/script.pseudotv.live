@@ -299,18 +299,20 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
                 self.channelButtons[row][-1].setWidth(basew)
                 self.channelButtons[row][-1].setLabel(self.MyOverlayWindow.channels[curchannel - 1].getCurrentTitle() + " (paused)")
                 self.channelButtons[row][-1].setPosition(basex, basey)
+            # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
+                # self.log("hdhomerun epg")
             else:
                 # Find the show that was running at the given time
                 # Use the current time and show offset to calculate it
                 # At timedif time, channelShowPosition was playing at channelTimes
                 # The only way this isn't true is if the current channel is curchannel since
                 # it could have been fast forwarded or rewinded (rewound)?
-                if curchannel == self.MyOverlayWindow.currentChannel:
+                if curchannel == self.MyOverlayWindow.currentChannel: #currentchannel epg
                     playlistpos = int(xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition())
                     videotime = xbmc.Player().getTime()
                     reftime = time.time()
                 else:
-                    playlistpos = self.MyOverlayWindow.channels[curchannel - 1].playlistPosition
+                    playlistpos = self.MyOverlayWindow.channels[curchannel - 1].playlistPosition #everyotherchannel epg
                     videotime = self.MyOverlayWindow.channels[curchannel - 1].showTimeOffset
                     reftime = self.MyOverlayWindow.channels[curchannel - 1].lastAccessTime
 

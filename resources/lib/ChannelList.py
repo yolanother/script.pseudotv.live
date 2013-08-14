@@ -41,6 +41,7 @@ from sickbeard import *
 from couchpotato import *
 from tvdb import *
 from tmdb import *
+# from tvdb_api import *
 
 
 class ChannelList:
@@ -318,14 +319,22 @@ class ChannelList:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'true'
             
             #disable force rebuild of livetv channels w/ TVDB and TMDB on every load
-            if (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true') and chtype == 8:
-                self.log("Disable LiveTV Force rebuild")
-                needsreset = False
-                makenewlist = False
-            elif (REAL_SETTINGS.getSetting('tvdb.enabled') == 'false' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'false') and chtype == 8:
-                self.log("LiveTV Force rebuild")
-                needsreset = True
-                makenewlist = True
+            if chtype == 8:
+                if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false':
+                    self.log("Disable LiveTV Force rebuild")
+                elif (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):    
+                    self.log("Disable LiveTV Force rebuild")                    
+                    needsreset = False
+                    makenewlist = False
+                else:
+                    self.log("LiveTV Force rebuild")
+                    needsreset = True
+                    makenewlist = True
+                # else:
+                    # if (REAL_SETTINGS.getSetting('tvdb.enabled') == 'false' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'false') and chtype == 8:
+                        # self.log("LiveTV Force rebuild")
+                        # needsreset = True
+                        # makenewlist = True
             
             # #force rebuild of other channels every load
             # if chtype == 9:
@@ -1601,7 +1610,32 @@ class ChannelList:
                                         episodeNumber = episode.findtext("EpisodeNumber")
                                     except:
                                         pass
-                        
+                                        
+                                # Lunatixz                                   
+                            if tvdbid > 0 and REAL_SETTINGS.getSetting('tvdb.showart') == 'true':
+                                getTVDBseries = "http://thetvdb.com/api/"+REAL_SETTINGS.getSetting('tvdb.apikey')+"/series/"+str(tvdbid)+"/en.xml"
+                                self.log("getTVDBseries " + str(getTVDBseries))                                    
+                                getTVDBseriesURL = urllib2.urlopen(getTVDBseries) 
+                                getTVDBseriesURL=getTVDBseriesURL.read()
+                                try:
+                                    tvfanarturl = getTVDBseriesURL.findtext("fanart")
+                                    self.log("tvfanarturl " + str(tvfanarturl))
+                                    tvposterurl = getTVDBseriesURL.findtext("poster")
+                                    self.log("tvposterurl " + str(tvposterurl))
+                                except:
+                                    pass
+                                    
+                                    # # if tvdbid > 0 and seasonNumber = 0:        
+                                    # try:
+                                        # getTVDBall = "http://thetvdb.com/api/"+tvdbAPI+"/series/"+tvdbid+"/all/en.xml"
+                                        # getTVDBallURL = urllib2.urlopen(getTVDBall) 
+                                        
+                                        # EpisodeNam = subtitle
+                                        # seasonNumber = EpisodeNam.findtext("SeasonNumber")
+                                        # episodeNumber = EpisodeNam.findtext("EpisodeNumber")
+                                    # except:
+                                        # pass
+                                    
                         #Rob Newton - 20130131 - Lookup the movie info from TMDB
                         imdbid = 0
                         if movie and REAL_SETTINGS.getSetting('tmdb.enabled') == 'true':
@@ -1634,7 +1668,7 @@ class ChannelList:
                         #skip old shows that have already ended
                         if now > stopDate:
                             self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
-                            self.log("Unaired = " + str(new) + " tvdbid - " + str(tvdbid) + " imdbid - " + str(imdbid) + " episodeId - " + str(episodeId) + " seasonNumber - " + str(seasonNumber) + " episodeNumber - " + str(episodeNumber) + " category - " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
+                            self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))       
                             continue
                         
                         #adjust the duration of the current show
@@ -1643,7 +1677,7 @@ class ChannelList:
                                 #dur = ((stopDate - startDate).seconds)
                                 dur = ((stopDate - startDate).seconds) - ((now - startDate).seconds) + 150
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
-                                self.log("Unaired = " + str(new) + " tvdbid - " + str(tvdbid) + " imdbid - " + str(imdbid) + " episodeId - " + str(episodeId) + " seasonNumber - " + str(seasonNumber) + " episodeNumber - " + str(episodeNumber) + " category - " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
+                                self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
@@ -1654,14 +1688,21 @@ class ChannelList:
                             try:
                                 dur = (stopDate - startDate).seconds
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  UPCOMING: " + title + "  DUR: " + str(dur))
-                                self.log("Unaired = " + str(new) + " tvdbid - " + str(tvdbid) + " imdbid - " + str(imdbid) + " episodeId - " + str(episodeId) + " seasonNumber - " + str(seasonNumber) + " episodeNumber - " + str(episodeNumber) + " category - " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
+                                self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))   
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
                                 raise
 
-                        tmpstr = str(dur) + ',' + title + "//" + str(seasonNumber) + "x" + str(episodeNumber) + " - LiveTV" + "//" + description + '\n' + url
-
+                        if tvdbid > 0:
+                            # tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + str(tvposterurl) + '\n' + url
+                            tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + '\n' + url
+                        elif imdbid > 0:
+                            # tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description + "//" + str(moviePosterUrl) + '\n' + url
+                            tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description + "//" + '\n' + url
+                        else:
+                            tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + '\n' + url                       
+                        
                         tmpstr = tmpstr[:500]
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
 
@@ -1832,18 +1873,10 @@ class ChannelList:
                     
                     duration = round(duration*60.0)
                     duration = int(duration)
-                    
-                    # if hasattr(feed.entries[i], 'media_content'):
-                        # url = feed.entries[i].media_content[0]['url']
-                        # url = url.replace("http://www.youtube.com/v/", "")
-                        # url = url.replace("&feature=youtube_gdata_player", "")     
-                    # else:
+
                     url = feed.entries[i].media_player['url']
-                    url = url.replace("http://", "")
-                    url = url.replace("https://", "")
-                    url = url.replace("www.youtube.com/watch?v=", "")
-                    url = url.replace("&feature=youtube_gdata_player", "")                                            
-                
+                    url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("&feature=youtube_gdata_player", "")     
+
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
                         self.log("Building YoutubeTV Channel Strms ")
                     
@@ -1962,18 +1995,8 @@ class ChannelList:
                     duration = round(duration*60.0)
                     duration = int(duration)
                     
-                    # if hasattr(feed.entries[i], 'media_content'):
-                        # url = feed.entries[i].media_content[0]['url']
-                        # url = url.replace("http://www.youtube.com/v/", "")
-                        # url = url.replace("?version=3&f=playlists&app=youtube_gdata", "")
-                        
-                    # else:
                     url = feed.entries[i].media_player['url']
-                    url = url.replace("http://", "")
-                    url = url.replace("https://", "")
-                    url = url.replace("www.youtube.com/watch?v=", "")
-                    url = url.replace("&feature=youtube_gdata_player", "")
-                    url = url.replace("?version=3&f=playlists&app=youtube_gdata", "")  
+                    url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=playlists&app=youtube_gdata", "").replace("&feature=youtube_gdata_player", "")
                                             
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
                         self.log("Building YoutubeTV Playlist Strms ")
@@ -2092,17 +2115,8 @@ class ChannelList:
                     duration = round(duration*60.0)
                     duration = int(duration)
                     
-                    # if hasattr(feed.entries[i], 'media_content'):
-                        # url = feed.entries[i].media_content[0]['url']
-                        # url = url.replace("http://www.youtube.com/v/", "")
-                        # url = url.replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
-                    
-                    # else:
                     url = feed.entries[i].media_player['url']
-                    url = url.replace("http://", "")
-                    url = url.replace("https://", "")
-                    url = url.replace("www.youtube.com/watch?v=", "")
-                    url = url.replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
+                    url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
                     
                     if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
                         self.log("Building YoutubeTV Subscription Strms ")
