@@ -49,9 +49,11 @@
 		<setting id="xmltv" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30053" default="" />
 		<setting id="IncludeInternetTV" type="bool" label="30054" default="true"/>
         <setting id="IncludeYoutubeTV" type="bool" label="30055" enable="System.HasAddon(plugin.video.youtube)" default="true"/>
-        <setting id="IncludeYoutubeTVstrms" subsetting="true" type="bool" visible="eq(-1,true)" label="30056" default="false"/>
+        <setting id="Youtubelimit" subsetting="true" type="enum" label="30059" visible="eq(-1,true)" values="100|250|500|1000" default="0"/>
+        <setting id="IncludeYoutubeTVstrms" subsetting="true" type="bool" visible="eq(-2,true)" label="30056" default="false"/>
         <setting id="IncludeRSS" type="bool" label="30057" default="true"/>
-        <setting id="IncludeRSSstrms" subsetting="true" type="bool" visible="eq(-1,true)" label="30058" default="false"/>
+        <setting id="RSSlimit" subsetting="true" type="enum" label="30059" visible="eq(-1,true)" values="100|250|500|1000" default="0"/>
+        <setting id="IncludeRSSstrms" subsetting="true" type="bool" visible="eq(-2,true)" label="30058" default="false"/>
     </category>
 
     <category label="30070">
@@ -61,8 +63,6 @@
       	<setting id="AutotuneTV" type="bool" label="30074" visible="eq(-2,true)" default="false"/>
       	<setting id="AutotuneMovie" type="bool" label="30075" visible="eq(-3,true)" default="false"/>
       	<setting id="AutotuneMixed" type="bool" subsetting="true" label="30076" visible="eq(-1,true) + eq(-2,true)" default="false"/>
-        <setting id="AutotuneTVGenre" type="bool" subsetting="true" label="30077" visible="eq(-1,true)" default="false"/>
-        <setting id="AutotuneMovieGenre" type="bool" subsetting="true" label="30078" visible="eq(-2,true)" default="false"/>
         <setting id="AutotuneMusic" type="bool" label="30079" visible="eq(-7,true)" default="false"/>
       	<setting id="AutotuneLiveTV" type="bool" label="30080" visible="eq(-8,true)" default="false"/>
       	<setting id="xLiveTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30081" default="" />

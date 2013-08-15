@@ -43,7 +43,7 @@ class Playlist:
         self.totalDuration = 0
         self.processingSemaphore = threading.BoundedSemaphore()
 
-    def getid(self, index):
+    def getid(self, index):#tvdb id
         self.processingSemaphore.acquire()
 
         if index >= 0 and index < len(self.itemlist):
@@ -224,7 +224,8 @@ class Playlist:
 
         for i in range(self.size()):
             tmpstr = str(self.getduration(i)) + ','
-            tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i) + "//" + self.getid(i)
+            tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i)
+            # tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i) + "//" + self.getid(i)
             tmpstr = tmpstr[:600]
             tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
             tmpstr = tmpstr + '\n' + self.getfilename(i)

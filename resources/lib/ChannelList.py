@@ -1791,8 +1791,20 @@ class ChannelList:
     def createYoutubePlaylist(self, setting1, setting2, channel):
         showList = []
         seasoneplist = []
-        showcount = 0
-               
+        showcount = 0        
+        limitcount = 0   
+        limit = 0
+
+        if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
+            limit = 100
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 1:
+            limit = 250    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 2:
+            limit = 500    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 3:
+            limit = 1000
+
+             
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing YoutubeTV")
         
@@ -1815,8 +1827,7 @@ class ChannelList:
                 
             if event == "end" and setting2 == '1': #youtubechannel
                 self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Channel")
-                youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?max-results=50&playlist=bottom'
-                    
+                youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?max-results=50&playlist=bottom'  
                 feed = feedparser.parse(youtubechannel)
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'channel')
 
@@ -1931,13 +1942,16 @@ class ChannelList:
                         if inSet == True:
                             self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
+                    
                     showcount += 1
-
-                
+                    limitcount += 1 
+            
+                    if limitcount == limit:
+                        break                    
+                   
             elif event == "end" and setting2 == '2': #youtubeplaylist 
                 self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist")
                 youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
-                    
                 feed = feedparser.parse(youtubechannel)
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'playlist')
 
@@ -2052,12 +2066,16 @@ class ChannelList:
                         if inSet == True:
                             self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
+                    
                     showcount += 1
-                
+                    limitcount += 1 
+               
+                    if limitcount == limit:
+                        break         
+            
             elif event == "end" and setting2 == '3': #subscriptions 
                 self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription")
                 youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?max-results=50'
-                    
                 feed = feedparser.parse(youtubechannel)
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'subscriptions')
 
@@ -2172,8 +2190,16 @@ class ChannelList:
                         if inSet == True:
                             self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
+                    
                     showcount += 1
-                
+                    limitcount += 1 
+                    
+                    if limitcount == limit:
+                        break         
+                        
+            if limitcount == limit:
+                break    
+    
             root.clear()
 
         return showList
@@ -2183,7 +2209,18 @@ class ChannelList:
         self.log("buildRSSFileList ")
         showList = []
         seasoneplist = []
-        showcount = 0
+        showcount = 0        
+        limitcount = 0   
+        limit = 0
+
+        if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
+            limit = 100
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 1:
+            limit = 250    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 2:
+            limit = 500    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 3:
+            limit = 1000 
                
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing RSS")
@@ -2330,7 +2367,14 @@ class ChannelList:
                             self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
                     showcount += 1
-                
+                    limitcount += 1 
+                    
+                    if limitcount == limit:
+                        break         
+                        
+            if limitcount == limit:
+                break    
+    
             root.clear()
 
         return showList

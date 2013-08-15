@@ -43,6 +43,7 @@
     <string id="30056">Optionally Generate Youtube Strms/NFOs</string>
     <string id="30057">Include RSS</string>
     <string id="30058">Optionally Generate RSS Strms/NFOs</string>
+    <string id="30059">Media Limit Per Channel</string>
 <string id="30070">AutoTune</string>
     <string id="30071">AutoTune Settings (Coming Soon)</string>
     <string id="30072">Enable Autotune</string>
@@ -50,8 +51,6 @@
     <string id="30074">Find TV Channels</string>
     <string id="30075">Find Movie Channels</string>
     <string id="30076">Find Mixed Channels</string>
-    <string id="30077">Find TV Genre Channels</string>
-    <string id="30078">Find Movie Genre Channels</string>
     <string id="30079">Find Music Channels</string>
     <string id="30080">Find LiveTV Channels</string>
 	<string id="30081">LiveTV.xml location</string>
