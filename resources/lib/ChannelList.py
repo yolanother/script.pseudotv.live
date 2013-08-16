@@ -318,18 +318,18 @@ class ChannelList:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
             # #disable force rebuild of livetv channels w/ TVDB and TMDB on every load
-            if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):    
+            # if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):    
             
-                if chtype == 8:
-                    self.log("Disable LiveTV Force rebuild")                    
-                    needsreset = False
-                    makenewlist = False
-                elif chtype >=9:
-                    self.log("Enable InternetTV Force rebuild")       
-                    needsreset = True
-                    makenewlist = True
+                # if chtype == 8:
+                    # self.log("Disable LiveTV Force rebuild")                    
+                    # needsreset = False
+                    # makenewlist = False
+                # elif chtype >=9:
+                    # self.log("Enable InternetTV Force rebuild")       
+                    # needsreset = True
+                    # makenewlist = True
             
-            elif chtype >= 8:
+            if chtype >= 8:
                 self.log("Force rebuild")
                 needsreset = True
                 makenewlist = True
@@ -523,8 +523,8 @@ class ChannelList:
             return setting1 + " TV"
         elif chtype == 4:
             return setting1 + " Movies"
-        elif chtype == 12:
-            return setting1 + " Music"
+        # elif chtype == 12:
+            # return setting1 + " Music"
         elif chtype == 7:
             if setting1[-1] == '/' or setting1[-1] == '\\':
                 return os.path.split(setting1[:-1])[1]
@@ -573,7 +573,7 @@ class ChannelList:
             fileList = self.createDirectoryPlaylist(setting1)
             israndom = True
             
-        elif chtype == 8 and REAL_SETTINGS.getSetting('IncludeLiveTV') == "true": # LiveTV
+        elif chtype == 8: # LiveTV
             self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
             #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
             if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
@@ -585,15 +585,15 @@ class ChannelList:
                 
             fileList = self.buildLiveTVFileList(setting1, setting2, channel)
             
-        elif chtype == 9 and REAL_SETTINGS.getSetting('IncludeInternetTV') == "true": # InternetTV
+        elif chtype == 9: # InternetTV
             self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
             fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel) 
             
-        elif chtype == 10 and REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true": # Youtube
+        elif chtype == 10: # Youtube
             self.log("Building YoutubeTV Channel " + setting1 + " using type " + setting2 + "...")
             fileList = self.createYoutubePlaylist(setting1, setting2, channel)
             
-        elif chtype == 11 and REAL_SETTINGS.getSetting('IncludeRSS') == "true": # RSS/iTunes/feedburner/Podcast
+        elif chtype == 11: # RSS/iTunes/feedburner/Podcast
             self.log("Building RSS Feed " + setting1 + " using type " + setting2 + "...")
             fileList = self.buildRSSFileList(setting1, setting2, channel)   
             
@@ -722,10 +722,10 @@ class ChannelList:
             if len(self.showList) == 0:
                 self.fillTVInfo()
             return self.createShowPlaylist(setting1, setting2)       
-        elif chtype == 12:
-            if len(self.musicGenreList) == 0:
-                self.fillMusicInfo()
-            return self.createGenrePlaylist('music', chtype, setting1)
+        # elif chtype == 12:
+            # if len(self.musicGenreList) == 0:
+                # self.fillMusicInfo()
+            # return self.createGenrePlaylist('music', chtype, setting1)
 
 
     # def createMusicPlaylist(self, pltype, chtype, genre):
@@ -1488,16 +1488,10 @@ class ChannelList:
 
         try:
             self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), 'xmltv.xml'))
-            #self.xmlTvFile = FileAccess.exists(xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('XMLTV'), 'xmltv.xml')))
         except:
             self.log("buildLiveTVFileList, Could not determine path the the xmltv file")
             return
 
-        #if not os.path.exists(self.xmlTvFile) or os.path.getsize(self.xmlTvFile) < 1:
-            #self.log("buildLiveTVFileList XMLTV file was not found or is empty")
-            #return
-            
-        #size = os.path.getsize(self.xmlTvFile)
         f = FileAccess.open(self.xmlTvFile, "rb")
         context = ET.iterparse(f, events=("start", "end"))
         
@@ -1505,13 +1499,12 @@ class ChannelList:
      
         inSet = False
         for event, elem in context:
-        #for elem in tree.iterfind(tree='/tv/programme[@channel="'+setting1+'"]'):
             if self.threadPause() == False:
                 del showList[:]
                 break
                 
             if event == "end":
-                if elem.tag == "programme" and REAL_SETTINGS.getSetting('IncludeLiveTV') == "true":
+                if elem.tag == "programme":
                     channel = elem.get("channel")
                     title = elem.findtext('title')
                     url = unquote(setting2)
@@ -1525,7 +1518,7 @@ class ChannelList:
                             icon = iconElement.get("src")
                         if not description:
                             if not subtitle:
-                                description = '(NO_DESCRIPTION)'
+                                description = title
                             else:
                                 description = subtitle 
 
@@ -1707,8 +1700,7 @@ class ChannelList:
                             tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description + "//" + '\n' + url
                         else:
                             tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + '\n' + url                       
-                        
-                        tmpstr = tmpstr[:500]
+
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
 
                         showList.append(tmpstr)
@@ -1751,7 +1743,7 @@ class ChannelList:
                 break
                 
             if event == "end":
-                if REAL_SETTINGS.getSetting('IncludeInternetTV') == "true":
+                if setting1 >= 1:
                     inSet = True
                     title = setting3
                     url = unquote(setting2)
@@ -1777,8 +1769,6 @@ class ChannelList:
                             raise
 
                     tmpstr = str(dur) + ',' + title + "//" + "InternetTV" + "//" + description + '\n' + url
-
-                    tmpstr = tmpstr[:500]
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
 
                     showList.append(tmpstr)
@@ -1934,11 +1924,10 @@ class ChannelList:
                         fle2.close()
                                 
                     # Build M3U
-                    if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
+                    if setting2 == '1':
                         inSet = True
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                        tmpstr = tmpstr[:500]
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
@@ -2058,11 +2047,10 @@ class ChannelList:
                         fle2.close()
                             
                     # Build M3U
-                    if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
+                    if setting2 == '2':
                         inSet = True
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                        tmpstr = tmpstr[:500]
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
@@ -2182,11 +2170,10 @@ class ChannelList:
                         fle2.close()
                             
                     # Build M3U
-                    if REAL_SETTINGS.getSetting('IncludeYoutubeTV') == "true":
+                    if setting2 == '3':
                         inSet = True
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                        tmpstr = tmpstr[:500]
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
@@ -2259,6 +2246,7 @@ class ChannelList:
                     eptitle = eptitle.replace("\"", "")
                     eptitle = eptitle.replace("?", "")
                     eptitle = uni(eptitle)
+                    eptitle = eptitle[:200]
                     thumburl = feed.channel.image['url']
                     studio = feed.entries[i].author_detail['name']
                     
@@ -2274,6 +2262,7 @@ class ChannelList:
                     else:
                         url = feed.entries[i].links[1]['href']
                         
+                    epdesc = epdesc[:200]
                     runtimex = feed.entries[i]['itunes_duration']
                     summary = feed.channel.subtitle
                     summary = summary.replace(":", "")
@@ -2358,11 +2347,10 @@ class ChannelList:
                         fle2.close()
                         
                     # Build M3U
-                    if REAL_SETTINGS.getSetting('IncludeRSS') == "true":
+                    if setting2 == '1':
                         inSet = True
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + epdesc + '\n' + url + '\n'
-                        tmpstr = tmpstr[:500]
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
@@ -2417,7 +2405,7 @@ class ChannelList:
                     link = elem.findtext('link')
                     description = title
                     if not description:
-                        description = '(NO_DESCRIPTION)'
+                        description = 'NO DESCRIPTION'
                     dur = 5400
                     url = unquote(link)
                     istvshow = True

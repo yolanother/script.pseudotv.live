@@ -44,16 +44,19 @@
     </category>
 
    <category label="30050">
-       	<setting id="IncludeIceLib" type="bool" label="30051" default="true"/>
-        <setting id="IncludeLiveTV" type="bool" label="30052" default="false"/>
-		<setting id="xmltv" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30053" default="" />
-		<setting id="IncludeInternetTV" type="bool" label="30054" default="true"/>
-        <setting id="IncludeYoutubeTV" type="bool" label="30055" enable="System.HasAddon(plugin.video.youtube)" default="true"/>
-        <setting id="Youtubelimit" subsetting="true" type="enum" label="30059" visible="eq(-1,true)" values="100|250|500|1000" default="0"/>
-        <setting id="IncludeYoutubeTVstrms" subsetting="true" type="bool" visible="eq(-2,true)" label="30056" default="false"/>
-        <setting id="IncludeRSS" type="bool" label="30057" default="true"/>
-        <setting id="RSSlimit" subsetting="true" type="enum" label="30059" visible="eq(-1,true)" values="100|250|500|1000" default="0"/>
-        <setting id="IncludeRSSstrms" subsetting="true" type="bool" visible="eq(-2,true)" label="30058" default="false"/>
+       	<setting id="IncludeIceLib" type="bool" label="30051" visible="eq(-1,!true)" default="true"/>
+        <setting id="IncludeLiveTV" type="bool" label="30052" visible="eq(-1,!true)" default="true"/>
+        <setting id="IncludeInternetTV" type="bool" label="30054" visible="eq(-1,!true)" default="true"/>
+        <setting id="IncludeYoutubeTV" type="bool" label="30055" visible="eq(-1,!true)" enable="System.HasAddon(plugin.video.youtube)" default="true"/>
+        <setting id="IncludeRSS" type="bool" label="30057" visible="eq(-1,!true)" default="true"/>
+    	<setting label="30062" type="lsep"/>
+		<setting id="xmltv" subsetting="true" type="folder" source="auto" label="30053" default="" />
+        <setting label="30061" type="lsep"/>
+        <setting id="Youtubelimit" subsetting="true" type="enum" label="30059" values="100|250|500|1000" default="0"/>
+        <setting id="IncludeYoutubeTVstrms" subsetting="true" type="bool" label="30056" default="false"/>
+        <setting label="30060" type="lsep"/>
+        <setting id="RSSlimit" subsetting="true" type="enum" label="30059" values="100|250|500|1000" default="0"/>
+        <setting id="IncludeRSSstrms" subsetting="true" type="bool" label="30056" default="false"/>
     </category>
 
     <category label="30070">
@@ -63,20 +66,20 @@
       	<setting id="AutotuneTV" type="bool" label="30074" visible="eq(-2,true)" default="false"/>
       	<setting id="AutotuneMovie" type="bool" label="30075" visible="eq(-3,true)" default="false"/>
       	<setting id="AutotuneMixed" type="bool" subsetting="true" label="30076" visible="eq(-1,true) + eq(-2,true)" default="false"/>
-        <setting id="AutotuneMusic" type="bool" label="30079" visible="eq(-7,true)" default="false"/>
-      	<setting id="AutotuneLiveTV" type="bool" label="30080" visible="eq(-8,true)" default="false"/>
+        <setting id="AutotuneMusic" type="bool" label="30079" visible="eq(-5,true)" default="false"/>
+      	<setting id="AutotuneLiveTV" type="bool" label="30080" visible="eq(-6,true)" default="false"/>
       	<setting id="xLiveTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30081" default="" />
-        <setting id="AutotuneInternetTV" type="bool" label="30082" visible="eq(-10,true)" default="false"/>
+        <setting id="AutotuneInternetTV" type="bool" label="30082" visible="eq(-8,true)" default="false"/>
       	<setting id="xInternetTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30083" default="" />
-        <setting id="AutotuneLivestream" type="bool" label="30084" visible="eq(-12,true)" default="false"/>
+        <setting id="AutotuneLivestream" type="bool" label="30084" visible="eq(-10,true)" default="false"/>
         <setting id="xLivestream" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30085" default="" />
-        <setting id="AutotuneYoutube" type="bool" label="30086" visible="eq(-14,true)" default="false"/>
+        <setting id="AutotuneYoutube" type="bool" label="30086" visible="eq(-12,true)" default="false"/>
       	<setting id="xYoutube" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30087" default="" />
-        <setting id="AutotuneRSS" type="bool" label="30088" visible="eq(-16,true)" default="false"/>
+        <setting id="AutotuneRSS" type="bool" label="30088" visible="eq(-14,true)" default="false"/>
         <setting id="xRSS" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30089" default="" />
-        <setting id="Restore" type="bool" label="30090" visible="!eq(-18,true)" default="false"/>
+        <setting id="Restore" type="bool" label="30090" visible="!eq(-16,true)" default="false"/>
       	<setting id="Warning2" type="bool" subsetting="true" label="30091" visible="eq(-1,true)" default="false" action="RunScript($CWD/restore.py)"/> />
-    	<setting label="30092" type="lsep" visible="!eq(-20,false)" />
+    	<setting label="30092" type="lsep" visible="!eq(-18,false)" />
     </category>
     
     <category label="30998">
