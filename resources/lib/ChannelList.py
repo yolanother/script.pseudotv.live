@@ -41,7 +41,6 @@ from sickbeard import *
 from couchpotato import *
 from tvdb import *
 from tmdb import *
-# from tvdb_api import *
 
 
 class ChannelList:
@@ -81,7 +80,7 @@ class ChannelList:
         self.findMaxChannels()
 
         if self.forceReset:
-            REAL_SETTINGS.setSetting('ForceChannelReset', "false")
+            REAL_SETTINGS.setSetting('ForceChannelReset', "False")
             self.forceReset = False
 
         try:
@@ -174,13 +173,13 @@ class ChannelList:
                 if FileAccess.exists(xbmc.translatePath(chsetting1)):
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
-            elif chtype <= 11:
+            elif chtype <= 12:
                 if len(chsetting1) > 0:
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
                     
             if self.forceReset and (chtype != 9999):
-                ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_changed', "true")
+                ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_changed', "True")
 
         self.log('findMaxChannels return ' + str(self.maxChannels))
 
@@ -316,30 +315,24 @@ class ChannelList:
         self.runActions(RULES_ACTION_START, channel, self.channels[channel - 1])
 
         try:
-            needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'true'
+            needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
-            #disable force rebuild of livetv channels w/ TVDB and TMDB on every load
-            if chtype == 8:
-                if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false':
-                    self.log("Disable LiveTV Force rebuild")
-                elif (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):    
+            # #disable force rebuild of livetv channels w/ TVDB and TMDB on every load
+            if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):    
+            
+                if chtype == 8:
                     self.log("Disable LiveTV Force rebuild")                    
                     needsreset = False
                     makenewlist = False
-                else:
-                    self.log("LiveTV Force rebuild")
+                elif chtype >=9:
+                    self.log("Enable InternetTV Force rebuild")       
                     needsreset = True
                     makenewlist = True
-                # else:
-                    # if (REAL_SETTINGS.getSetting('tvdb.enabled') == 'false' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'false') and chtype == 8:
-                        # self.log("LiveTV Force rebuild")
-                        # needsreset = True
-                        # makenewlist = True
             
-            # #force rebuild of other channels every load
-            # if chtype == 9:
-                # needsreset = True
-                # makenewlist = True
+            elif chtype >= 8:
+                self.log("Force rebuild")
+                needsreset = True
+                makenewlist = True
                 
             if needsreset:
                 self.channels[channel - 1].isSetup = False
@@ -430,7 +423,7 @@ class ChannelList:
                         ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_time', '0')
 
                         if needsreset:
-                            ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_changed', 'false')
+                            ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_changed', 'False')
                             self.channels[channel - 1].isSetup = True
 
         self.runActions(RULES_ACTION_BEFORE_CLEAR, channel, self.channels[channel - 1])
@@ -530,6 +523,8 @@ class ChannelList:
             return setting1 + " TV"
         elif chtype == 4:
             return setting1 + " Movies"
+        elif chtype == 12:
+            return setting1 + " Music"
         elif chtype == 7:
             if setting1[-1] == '/' or setting1[-1] == '\\':
                 return os.path.split(setting1[:-1])[1]
@@ -600,11 +595,7 @@ class ChannelList:
             
         elif chtype == 11 and REAL_SETTINGS.getSetting('IncludeRSS') == "true": # RSS/iTunes/feedburner/Podcast
             self.log("Building RSS Feed " + setting1 + " using type " + setting2 + "...")
-            fileList = self.buildRSSFileList(setting1, setting2, channel)
-            
-        # elif chtype == 12 and REAL_SETTINGS.getSetting('fillMusicInfo') == "true": # Music
-            # self.log("Building Music Channel" + setting1 + " using type " + setting2 + "...")
-            # fileList = self.fillMusicInfo(setting1, setting2, channel)
+            fileList = self.buildRSSFileList(setting1, setting2, channel)   
             
         else:
             if chtype == 0:
@@ -730,34 +721,30 @@ class ChannelList:
         elif chtype == 6:
             if len(self.showList) == 0:
                 self.fillTVInfo()
-            return self.createShowPlaylist(setting1, setting2)
-            
-        elif int(chtype) == 12:
+            return self.createShowPlaylist(setting1, setting2)       
+        elif chtype == 12:
             if len(self.musicGenreList) == 0:
                 self.fillMusicInfo()
-            return self.createMusicPlaylist(setting1, setting3)    
-
-        self.log('makeTypePlaylists invalid channel type: ' + str(chtype))
-        return ''
+            return self.createGenrePlaylist('music', chtype, setting1)
 
 
-    def createMusicPlaylist(self, genre, pltype, channelname):
-        self.log("createMusicPlaylist")
-        limit = 1000
-        pltype = "songs"
-        genre = genre.lower()
-        flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
-        try:
-            fle = FileAccess.open(flename, "w")
-        except:
-            self.Error('Unable to open the cache file ' + flename, xbmc.LOGERROR)
-            return ''
-        self.writeXSPHeader(fle, pltype, channelname, 'all')
-        genre = self.cleanString(genre)
-        fle.write('    <rule field="genre" operator="is">' + genre + '</rule>\n')
-        self.writeXSPFooter(fle, limit, "random")
-        fle.close()
-        return flename
+    # def createMusicPlaylist(self, pltype, chtype, genre):
+        # self.log("createMusicPlaylist")
+        # limit = 1000
+        # pltype = "songs"
+        # genre = genre.lower()
+        # flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
+        # try:
+            # fle = FileAccess.open(flename, "w")
+        # except:
+            # self.Error('Unable to open the cache file ' + flename, xbmc.LOGERROR)
+            # return ''
+        # self.writeXSPHeader(fle, pltype, channelname, 'all')
+        # genre = self.cleanString(genre)
+        # fle.write('    <rule field="genre" operator="is">' + genre + '</rule>\n')
+        # self.writeXSPFooter(fle, limit, "random")
+        # fle.close()
+        # return flename
     
     def createNetworkPlaylist(self, network):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Network_' + network + '.xsp')
@@ -993,50 +980,68 @@ class ChannelList:
         return uni(newstr)
         
     
-    def fillMusicInfo(self):
+    def fillMusicInfo(self, sortbycount = False):
         self.log("fillMusicInfo")
         json_query = '{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"fields":["genre"]}, "id": 1}'
         
         if self.background == False:
-            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "adding videos", "reading TV data")
+            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "adding music", "reading music data")
 
-        json_folder_detail = xbmc.executeJSONRPC(json_query)
+        json_folder_detail = self.sendJSON(json_query)
         detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
         
         for f in detail:
             if self.threadPause() == False:
                 del self.musicGenreList[:]
-                return
+                break
                 
             if USING_FRODO:
-                match = re.search('"genre" *: *"(.*?)",', f)
+                match = re.search('"genre" *: *\[(.*?)\]', f)
             else:
                 match = re.search('"genre" *: *"(.*?)",', f)
- 
-            genres = ''
             
             if match:
                 if USING_FRODO:
+                    genres = match.group(1).split(',')
+                else:
                     genres = match.group(1).split('/')
-                else: 
-                    genres = match.group(1)
-                
-                genres = genres.strip('"').strip()
-                found = False                  
-                    
+
                 for genre in genres:
                     found = False
-                    curgenre = genre.lower().strip()
+                    curgenre = genre.lower().strip('"').strip()
+                
+                    for g in range(len(self.musicGenreList)):
+                        itm = self.musicGenreList[g]
 
-                    for g in self.musicGenreList:
-                        if curgenre == g.lower():
+                        if sortbycount:
+                            itm = itm[0]
+
+                        if curgenre == itm.lower():
                             found = True
+
+                            if sortbycount:
+                                self.musicGenreList[g][1] += 1
+
                             break
 
                     if found == False:
-                        self.musicGenreList.append(genre.strip())
+                        if sortbycount:
+                            self.musicGenreList.append([genre.strip('"').strip(), 1])
+                        else:
+                            self.musicGenreList.append(genre.strip('"').strip())
+                            
+                            
+        if sortbycount:
+            self.musicGenreList.sort(key=lambda x: x[1], reverse=True)
+        else:
+            self.musicGenreList.sort(key=lambda x: x.lower())
+            
+        if (len(self.musicGenreList) == 0):
+            self.log(json_folder_detail)
 
-        self.musicGenreList.sort(key=lambda x: x.lower()) 
+        self.log("found genres " + str(self.musicGenreList)) 
+            
+            
      
     def fillTVInfo(self, sortbycount = False):
         self.log("fillTVInfo")
@@ -2379,7 +2384,68 @@ class ChannelList:
 
         return showList
 
-    
+        
+    def fillLivestream(self, channel):
+        self.log("fillLivestream")
+        fileList = []
+
+        if self.background == False:
+            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing Livestream")
+
+        try:
+            self.Livestream = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xLivestream'), 'theStreamDB.xml'))
+        except:
+            self.log("fillLivestream, Could not determine path the the theStreamDB file")
+            return
+          
+        f = FileAccess.open(self.Livestream, "rb")
+        context = ET.iterparse(f, events=("start", "end"))
+        
+        event, root = context.next()
+     
+        inSet = False
+        for event, elem in context:
+            if self.threadPause() == False:
+                del fileList[:]
+                break
+            
+            if event == "end":
+                if elem.tag == "channel":
+                    inSet = True
+                    chname = elem.findtext("name")
+                    title = elem.findtext('title')
+                    link = elem.findtext('link')
+                    description = title
+                    if not description:
+                        description = '(NO_DESCRIPTION)'
+                    dur = 5400
+                    url = unquote(link)
+                    istvshow = True
+                    
+                    # for item in range(len(self.fileList)):
+                        # if self.threadPause() == False:
+                            # del fileList[:]
+                            # return
+                        
+                        # item = self.fileList[item]    
+
+                    tmpstr = str(dur) + ',' + title + "//" + "Livestream" + "//" + description + '\n' + url
+                    tmpstr = tmpstr[:500]
+                    tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                    
+                    fileList.append(tmpstr)
+                    
+                else:
+                    if inSet == True:
+                        self.log("fillLivestream,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                        break
+                    
+            root.clear()
+            
+        # valid channel
+        self.writeFileList(channel, fileList)
+
+        
     # Run rules for a channel
     def runActions(self, action, channel, parameter):
         self.log("runActions " + str(action) + " on channel " + str(channel))

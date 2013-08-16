@@ -33,7 +33,7 @@ class PlaylistItem:
         self.description = ''
         self.title = ''
         self.episodetitle = ''
-        self.id = ''
+        # self.id = ''
 
 
 
@@ -43,16 +43,16 @@ class Playlist:
         self.totalDuration = 0
         self.processingSemaphore = threading.BoundedSemaphore()
 
-    def getid(self, index):#tvdb id
-        self.processingSemaphore.acquire()
+    # def getid(self, index):#tvdb id
+        # self.processingSemaphore.acquire()
 
-        if index >= 0 and index < len(self.itemlist):
-            dur = self.itemlist[index].id
-            self.processingSemaphore.release()
-            return dur
+        # if index >= 0 and index < len(self.itemlist):
+            # dur = self.itemlist[index].id
+            # self.processingSemaphore.release()
+            # return dur
 
-        self.processingSemaphore.release()
-        return 0
+        # self.processingSemaphore.release()
+        # return 0
     
     
     def getduration(self, index):
@@ -226,7 +226,7 @@ class Playlist:
             tmpstr = str(self.getduration(i)) + ','
             tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i)
             # tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i) + "//" + self.getid(i)
-            tmpstr = tmpstr[:600]
+            tmpstr = tmpstr[:500]
             tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
             tmpstr = tmpstr + '\n' + self.getfilename(i)
             flewrite += "#EXTINF:" + tmpstr + "\n"
