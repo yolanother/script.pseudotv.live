@@ -330,7 +330,7 @@ class ChannelList:
                     # makenewlist = True
             
             if chtype == 8:
-                self.log("Force LiveTV rebuild")
+                self.log("Force rebuild")
                 needsreset = True
                 makenewlist = True
                 

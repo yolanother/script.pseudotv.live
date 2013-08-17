@@ -43,8 +43,9 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.lastActionTime = time.time()
         self.channelLogos = ''
         self.textcolor = "FFFFFFFF"
-        self.focusedcolor = "FF00b4db"
+        self.focusedcolor = "FF7d7d7d"
         self.clockMode = 0
+        self.textfont  = "font14"
 
         # Decide whether to use the current skin or the default skin.  If the current skin has the proper
         # image, then it should work.
@@ -122,6 +123,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         try:
             textcolor = int(self.getControl(100).getLabel(), 16)
             focusedcolor = int(self.getControl(100).getLabel2(), 16)
+            self.textfont =  self.getControl(105).getLabel()
 
             if textcolor > 0:
                 self.textcolor = hex(textcolor)[2:]
@@ -294,11 +296,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
 
             # if the channel is paused, then only 1 button needed
             if self.MyOverlayWindow.channels[curchannel - 1].isPaused:
-                self.channelButtons[row].append(self.getButton())
-                self.channelButtons[row][-1].setHeight(baseh)
-                self.channelButtons[row][-1].setWidth(basew)
-                self.channelButtons[row][-1].setLabel(self.MyOverlayWindow.channels[curchannel - 1].getCurrentTitle() + " (paused)")
-                self.channelButtons[row][-1].setPosition(basex, basey)
+                self.channelButtons[row].append(xbmcgui.ControlButton(basex, basey, basew, baseh, self.MyOverlayWindow.channels[curchannel - 1].getCurrentTitle() + " (paused)", focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, textColor=self.textcolor, focusedColor=self.focusedcolor))
             # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
                 # self.log("hdhomerun epg")
             else:
@@ -373,7 +371,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
 
                     if shouldskip == False and width >= 30:
                         mylabel = self.MyOverlayWindow.channels[curchannel - 1].getItemTitle(playlistpos)
-                        self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                        self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
 
                     totaltime += tmpdur
                     reftime += tmpdur
@@ -382,6 +380,10 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
 
                 if totalloops >= 1000:
                     self.log("Broken big loop, too many loops, reftime is " + str(reftime) + ", endtime is " + str(endtime))
+
+                # If there were no buttons added, show some default button
+                if len(self.channelButtons[row]) == 0:
+                    self.channelButtons[row].append(xbmcgui.ControlButton(basex, basey, basew, baseh, self.MyOverlayWindow.channels[curchannel - 1].name, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, textColor=self.textcolor, focusedColor=self.focusedcolor))
         except:
             self.log("Exception in setButtons", xbmc.LOGERROR)
             self.log(traceback.format_exc(), xbmc.LOGERROR)
