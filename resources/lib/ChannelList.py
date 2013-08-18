@@ -523,8 +523,8 @@ class ChannelList:
             return setting1 + " TV"
         elif chtype == 4:
             return setting1 + " Movies"
-        # elif chtype == 12:
-            # return setting1 + " Music"
+        elif chtype == 12:
+            return setting1 + " Music"
         elif chtype == 7:
             if setting1[-1] == '/' or setting1[-1] == '\\':
                 return os.path.split(setting1[:-1])[1]
@@ -722,23 +722,26 @@ class ChannelList:
             if len(self.showList) == 0:
                 self.fillTVInfo()
             return self.createShowPlaylist(setting1, setting2)       
-        # elif chtype == 12:
-            # if len(self.musicGenreList) == 0:
-                # self.fillMusicInfo()
-            # return self.createGenrePlaylist('music', chtype, setting1)
+        elif chtype == 12:
+            if len(self.musicGenreList) == 0:
+                self.fillMusicInfo()
+                
+            return self.createGenrePlaylist('songs', chtype, setting1)
 
 
-    # def createMusicPlaylist(self, pltype, chtype, genre):
+    # def createMusicPlaylist(self, genre, channelname):
         # self.log("createMusicPlaylist")
         # limit = 1000
         # pltype = "songs"
         # genre = genre.lower()
         # flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
+        
         # try:
             # fle = FileAccess.open(flename, "w")
         # except:
             # self.Error('Unable to open the cache file ' + flename, xbmc.LOGERROR)
             # return ''
+        
         # self.writeXSPHeader(fle, pltype, channelname, 'all')
         # genre = self.cleanString(genre)
         # fle.write('    <rule field="genre" operator="is">' + genre + '</rule>\n')
@@ -982,6 +985,7 @@ class ChannelList:
     
     def fillMusicInfo(self, sortbycount = False):
         self.log("fillMusicInfo")
+        # self.musicGenreList = [] 
         json_query = '{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"fields":["genre"]}, "id": 1}'
         
         if self.background == False:
@@ -989,17 +993,17 @@ class ChannelList:
 
         json_folder_detail = self.sendJSON(json_query)
         detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
-        
+
         for f in detail:
             if self.threadPause() == False:
                 del self.musicGenreList[:]
-                break
-                
+                return
+
             if USING_FRODO:
                 match = re.search('"genre" *: *\[(.*?)\]', f)
             else:
                 match = re.search('"genre" *: *"(.*?)",', f)
-            
+
             if match:
                 if USING_FRODO:
                     genres = match.group(1).split(',')
@@ -1009,8 +1013,12 @@ class ChannelList:
                 for genre in genres:
                     found = False
                     curgenre = genre.lower().strip('"').strip()
-                
+
                     for g in range(len(self.musicGenreList)):
+                        if self.threadPause() == False:
+                            del self.musicGenreList[:]
+                            return
+                            
                         itm = self.musicGenreList[g]
 
                         if sortbycount:
@@ -1029,19 +1037,16 @@ class ChannelList:
                             self.musicGenreList.append([genre.strip('"').strip(), 1])
                         else:
                             self.musicGenreList.append(genre.strip('"').strip())
-                            
-                            
+    
         if sortbycount:
-            self.musicGenreList.sort(key=lambda x: x[1], reverse=True)
+            self.musicGenreList.sort(key=lambda x: x[1], reverse = True)
         else:
             self.musicGenreList.sort(key=lambda x: x.lower())
-            
+
         if (len(self.musicGenreList) == 0):
             self.log(json_folder_detail)
 
-        self.log("found genres " + str(self.musicGenreList)) 
-            
-            
+        self.log("found genres " + str(self.musicGenreList))
      
     def fillTVInfo(self, sortbycount = False):
         self.log("fillTVInfo")
@@ -2432,8 +2437,381 @@ class ChannelList:
             
         # valid channel
         self.writeFileList(channel, fileList)
-
+    
+    # OLD TV Time RSS Live Feed Code
+    
+    # def createFeedsSourcesXML(self):
+        # self.log("createFeedsSourcesXML")
+        # # create initial feed sources.xml
+        # sourcesXMLFile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'sources.xml'))
+        # sourcesXML = FileAccess.open(self.sourcesXMLFile, 'w')
+        # sourcesXML.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+        # sourcesXML.write('<feeds>\n')
+        # #sourcesXML.write('    <feed url="http://archiveclassicmovies.com/acm.rss">ACM Classic Movies</feed>\n')
+        # sourcesXML.write('    <feed url="http://feeds.feedburner.com/alaskapodshow">Alaska HDTV</feed>\n')
+        # #sourcesXML.write('    <feed url="http://images.apple.com/trailers/home/rss/newtrailers.rss">Apple Movie Trailers</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.atomfilms.com/rss/all_new_films.xml">Atom Films</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.bassedge.com/Media/podcast/bassedge.xml">Bass Edge</feed>\n')
+        # #sourcesXML.write('    <feed url="http://blip.tv/rss/?pagelen=1238676299409">blip.tv</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.boingboing.net/boingboing/tv?format=xml">Boing Boing</feed>\n')
+        # #sourcesXML.write('    <feed url="http://cartoon-network.gemzies.com/rss/latest">Cartoon Network: Latest</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.cbsnews.com/podcast_eveningnews_video_1">CBS: Evening News</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.cbsnews.com/common/includes/podcast/podcast_nation_video_1.rss">CBS: Face the Nation</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.feedburner.com/classicanimation">Classic Animation</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.comedycentral.com/rss/recentvideos.jhtml">Comedy Central: Recent</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.comedycentral.com/rss/standupvideos.jhtml">Comedy Central: Stand Up</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.comedycentral.com/rss/colbertvideos.jhtml">Comedy Central: The Colbert Report</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.comedycentral.com/rss/tdsvideos.jhtml">Comedy Central: The Daily Show</feed>\n')
+        # sourcesXML.write('    <feed url="http://rss.cnn.com/services/podcasting/cnnnewsroom/rss.xml">CNN: Daily</feed>\n')
+        # sourcesXML.write('    <feed url="http://feeds2.feedburner.com/cnet/hacks">CNET Hacks</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.crackle.com/rss/media/bz0xMiZmcGw9MzkyMTIxJmZ4PQ.rss">Crackle: Minisodes</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.crackle.com/rss/media/ZmNtdD0zMDMmZnA9MSZmeD0.rss">Crackle: Movies</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.current.com/groups/green.rss">Current TV: Green</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.current.com/groups/movies.rss">Current TV: Movies</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.current.com/groups/music.rss">Current TV: Music Videos</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.current.com/homepage/en_US/news.rss">Current TV: News</feed>\n')
+        # #sourcesXML.write('    <feed url="http://revision3.com/diggnation/feed/quicktime-high-definition/">Diggnation</feed>\n')
+        # sourcesXML.write('    <feed url="http://www.ringtales.com/dilbert.xml">Dilbert</feed>\n')
+        # sourcesXML.write('    <feed url="http://www.discovery.com/radio/xml/discovery_video.xml">Discovery</feed>\n')
+        # #sourcesXML.write('    <feed url="http://sports.espn.go.com/espnradio/podcast/feeds/itunes/podCast?id=2870570">ESPN: Around the Horn</feed>\n')
+        # #sourcesXML.write('    <feed url="http://sports.espn.go.com/espnradio/podcast/feeds/itunes/podCast?id=2869921">ESPN: Mike and Mike</feed>\n')
+        # #sourcesXML.write('    <feed url="http://sports.espn.go.com/espnradio/podcast/feeds/itunes/podCast?id=3403194">ESPN: SportsCenter</feed>\n')
+        # sourcesXML.write('    <feed url="http://video.foxnews.com/v/feed/playlist/87249.xml">Fox News Live!</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.feedburner.com/imovies-bt">iMovies</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.youtube.com/ut_rss?type=username&amp;arg=MontyPython">MontyPython</feed>\n')
+        # sourcesXML.write('    <feed url="http://podcast.msnbc.com/audio/podcast/MSNBC-NN-NETCAST-M4V.xml">MSNBC: Nightly News</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.mtv.com/overdrive/rss/news.jhtml">MTV News</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.nba.com/topvideo/rss.xml">NBA: Top Videos</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.nfl.com/rss/rsslanding?searchString=gamehighlightsVideo">NFL: Highlights</feed>\n')
+        # #sourcesXML.write('    <feed url="http://feeds.theonion.com/OnionNewsNetwork">Onion News Network</feed>\n')
+        # sourcesXML.write('    <feed url="http://feeds.feedburner.com/pbs/wnet/nature-video">PBS: Nature</feed>\n')
+        # sourcesXML.write('    <feed url="http://feeds.pbs.org/pbs/wgbh/nova-video">PBS: Nova</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.comedycentral.com/rss/southparkvideos.jhtml">South Park</feed>\n')
+        # sourcesXML.write('    <feed url="http://feeds.feedburner.com/tedtalksHD">TED Talks</feed>\n')
+        # #sourcesXML.write('    <feed url="http://www.vh1.com/rss/news/today_on_vh1.jhtml">VH1: Today on VH1</feed>\n')
+        # sourcesXML.write('</feeds>\n')
+        # sourcesXML.close()
         
+
+    # def fillFeedInfo(self): 
+        # self.log("fillFeedInfo")        
+        # self.feedList = []
+        
+        # sourcesXMLFile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'sources.xml'))
+        # if not FileAccess.exists(sourcesXMLFile):
+            # # create initial feeds list
+            # self.createFeedsSourcesXML()
+        
+
+        # fle = sourcesXMLFile
+        # try:
+            # xml = FileAccess.open(fle, "r")
+        # except:
+            # self.log("fillFeedInfo: Unable to open the feeds xml file " + fle, xbmc.LOGERROR)
+            # return ''
+
+        # try:
+            # dom = parse(xml)
+        # except:
+            # self.log('fillFeedInfo: Problem parsing feeds xml file ' + fle, xbmc.LOGERROR)
+            # xml.close()
+            # return ''
+        # xml.close()
+        
+        # try:
+            # feedsNode = dom.getElementsByTagName('feed')
+        # except:
+            # self.log('fillFeedInfo: No feeds found ' + fle, xbmc.LOGERROR)
+            # xml.close()
+            # return ''
+        # xml.close()
+   
+        # self.feedList = []
+        # # need to redo this for loop
+        # for feed in feedsNode:
+            # try:
+                # feedName = feed.childNodes[0].nodeValue
+            # except:
+                # feedName = ""
+            # if len(feedName) > 0:
+                # self.feedList.append(feedName)
+         
+        # self.feedList.sort(key=lambda x: x.lower())
+        
+    # def getFeedURL(self, chname):
+        # self.log("getFeedURL")
+        # feedURL = ''
+        # sourcesXMLFile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'sources.xml'))
+        # fle = sourcesXMLFile
+
+        # try:
+            # xml = FileAccess.open(fle, "r")
+        # except:
+            # self.log("getFeedURL: Unable to open the feeds xml file " + fle, xbmc.LOGERROR)
+            # return ''
+
+        # try:
+            # dom = parse(xml)
+        # except:
+            # self.log('getFeedURL: Problem parsing feeds xml file ' + fle, xbmc.LOGERROR)
+            # xml.close()
+            # return ''
+        # xml.close()
+
+        # try:
+            # feedsNode = dom.getElementsByTagName('feed')
+        # except:
+            # self.log('getFeedURL: No feeds found ' + fle, xbmc.LOGERROR)
+            # xml.close()
+            # return ''
+        # xml.close()
+   
+        # # need to redo this for loop
+        # for feed in feedsNode:
+            # feedName = feed.childNodes[0].nodeValue
+            # if str(feedName) == str(chname):
+                # # get feed URL attribute value                
+                # try:
+                    # feedURL = feed.getAttribute('url')
+                    # self.log("feedURL " + str(feedURL))
+                # except:
+                    # self.log("Error getting feed url")
+                    # feedURL = ''
+                    
+
+        # return feedURL
+     
+
+    # def getFeedXML(self, url):
+        # self.log("getFeedXML")
+        # self.log("url " + str(self.uncleanString(url)))
+        # feedXML = ''
+        # try:
+            # feed_request = urllib2.Request(self.uncleanString(url))
+            # #feed_request.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+            # feed_opener = urllib2.build_opener()
+            # feedXML = feed_opener.open(feed_request).read()
+        # except:
+            # self.log("Unable to open feed URL")
+        # self.log("feedXML = " + str(feedXML))
+        # return feedXML
+
+
+    # def makeChannelListFromFeed(self, channel):
+        # fileList = []
+        # chname = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_3")
+        # # get feed URL
+        # feedURL = self.getFeedURL(chname)
+        # if len(feedURL) > 0:
+            # # get feed XML
+            # feedXML = self.getFeedXML(feedURL)
+            # if len(feedXML) > 0:
+                # # parse feed XML
+                # try:
+                    # feed = parseString(feedXML)
+                # except:
+                    # self.log("Unable to parse feedXML")
+                    # self.writeFileList(channel, fileList)
+                    # return
+
+                # # need to add more logic to identify feed as either:
+                # #   itunes
+                # #   rss
+                # #   atom
+                # # get channel items in feed
+                # itemNode = feed.getElementsByTagName("item")
+                # # loop through items and determine which fields to get
+                # for item in itemNode:
+                    # # find title
+                    # if len(item.getElementsByTagName("title")) > 0:
+                        # titleNode = item.getElementsByTagName("title") #element
+                        # try:
+                            # title = titleNode[0].firstChild.data
+                            # self.log("title found")
+                        # except:
+                            # self.log("no title data present")
+                            # title = ''
+                    # else:
+                        # self.log("title not found")
+                        # title = ''
+                    # # find content url
+                    # if len(item.getElementsByTagName("media:content")) > 0:
+                        # contentNode = item.getElementsByTagName("media:content") #url attribute                    
+                        # try:
+                            # url = contentNode[0].getAttribute('url')
+                            # self.log("content url found")
+                        # except:
+                            # self.log("content url not found")
+                            # url = ''
+                    # elif len(item.getElementsByTagName("enclosure")) > 0:
+                        # contentNode = item.getElementsByTagName("enclosure") #url attribute                    
+                        # try:
+                            # url = contentNode[0].getAttribute('url')
+                            # self.log("content url found")
+                        # except:
+                            # self.log("content url not found")
+                            # url = ''
+                    # elif len(item.getElementsByTagName("link")) > 0:
+                        # contentNode = item.getElementsByTagName("link") #url attribute                    
+                        # try:
+                            # url = contentNode[0].firstChild.data
+                            # self.log("content url found")
+                        # except:
+                            # self.log("content url not found")
+                            # url = ''
+                    # else:
+                        # self.log("content url not found")
+                        # url = ''
+                    # # find duration
+                    # self.log("durationNode found at " + str(item.getElementsByTagName("mvn:duration")))
+                    # if len(item.getElementsByTagName("mvn:duration")) > 0:
+                        # durationNode = item.getElementsByTagName("mvn:duration") #element
+                        # try:
+                            # dur = durationNode[0].firstChild.data
+                            # self.log("duration found")
+                        # except:
+                            # self.log("duration not found")
+                            # dur = 0
+                    # elif len(item.getElementsByTagName("itunes:duration")) > 0:
+                        # durationNode = item.getElementsByTagName("itunes:duration") #element
+                        # try:
+                            # dur = durationNode[0].firstChild.data
+                            # self.log("dur = " + str(dur))
+                            # self.log("duration found")
+                        # except:
+                            # self.log("exception occurred: duration not found")
+                            # dur = 0
+
+                        # # duration is in <![CDATA[9:23]]>
+                        # # need to convert to seconds
+                        # try:
+                            # dur_parts = []
+                            # dur_parts = dur.split(':')
+                            # self.log("length of duration string = " + str(len(dur_parts)))
+                            # if len(dur_parts) == 1:
+                                # seconds = int(dur_parts[0])
+                                # dur = seconds
+                                # self.log("seconds = " + str(seconds))
+                                # self.log("dur = " + str(dur))
+                            # elif len(dur_parts) == 2:
+                                # minutes = int(dur_parts[0])
+                                # seconds = int(dur_parts[1])
+                                # dur = (minutes * 60) + seconds
+                                # self.log("minutes = " + str(minutes))
+                                # self.log("seconds = " + str(seconds))
+                                # self.log("dur = " + str(dur))
+                            # elif len(dur_parts) == 3:
+                                # hours = int(dur_parts[0])
+                                # minutes = int(dur_parts[1])
+                                # seconds = int(dur_parts[2])
+                                # dur = (hours * 3600) + (minutes * 60) + seconds
+                                # self.log("hours = " + str(hours))
+                                # self.log("minutes = " + str(minutes))
+                                # self.log("seconds = " + str(seconds))
+                                # self.log("dur = " + str(dur))
+                        # except:
+                            # self.log("error parsing duration time")
+                            # dur = 0
+                    # else:
+                        # self.log("duration element not found")
+                        # dur = 0
+                    # # find airdate
+                    # if len(item.getElementsByTagName("mvn:airDate")) > 0:
+                        # airdateNode = item.getElementsByTagName("mvn:airDate") #element
+                        # try:
+                            # airdate = airdateNode[0].firstChild.data
+                            # self.log("airdate found")
+                        # except:
+                            # self.log("airdate not found")
+                            # airdate = ''
+                    # elif len(item.getElementsByTagName("pubDate")) > 0:
+                        # airdateNode = item.getElementsByTagName("pubDate") #element
+                        # try:
+                            # airdate = airdateNode[0].firstChild.data
+                            # self.log("airdate found")
+                        # except:
+                            # self.log("airdate not found")
+                            # airdate = ''
+                    # else:
+                        # self.log("airdate not found")
+                        # airdate = ''
+
+                    # # find description
+                    # if len(item.getElementsByTagName("media:description")) > 0:
+                        # descriptionNode = item.getElementsByTagName("media:description") #element
+                        # try:
+                            # description = descriptionNode[0].firstChild.data
+                            # self.log("description found")
+                        # except:
+                            # self.log("description not found")
+                            # description = ''
+                    # elif len(item.getElementsByTagName("description")) > 0:
+                        # descriptionNode = item.getElementsByTagName("description") #element
+                        # try:
+                            # description = descriptionNode[0].firstChild.data
+                            # # <![CDATA[Tony Reali and the national panel discuss the hot topics of the day in "The First Word."]]>
+                            # self.log("description found")
+                            # if description.find("</embed>") > 0:
+                                # self.log("description has embedded object. Removing description")
+                                # description = ''
+                            # if description.find("</a>") > 0:
+                                # self.log("description has links. Removing description")
+                                # description = ''                            
+                        # except:
+                            # self.log("description not found")
+                            # description = ''
+                    # else:
+                        # self.log("description not found")
+                        # description = ''
+                    # # find show
+                    # if len(item.getElementsByTagName("mvn:fnc_show")) > 0:
+                        # showNode = item.getElementsByTagName("mvn:fnc_show") #element
+                        # try:
+                            # showtitle = showNode[0].firstChild.data
+                            # self.log("show found")
+                        # except:
+                            # self.log("show not found")
+                            # showtitle = ''
+                    # elif len(item.getElementsByTagName("mvn:fnc_show")) > 0:
+                        # showNode = item.getElementsByTagName("mvn:fnc_show") #element
+                        # try:
+                            # showtitle = showNode[0].firstChild.data
+                            # self.log("show found")
+                        # except:
+                            # self.log("show not found")
+                            # showtitle = ''
+                    # else:
+                        # self.log("show not found")
+                        # showtitle = ''
+
+                    # # log results
+                    # self.log("title = " + str(title))
+                    # self.log("url = " + str(url))
+                    # self.log("dur = " + str(dur))
+                    # self.log("airdate = " + str(airdate))
+                    # self.log("description = " + str(description))
+                    # self.log("showtitle = " + str(showtitle))
+                    
+                    # if len(showtitle) > 0:
+                        # showtitle = showtitle + "(" + airdate + ")"
+                    # else:
+                        # showtitle = "(" + airdate + ")"
+
+                    # # add file to file list
+                    # # will see if this works or whether
+                    # # we will need to add shows direct to playlist and 
+                    # # call play
+                    # if len(url) > 0 and int(dur) > 0:
+                        # tmpstr = str(dur) + ',' + title + "//" + showtitle + "//" + self.uncleanString(description)
+                        # tmpstr = tmpstr[:600]
+                        # tmpstr = tmpstr.replace("\\n", " ").replace("\n", " ").replace("\r", " ").replace("\\r", " ").replace("\\\"", "\"")
+                        # tmpstr = tmpstr + '\n' + url.replace("\\\\", "\\")
+                        # fileList.append(tmpstr)
+
+        # # valid channel
+        # self.writeFileList(channel, fileList)
+    
+    
     # Run rules for a channel
     def runActions(self, action, channel, parameter):
         self.log("runActions " + str(action) + " on channel " + str(channel))

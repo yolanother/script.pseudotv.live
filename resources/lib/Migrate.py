@@ -136,6 +136,14 @@ class Migrate:
             mixedlist.sort(key=lambda x: x[1] + x[2], reverse=True)
             currentchan = self.initialAddChannels(chanlist.networkList, 1, currentchan)
             updatedlg.update(70)
+            
+            if Globals.REAL_SETTINGS.getSetting("AutotuneMusic") == "true":
+                self.log('Autotune, AutotuneMusic')
+                chanlist.fillMusicInfo(True)
+                Globals.REAL_SETTINGS.setSetting('AutotuneMusic', "False")               
+                currentchan = self.initialAddChannels(chanlist.musicGenreList, 12, currentchan)
+                updatedlg.update(95)   
+            
 
             # Mixed genres
             if len(mixedlist) > 0:
@@ -146,9 +154,6 @@ class Migrate:
                         Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", "5")
                         Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
                         
-                        # if Globals.REAL_SETTINGS.getSetting("AutotuneMixed") == "true":
-                            # self.log('Autotune, AutotuneMixed')
-                            # Globals.REAL_SETTINGS.setSetting('AutotuneMixed', "False")
                         added += 1.0
                         currentchan += 1
                         # else:    
@@ -174,21 +179,17 @@ class Migrate:
 
                     updatedlg.update(int(70 + 10.0 / added))
                     updatedlg.update(80)                        
-                    
+            
+            # if Globals.REAL_SETTINGS.getSetting("AutotuneMixed") == "true":
+            # self.log('Autotune, AutotuneMixed')
+            # Globals.REAL_SETTINGS.setSetting('AutotuneMixed', "False")
             currentchan = self.initialAddChannels(chanlist.showGenreList, 3, currentchan)
             updatedlg.update(85)
                             
             currentchan = self.initialAddChannels(chanlist.movieGenreList, 4, currentchan)
             updatedlg.update(90)
-           
-                        
-            # if Globals.REAL_SETTINGS.getSetting("AutotuneMusic") == "true":
-                # self.log('Autotune, AutotuneMusic')
-                # chanlist.fillMusicInfo(True)
-                # Globals.REAL_SETTINGS.setSetting('AutotuneMusic', "False")    
-                # currentchan = self.initialAddChannels(chanlist.musicGenreList, 5, currentchan)
-                # updatedlg.update(95)   
-            
+               
+                            
             # elif Globals.REAL_SETTINGS.getSetting("AutotuneLivestream") == "true":
                 # self.log('Autotune, AutotuneLivestream')
                 # Globals.REAL_SETTINGS.setSetting('AutotuneLivestream', "False")
