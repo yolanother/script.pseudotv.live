@@ -173,7 +173,7 @@ class ChannelList:
                 if FileAccess.exists(xbmc.translatePath(chsetting1)):
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
-            elif chtype <= 12:
+            elif chtype <= 15:
                 if len(chsetting1) > 0:
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
@@ -330,7 +330,7 @@ class ChannelList:
                     # makenewlist = True
             
             if chtype == 8:
-                self.log("Force rebuild")
+                self.log("Force LiveTV rebuild")
                 needsreset = True
                 makenewlist = True
                 
@@ -523,7 +523,7 @@ class ChannelList:
             return setting1 + " TV"
         elif chtype == 4:
             return setting1 + " Movies"
-        elif chtype == 12:
+        elif chtype == 15:
             return setting1 + " Music"
         elif chtype == 7:
             if setting1[-1] == '/' or setting1[-1] == '\\':
@@ -722,7 +722,7 @@ class ChannelList:
             if len(self.showList) == 0:
                 self.fillTVInfo()
             return self.createShowPlaylist(setting1, setting2)       
-        elif chtype == 12:
+        elif chtype == 15:
             if len(self.musicGenreList) == 0:
                 self.fillMusicInfo()
                 
@@ -1786,7 +1786,95 @@ class ChannelList:
             root.clear()
 
         return showList
+ 
+  # def buildInternetTVFileList(self, setting1, setting2, setting3, setting4, channel):
+        # fileList = []
+        # showcount = 0
+            
+        # if self.background == False:
+            # self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Building InternetTV")
+   
+        # try:
+            # self.InternetTV = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'InternetTV.xml'))
+        # except:
+            # self.log("buildInternetTVFileList, Could not find InternetTV.xml")
+            # return   
+            
+        # f = open(self.InternetTV, "rb")
+        # context = ET.iterparse(f, events=("start", "end"))
 
+        # event, root = context.next()
+     
+        # inSet = False
+        # for event, elem in context:
+            # if self.threadPause() == False:
+                # del fileList[:]
+                # break
+                
+            # if event == "end":
+                # if elem.tag == "item":
+                    # inSet = True
+                    # # find title
+                    # if len(elem.getElementsByTagName("title")) > 0:
+                        # titleNode = elem.getElementsByTagName("title") #element
+                        # try:
+                            # title = titleNode[0].firstChild.data
+                            # self.log("title found")
+                        # except:
+                            # self.log("no title data present")
+                            # title = ''
+                    # else:
+                        # self.log("title not found")
+                        # title = ''
+                    
+                    # # find content url
+                    # if len(elem.getElementsByTagName("link")) > 0:
+                        # contentNode = elem.getElementsByTagName("link") #url attribute                    
+                        # try:
+                            # url = contentNode[0].firstChild.data
+                            # self.log("content url found")
+                        # except:
+                            # self.log("content url not found")
+                            # url = ''
+                    # url = unquote(url)
+                   
+                    # # find description
+                    # if len(elem.getElementsByTagName("description")) > 0:
+                        # descriptionNode = elem.getElementsByTagName("description") #element
+                        # try:
+                            # description = descriptionNode[0].firstChild.data
+                            # self.log("description found")
+                        # except:
+                            # self.log("description not found")
+                            # description = title
+                    # # find duration
+                    # if len(elem.getElementsByTagName("duration")) > 0:
+                        # durationNode = elem.getElementsByTagName("duration") #element
+                        # try:
+                            # dur = durationNode[0].firstChild.data
+                            # self.log("duration found")
+                            # self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + ", " + title + "  DUR: " + str(dur))
+
+                        # except:
+                            # self.log("duration not found")
+                            # self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
+                            # dur = 5400
+    
+                    # istvshow = True
+
+                    # tmpstr = str(dur) + ',' + title + "//" + "InternetTV" + "//" + description + '\n' + url
+                    # tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+
+                    # fileList.append(tmpstr)
+                # else:
+                    # if inSet == True:
+                        # self.log("buildInternetTVFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                        # break
+                # showcount += 1
+                    
+            # root.clear()
+
+        # self.writeFileList(channel, fileList)
         
     def createYoutubePlaylist(self, setting1, setting2, channel):
         showList = []
@@ -1836,7 +1924,12 @@ class ChannelList:
                     showtitle = feed.channel.author_detail['name']
                     showtitle = showtitle.replace(":", "")
                     genre = (feed.entries[0].tags[1]['term'])
-                    thumburl = feed.entries[i].media_thumbnail[0]['url']
+                    try:
+                        thumburl = feed.entries[i].media_thumbnail[0]['url']
+                    except:
+                        self.log("createYoutubePlaylist, media_thumbnail")
+                        return 
+            
                     #Time when the episode was published
                     time = (feed.entries[i].published_parsed)
                     time = str(time)
@@ -1959,7 +2052,11 @@ class ChannelList:
                     showtitle = feed.channel.author_detail['name']
                     showtitle = showtitle.replace(":", "")
                     genre = (feed.entries[0].tags[1]['term'])
-                    thumburl = feed.entries[i].media_thumbnail[0]['url']
+                    try:
+                        thumburl = feed.entries[i].media_thumbnail[0]['url']
+                    except:
+                        self.log("createYoutubePlaylist, media_thumbnail")
+                        return 
                     #Time when the episode was published
                     time = (feed.entries[i].published_parsed)
                     time = str(time)
@@ -2082,7 +2179,11 @@ class ChannelList:
                     showtitle = feed.channel.title
                     showtitle = showtitle.replace(":", "")
                     genre = (feed.entries[0].tags[1]['term'])
-                    thumburl = feed.entries[i].media_thumbnail[0]['url']
+                    try:
+                        thumburl = feed.entries[i].media_thumbnail[0]['url']
+                    except:
+                        self.log("createYoutubePlaylist, media_thumbnail")
+                        return 
                     #Time when the episode was published
                     time = (feed.entries[i].published_parsed)
                     time = str(time)

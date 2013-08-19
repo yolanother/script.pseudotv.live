@@ -31,7 +31,7 @@ from resources.lib.FileAccess import FileAccess
 from resources.lib.Migrate import Migrate
 
 
-NUMBER_CHANNEL_TYPES = 12
+NUMBER_CHANNEL_TYPES = 15
 
 
 
@@ -164,7 +164,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             # ADDON_SETTINGS.setSetting(setting1, self.getControl(1001).getLabel())
         # elif chantype == 11:
             # ADDON_SETTINGS.setSetting(setting1, self.getControl(1101).getLabel())
-        # elif chantype == 12:
+        # elif chantype == 15:
             # ADDON_SETTINGS.setSetting(setting1, self.getControl(1201).getLabel())
         elif chantype == 9999:
             ADDON_SETTINGS.setSetting(setting1, '')
@@ -445,7 +445,9 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             self.getControl(182).setLabel(self.findItemInList(self.mixedGenreList, chansetting1))
         elif chantype == 6:
             self.getControl(192).setLabel(self.findItemInList(self.showList, chansetting1))
-            self.getControl(194).setSelected(chansetting2 == str(MODE_ORDERAIRDATE))
+            self.getControl(194).setSelected(chansetting2 == str(MODE_ORDERAIRDATE))        
+        # elif chantype == 15: # music
+            # self.getControl(212).setLabel(self.findItemInList(self.musicGenreList, chansetting1))
         elif chantype == 7:
             if (chansetting1.find('/') > -1) or (chansetting1.find('\\') > -1):
                 plname = self.getSmartPlaylistName(chansetting1)
@@ -538,7 +540,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             return "YoutubeTV"
         elif chantype == 11:
             return "rssTV"
-        elif chantype == 12:
+        elif chantype == 15:
             return "Music"
         elif chantype == 9999:
             return "None"
@@ -634,7 +636,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
                 newlabel = channame + " - YoutubeTV"            
             elif chantype == 11:
                 newlabel = channame + " - rssTV"            
-            elif chantype == 12:
+            elif chantype == 15:
                 newlabel = channame + " - Music"
             elif chantype == 7:
                 if chansetting1[-1] == '/' or chansetting1[-1] == '\\':

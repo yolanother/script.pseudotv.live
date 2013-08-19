@@ -141,7 +141,7 @@ class Migrate:
                 self.log('Autotune, AutotuneMusic')
                 chanlist.fillMusicInfo(True)
                 Globals.REAL_SETTINGS.setSetting('AutotuneMusic', "False")               
-                currentchan = self.initialAddChannels(chanlist.musicGenreList, 12, currentchan)
+                currentchan = self.initialAddChannels(chanlist.musicGenreList, 15, currentchan)
                 updatedlg.update(95)   
             
 
