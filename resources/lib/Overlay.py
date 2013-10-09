@@ -505,7 +505,6 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.invalidatedChannelCount += 1
 
         if self.invalidatedChannelCount > 3:
-            # self.setChannel(self.fixChannel(channel + 2)) # attempt to fix exiting on invalid channel
             self.Error("Exceeded 3 invalidated channels. Exiting.")
             return
 

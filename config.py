@@ -31,7 +31,7 @@ from resources.lib.FileAccess import FileAccess
 from resources.lib.Migrate import Migrate
 
 
-NUMBER_CHANNEL_TYPES = 15
+NUMBER_CHANNEL_TYPES = 9
 
 
 
@@ -76,7 +76,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         migratemaster = Migrate()
         migratemaster.migrate()
         self.prepareConfig()
-        self.myRules = AdvancedConfig("script.pseudotv.AdvancedConfig.xml", ADDON_INFO, "default")
+        self.myRules = AdvancedConfig("script.pseudotv.live.AdvancedConfig.xml", ADDON_INFO, "default")
         self.log("onInit return")
 
 
@@ -148,24 +148,13 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             ADDON_SETTINGS.setSetting(setting1, self.getControl(182).getLabel())
         elif chantype == 6:
             ADDON_SETTINGS.setSetting(setting1, self.getControl(192).getLabel())
-            
+
             if self.getControl(194).isSelected():
                 ADDON_SETTINGS.setSetting(setting2, str(MODE_ORDERAIRDATE))
             else:
                 ADDON_SETTINGS.setSetting(setting2, "0")
-        
         elif chantype == 7:
             ADDON_SETTINGS.setSetting(setting1, self.getControl(200).getLabel())
-        # elif chantype == 8:
-            # ADDON_SETTINGS.setSetting(setting1, self.getControl(801).getLabel())
-        # elif chantype == 9:
-            # ADDON_SETTINGS.setSetting(setting1, self.getControl(901).getLabel())
-        # elif chantype == 10:
-            # ADDON_SETTINGS.setSetting(setting1, self.getControl(1001).getLabel())
-        # elif chantype == 11:
-            # ADDON_SETTINGS.setSetting(setting1, self.getControl(1101).getLabel())
-        # elif chantype == 15:
-            # ADDON_SETTINGS.setSetting(setting1, self.getControl(1201).getLabel())
         elif chantype == 9999:
             ADDON_SETTINGS.setSetting(setting1, '')
             ADDON_SETTINGS.setSetting(setting2, '')
@@ -250,7 +239,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
                 self.savedRules = True
         elif controlId == 130:      # Playlist-type channel, playlist button
             dlg = xbmcgui.Dialog()
-            retval = dlg.browse(1, "Channel " + str(self.channel) + " Playlist", "files", ".xsp", False, False, "")
+            retval = dlg.browse(1, "Channel " + str(self.channel) + " Playlist", "files", ".xsp", False, False, "special://videoplaylists/")
 
             if retval != "special://videoplaylists/":
                 self.getControl(130).setLabel(self.getSmartPlaylistName(retval), label2=retval)
@@ -445,9 +434,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             self.getControl(182).setLabel(self.findItemInList(self.mixedGenreList, chansetting1))
         elif chantype == 6:
             self.getControl(192).setLabel(self.findItemInList(self.showList, chansetting1))
-            self.getControl(194).setSelected(chansetting2 == str(MODE_ORDERAIRDATE))        
-        # elif chantype == 15: # music
-            # self.getControl(212).setLabel(self.findItemInList(self.musicGenreList, chansetting1))
+            self.getControl(194).setSelected(chansetting2 == str(MODE_ORDERAIRDATE))
         elif chantype == 7:
             if (chansetting1.find('/') > -1) or (chansetting1.find('\\') > -1):
                 plname = self.getSmartPlaylistName(chansetting1)
@@ -540,7 +527,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             return "YoutubeTV"
         elif chantype == 11:
             return "rssTV"
-        elif chantype == 15:
+        elif chantype == 12:
             return "Music"
         elif chantype == 9999:
             return "None"
@@ -636,7 +623,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
                 newlabel = channame + " - YoutubeTV"            
             elif chantype == 11:
                 newlabel = channame + " - rssTV"            
-            elif chantype == 15:
+            elif chantype == 12:
                 newlabel = channame + " - Music"
             elif chantype == 7:
                 if chansetting1[-1] == '/' or chansetting1[-1] == '\\':

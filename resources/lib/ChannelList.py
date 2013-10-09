@@ -173,7 +173,7 @@ class ChannelList:
                 if FileAccess.exists(xbmc.translatePath(chsetting1)):
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
-            elif chtype <= 15:
+            elif chtype <= 12:
                 if len(chsetting1) > 0:
                     self.maxChannels = i + 1
                     self.enteredChannelCount += 1
@@ -523,7 +523,7 @@ class ChannelList:
             return setting1 + " TV"
         elif chtype == 4:
             return setting1 + " Movies"
-        elif chtype == 15:
+        elif chtype == 12:
             return setting1 + " Music"
         elif chtype == 7:
             if setting1[-1] == '/' or setting1[-1] == '\\':
@@ -722,7 +722,7 @@ class ChannelList:
             if len(self.showList) == 0:
                 self.fillTVInfo()
             return self.createShowPlaylist(setting1, setting2)       
-        elif chtype == 15:
+        elif chtype == 12:
             if len(self.musicGenreList) == 0:
                 self.fillMusicInfo()
                 
@@ -1669,16 +1669,16 @@ class ChannelList:
                         startDate = self.parseXMLTVDate(elem.get('start'))
 
                         #skip old shows that have already ended
-                        if now > stopDate:
-                            self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
-                            self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))       
-                            continue
+                        # if now > stopDate:
+                            # self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
+                            # self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))       
+                            # continue
                         
                         #adjust the duration of the current show
                         if now > startDate and now < stopDate:
                             try:
                                 #dur = ((stopDate - startDate).seconds)
-                                dur = ((stopDate - startDate).seconds) - ((now - startDate).seconds) + 150
+                                dur = ((stopDate - startDate).seconds) - ((now - startDate).seconds)
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
                                 self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
                             except:
@@ -2006,7 +2006,8 @@ class ChannelList:
                         fle1.write('<episodedetails>\n')
                         fle1.write('<title>' + eptitle + '</title>\n')
                         fle1.write('<genre>' + genre + '</genre>\n')
-                        fle1.write('<season>1</season>\n')
+                        fle1.write('<season>' + showseason + '</season>\n')
+                        fle1.write('<episode>' + showepisodenuma + '</episode>\n')
                         fle1.write('<plot>' + summary + '</plot>\n')
                         fle1.write('<thumb>' + thumburl + '</thumb>\n')
                         fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
@@ -2132,8 +2133,9 @@ class ChannelList:
                         fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
                         fle1.write('<episodedetails>\n')
                         fle1.write('<title>' + eptitle + '</title>\n')
-                        fle1.write('<genre>' + genre + '</genre>\n')
-                        fle1.write('<season>1</season>\n')
+                        fle1.write('<genre>' + genre + '</genre>\n')                        
+                        fle1.write('<season>' + showseason + '</season>\n')
+                        fle1.write('<episode>' + showepisodenuma + '</episode>\n')
                         fle1.write('<plot>' + summary + '</plot>\n')
                         fle1.write('<thumb>' + thumburl + '</thumb>\n')
                         fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
@@ -2164,9 +2166,9 @@ class ChannelList:
                     
                     showcount += 1
                     limitcount += 1 
-               
+            
                     if limitcount == limit:
-                        break         
+                        break   
             
             elif event == "end" and setting2 == '3': #subscriptions 
                 self.log("createYoutubePlaylist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription")
@@ -2260,7 +2262,8 @@ class ChannelList:
                         fle1.write('<episodedetails>\n')
                         fle1.write('<title>' + eptitle + '</title>\n')
                         fle1.write('<genre>' + genre + '</genre>\n')
-                        fle1.write('<season>1</season>\n')
+                        fle1.write('<season>' + showseason + '</season>\n')
+                        fle1.write('<episode>' + showepisodenuma + '</episode>\n')
                         fle1.write('<plot>' + summary + '</plot>\n')
                         fle1.write('<thumb>' + thumburl + '</thumb>\n')
                         fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
@@ -2311,13 +2314,13 @@ class ChannelList:
         limitcount = 0   
         limit = 0
 
-        if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
+        if int(REAL_SETTINGS.getSetting('RSSlimit')) == 0:
             limit = 100
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 1:
+        elif int(REAL_SETTINGS.getSetting('RSSlimit')) == 1:
             limit = 250    
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 2:
+        elif int(REAL_SETTINGS.getSetting('RSSlimit')) == 2:
             limit = 500    
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 3:
+        elif int(REAL_SETTINGS.getSetting('RSSlimit')) == 3:
             limit = 1000 
                
         if self.background == False:
@@ -2437,7 +2440,8 @@ class ChannelList:
                         fle1.write('<episodedetails>\n')
                         fle1.write('<title>' + eptitle + '</title>\n')
                         fle1.write('<genre>' + genre + '</genre>\n')
-                        fle1.write('<season>1</season>\n')
+                        fle1.write('<season>' + showseason + '</season>\n')
+                        fle1.write('<episode>' + showepisodenuma + '</episode>\n')
                         fle1.write('<plot>' + epdesc + '</plot>\n')
                         fle1.write('<thumb>' + thumburl + '</thumb>\n')
                         fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
