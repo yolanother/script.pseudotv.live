@@ -116,7 +116,7 @@ class Playlist:
 
 
     def log(self, msg, level = xbmc.LOGDEBUG):
-        xbmc.log('script.pseudotv-Playlist: ' + ascii(msg), level)
+        xbmc.log('script.pseudotv.live-Playlist: ' + ascii(msg), level)
 
 
     def load(self, filename):
