@@ -146,6 +146,237 @@ class ChannelList:
     def log(self, msg, level = xbmc.LOGDEBUG):
         log('ChannelList: ' + msg, level)
 
+    
+    def autoTune(self):
+        self.log('autoTune')
+        
+        # # delete settings2.xml
+        settingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.xml'))
+        if  FileAccess.exists(settingsFile):
+            try:
+                os.remove(settingsFile)
+            except:
+                self.log("Unable to delete " + str(settingsFile))
+
+        channelNum = 0
+        
+        self.updateDialog = xbmcgui.DialogProgress()
+        self.updateDialog.create("PseudoTV Live", "Auto Tune")
+        
+        self.updateDialogProgress = 10
+        # LiveTV - Hdhomerun
+        
+        self.updateDialogProgress = 15
+        # LiveTV - USTVNOW
+        if REAL_SETTINGS.getSetting("autoFindLive") == "true" and REAL_SETTINGS.getSetting("autoFindLiveUSTVnow") == "true" :
+            self.log("Adding Live USTVnow Channel")
+            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding USTVnow Channel","")
+            for i in range(1):
+                channelNum = channelNum + 1
+                # add network presets
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "8")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", "I27.28460898.microsoft.com")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_2", "plugin://plugin.video.ustvnow/?name=ABC&mode=play")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_3", "ustvnow")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rulecount", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_id", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_opt_1", "ABC USTVNOW")  
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_type", "8")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_1", "I21.28459588.microsoft.com")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_2", "plugin://plugin.video.ustvnow/?name=CBS&mode=play")    
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_3", "ustvnow")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rulecount", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_id", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_opt_1", "CBS USTVNOW") 
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 1) + '_changed', 'true')
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_type", "8")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_1", "I15.28461494.microsoft.com")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_2", "plugin://plugin.video.ustvnow/?name=CW&mode=play")  
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_3", "ustvnow")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rulecount", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rule_1_id", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rule_1_opt_1", "CW USTVNOW")
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 2) + '_changed', 'true')
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_type", "8")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_1", "I43.28457987.microsoft.com")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_2", "plugin://plugin.video.ustvnow/?name=FOX&mode=play")   
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_3", "ustvnow")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rulecount", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rule_1_id", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rule_1_opt_1", "FOX USTVNOW")  
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 3) + '_changed', 'true')
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_type", "8")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_1", "I8.28460167.microsoft.com")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_2", "plugin://plugin.video.ustvnow/?name=NBC&mode=play")     
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_3", "ustvnow")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_rulecount", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_rule_1_id", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_rule_1_opt_1", "NBC USTVNOW")  
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 4) + '_changed', 'true')
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_type", "8")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_1", "I33.28455626.microsoft.com")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_2", "plugin://plugin.video.ustvnow/?name=PBS&mode=play")   
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_3", "ustvnow")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_rulecount", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_rule_1_id", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_rule_1_opt_1", "PBS USTVNOW")
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 5) + '_changed', 'true')
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_type", "8")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_1", "I238.28455933.microsoft.com")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_2", "plugin://plugin.video.ustvnow/?name=My9&mode=play")  
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_3", "ustvnow")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_rulecount", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_rule_1_id", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_rule_1_opt_1", "MY9 USTVNOW")  
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 6) + '_changed', 'true')
+
+        
+        self.updateDialogProgress = 20
+        #TV - Networks/Genres
+        self.log("autoFindNetworks " + str(REAL_SETTINGS.getSetting("autoFindNetworks")))
+        self.log("autoFindTVGenres " + str(REAL_SETTINGS.getSetting("autoFindTVGenres")))
+        if (REAL_SETTINGS.getSetting("autoFindNetworks") == "true" or REAL_SETTINGS.getSetting("autoFindTVGenres") == "true"):
+            self.log("Searching for TV Channels")
+            self.updateDialog(self.updateDialogProgress,"Auto Tune","Searching for TV Channels","")
+            self.fillTVInfo()
+
+        # need to add check for auto find network channels
+        self.updateDialogProgress = 25
+        if REAL_SETTINGS.getSetting("autoFindNetworks") == "true":
+            self.log("Adding TV Networks")
+            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding TV Networks","")
+            for i in range(len(self.networkList)):
+                channelNum = channelNum + 1
+                # add network presets
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "1")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.networkList[i]))
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
+                self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding TV Network",str(self.networkList[i]))
+
+        self.updateDialogProgress = 30
+        if REAL_SETTINGS.getSetting("autoFindTVGenres") == "true":
+            self.log("Adding TV Genres")
+            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding TV Genres","")
+            for i in range(len(self.showGenreList)):
+                channelNum = channelNum + 1
+                # add network presets
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "3")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.showGenreList[i]))
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
+                self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding TV Genres",str(self.showGenreList[i]) + " TV")
+        
+        self.updateDialogProgress = 40
+        self.log("autoFindStudios " + str(REAL_SETTINGS.getSetting("autoFindStudios")))
+        self.log("autoFindMovieGenres " + str(REAL_SETTINGS.getSetting("autoFindMovieGenres")))
+        if (REAL_SETTINGS.getSetting("autoFindStudios") == "true" or REAL_SETTINGS.getSetting("autoFindMovieGenres") == "true"):
+            self.updateDialog(self.updateDialogProgress,"Auto Tune","Searching for Movie Channels","")
+            self.fillMovieInfo()
+
+        self.updateDialogProgress = 50
+        if REAL_SETTINGS.getSetting("autoFindStudios") == "true":
+            self.log("Adding Movie Studios")
+            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Movie Studios","")
+            for i in range(len(self.studioList)):
+                channelNum = channelNum + 1
+                self.updateDialogProgress = self.updateDialogProgress + (10/len(self.studioList))
+                # add network presets
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "2")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.studioList[i]))
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
+                self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Movie Studios",str(self.studioList[i]))
+
+        self.updateDialogProgress = 60
+        if REAL_SETTINGS.getSetting("autoFindMovieGenres") == "true":
+            self.log("Adding Movie Genres")
+            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Movie Genres","")
+            for i in range(len(self.movieGenreList)):
+                channelNum = channelNum + 1
+                self.updateDialogProgress = self.updateDialogProgress + (10/len(self.movieGenreList))
+                # add network presets
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "4")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.movieGenreList[i]))
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
+                self.updateDialog(updateDialogProgress,"Auto Tune","Adding Movie Genres","Found " + str(self.movieGenreList[i]) + " Movies")
+
+        self.updateDialogProgress = 65
+        self.log("autoFindMixGenres " + str(REAL_SETTINGS.getSetting("autoFindMixGenres")))
+        if REAL_SETTINGS.getSetting("autoFindMixGenres") == "true":
+            self.updateDialog(self.updateDialogProgress,"Auto Tune","Searching for Mixed Channels","")
+            self.fillMixedGenreInfo()
+        
+        self.updateDialogProgress = 70
+        if REAL_SETTINGS.getSetting("autoFindMixGenres") == "true":
+            self.log("Adding Mixed Genres")
+            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Mixed Genres","")
+            for i in range(len(self.mixedGenreList)):
+                channelNum = channelNum + 1
+                # add network presets
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "5")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.mixedGenreList[i]))
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
+                self.updateDialog(updateDialogProgress,"Auto Tune","Adding Mixed Genres",str(self.mixedGenreList[i]) + " Mix")
+
+        self.updateDialogProgress = 80
+        self.log("autoFindMusicGenres " + str(REAL_SETTINGS.getSetting("autoFindMusicGenres")))
+        if REAL_SETTINGS.getSetting("autoFindMusicGenres") == "true":
+            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Searching for Music Channels","")
+            self.fillMusicInfo()
+
+        self.updateDialogProgress = 85
+        #Music Genre
+        if REAL_SETTINGS.getSetting("autoFindMusicGenres") == "true":
+            self.log("Adding Music Genres")
+            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Genres","")
+            for i in range(len(self.musicGenreList)):
+                channelNum = channelNum + 1
+                # add network presets
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "12")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.musicGenreList[i]))
+                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_2", "0")
+                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
+                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Genres",str(self.musicGenreList[i]) + " Music")
+
+        self.updateDialogProgress = 90
+
+        self.updateDialogProgress = 95
+        
+
+        # ADDON_SETTINGS.writeSettings()
+
+        # set max channels
+        # self.MaxChannels()
+
+        # reset auto tune settings
+        REAL_SETTINGS.setSetting("autoFindNetworks","false")
+        REAL_SETTINGS.setSetting("autoFindStudios","false")
+        REAL_SETTINGS.setSetting("autoFindTVGenres","false")
+        REAL_SETTINGS.setSetting("autoFindMovieGenres","false")
+        REAL_SETTINGS.setSetting("autoFindMixGenres","false")
+        REAL_SETTINGS.setSetting("autoFindTVShows","false")
+        REAL_SETTINGS.setSetting("autoFindMusicGenres","false")
+        REAL_SETTINGS.setSetting("autoFindLive","false")
+        REAL_SETTINGS.setSetting('autoFindLiveUSTVnow', "False")
+        REAL_SETTINGS.setSetting('ATClean', "False")
+        REAL_SETTINGS.setSetting('Autotune', "False")
+        
+        # force a reset
+        REAL_SETTINGS.setSetting("ForceChannelReset","1")
+
+        self.updateDialog.close()
 
     # Determine the maximum number of channels by opening consecutive
     # playlists until we don't find one
@@ -732,15 +963,15 @@ class ChannelList:
                 self.fillTVInfo()
             return self.createShowPlaylist(setting1, setting2)    
             
-        elif chtype == 12:
-            if len(self.musicGenreList) == 0:
-                self.fillMusicInfo()
-            return self.createMusicPlaylist(setting1, setting2)
-            
         # elif chtype == 12:
             # if len(self.musicGenreList) == 0:
                 # self.fillMusicInfo()
-            # return self.createGenrePlaylist('songs', chtype, setting1)
+            # return self.createMusicPlaylist(setting1, setting2)
+            
+        elif chtype == 12:
+            if len(self.musicGenreList) == 0:
+                self.fillMusicInfo()
+            return self.createGenrePlaylist('songs', chtype, setting1)
 
 
     def createMusicPlaylist(self, genre, channelname):
@@ -822,7 +1053,33 @@ class ChannelList:
         fle.close()
         return flename
 
+    
+    def fillMixedGenreInfo(self):
+        if len(self.mixedGenreList) == 0:
+            if len(self.showGenreList) == 0:
+                self.fillTVInfo()
+            if len(self.movieGenreList) == 0:
+                self.fillMovieInfo()
 
+            self.mixedGenreList = self.makeMixedList(self.showGenreList, self.movieGenreList)
+            self.mixedGenreList.sort(key=lambda x: x.lower())
+
+    
+    def makeMixedList(self, list1, list2):
+        self.log("makeMixedList")
+        newlist = []
+
+        for item in list1:
+            curitem = item.lower()
+
+            for a in list2:
+                if curitem == a.lower():
+                    newlist.append(item)
+                    break
+
+        return newlist
+    
+    
     def createGenreMixedPlaylist(self, genre):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Mixed_' + genre + '.xsp')
 

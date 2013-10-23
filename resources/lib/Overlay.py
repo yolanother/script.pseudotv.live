@@ -120,13 +120,14 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
     # override the doModal function so we can setup everything first
     def onInit(self):
         self.log('onInit')
+        self.channelList = ChannelList()
         
-        if REAL_SETTINGS.getSetting("Autotune") == "true":
+        if REAL_SETTINGS.getSetting("ATClean") == "true":
             self.log('Autotune onInit')
             settingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.xml'))
             nsettingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.bak.xml'))
-            #Backup and Delete old settings2.xml before autotune runs.
             
+            #Backup and Delete old settings2.xml before autotune runs.
             if FileAccess.exists(settingsFile) and FileAccess.exists(nsettingsFile) and REAL_SETTINGS.getSetting("ATClean") == "true":
                 os.remove(nsettingsFile)
                 self.log('Autotune, Deleted Old Backup') 
@@ -137,7 +138,9 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                     self.log('Autotune, Settings2 Backup Complete')                
                 else:
                     self.log('Autotune, Settings2 Backup Failed')
-
+        
+        self.channelList.autoTune()
+        
         if FileAccess.exists(GEN_CHAN_LOC) == False:
             try:
                 FileAccess.makedirs(GEN_CHAN_LOC)
@@ -191,20 +194,56 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.myEPG.channelLogos = self.channelLogos
         self.maxChannels = len(self.channels)
 
-        if self.maxChannels == 0:
-            self.Error('Unable to find any channels. Please configure the addon.')
-            return
+        # if self.maxChannels == 0:
+            # #self.Error('Unable to find any channels. \nPlease go to the Addon Settings to configure PseudoTV Live.')
+            # #return
+            # dlg = xbmcgui.Dialog()
+            
+            # autoTune = False
+            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune TV Network\nchannels the next time it loads?"):
+                # REAL_SETTINGS.setSetting("autoFindNetworks","true")
+                # autoTune = True
 
-        found = False
+            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune TV Genre\nchannels the next time it loads?"):
+                # REAL_SETTINGS.setSetting("autoFindTVGenre","true")
+                # autoTune = True
 
-        for i in range(self.maxChannels):
-            if self.channels[i].isValid:
-                found = True
-                break
+            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Movie Studio\nchannels the next time it loads?"):
+                # REAL_SETTINGS.setSetting("autoFindStudios","true")
+                # autoTune = True
 
-        if found == False:
-            self.Error("Unable to populate channels. Please verify that you", "have scraped media in your library and that you have", "properly configured channels.")
-            return
+            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Movie Genre\nchannels the next time it loads?"):
+                # REAL_SETTINGS.setSetting("autoFindMovieGenres","true")
+                # autoTune = True
+
+            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Mix Genre\nchannels the next time it loads?"):
+                # REAL_SETTINGS.setSetting("autoFindMixGenres","true")
+                # autoTune = True
+
+            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Music Genre\nchannels the next time it loads?"):
+                # REAL_SETTINGS.setSetting("autoFindMusicGenres","true")
+                # autoTune = True
+
+            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Live\nchannels the next time it loads?"):
+                # REAL_SETTINGS.setSetting("autoFindLive","true")
+                # autoTune = True
+
+            # if autoTune:
+                # self.end()
+                # return
+
+            # del dlg
+
+        # found = False
+
+        # for i in range(self.maxChannels):
+            # if self.channels[i].isValid:
+                # found = True
+                # break
+
+        # if found == False:
+            # self.Error("Unable to populate channels. Please verify that you", "have scraped media in your library and that you have", "properly configured channels.")
+            # return
 
         if self.sleepTimeValue > 0:
             self.sleepTimer = threading.Timer(self.sleepTimeValue, self.sleepAction)

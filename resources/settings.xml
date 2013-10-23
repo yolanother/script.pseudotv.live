@@ -21,8 +21,7 @@
     	<setting id="EnableComingUp" type="bool" label="30025" default="true"/>
     	<setting id="HideClips" type="bool" label="30026" default="true"/>
     	<setting id="ClipLength" type="enum" subsetting="true" label="30027" visible="eq(-1,true)" values="15|30|60|90|120|180|240|300|360" default="2"/>
-<!--     	<setting id="ShowSeEp" type="bool" label="30028" default="false"/> -->
-        <setting type="sep"/>
+       <!--  <setting id="ShowSeEp" type="bool" label="30028" default="false"/> -->
         <setting label="30029" type="lsep"/>        
         <setting id="tvdb.enabled" label="30030" type="bool" default="false" />
         <setting id="tvdb.apikey" subsetting="true" label="30031" visible="eq(-1,true)" type="text" default="01F0668B2FC765B9" />
@@ -45,14 +44,10 @@
 
    <category label="30050">
        	<setting id="IncludeIceLib" type="bool" label="30051" visible="eq(-1,!true)" default="true"/>
-        <setting id="IncludeLiveTV" type="bool" label="30052" visible="eq(-1,!true)" default="true"/>
-        <setting id="IncludeInternetTV" type="bool" label="30054" visible="eq(-1,!true)" default="true"/>
-        <setting id="IncludeYoutubeTV" type="bool" label="30055" visible="eq(-1,!true)" enable="System.HasAddon(plugin.video.youtube)" default="true"/>
-        <setting id="IncludeRSS" type="bool" label="30057" visible="eq(-1,!true)" default="true"/>
-    	<setting label="30062" type="lsep"/>
-		<setting id="xmltv" subsetting="true" type="folder" source="auto" label="30053" default="" />
+        <setting label="30062" type="lsep"/>
+        <setting id="xmltv" subsetting="true" type="folder" source="auto" label="30053" default="" />
         <setting label="30061" type="lsep"/>
-        <setting id="Youtubelimit" subsetting="true" type="enum" label="30059" values="100|250|500|1000" default="0"/>
+        <setting id="Youtubelimit" subsetting="true" type="enum" label="30059" values="50|100|200|250" default="0"/>
         <setting id="IncludeYoutubeTVstrms" subsetting="true" type="bool" label="30056" default="false"/>
         <setting label="30060" type="lsep"/>
         <setting id="RSSlimit" subsetting="true" type="enum" label="30059" values="100|250|500|1000" default="0"/>
@@ -60,26 +55,24 @@
     </category>
 
     <category label="30070">
-    	<setting label="30071" type="lsep"/>
-      	<setting id="Autotune" type="bool" label="30072" default="false"/>
-      	<setting id="ATClean" type="bool" subsetting="true" label="30073" visible="eq(-1,true)" default="false"/>
-      	<setting id="AutotuneTV" type="bool" label="30074" visible="eq(-2,true)" default="false"/>
-      	<setting id="AutotuneMovie" type="bool" label="30075" visible="eq(-3,true)" default="false"/>
-      	<setting id="AutotuneMixed" type="bool" subsetting="true" label="30076" visible="eq(-1,true) + eq(-2,true)" default="false"/>
-        <setting id="AutotuneMusic" type="bool" label="30079" visible="eq(-5,true)" default="false"/>
-      	<setting id="AutotuneLiveTV" type="bool" label="30080" visible="eq(-6,true)" default="false"/>
-      	<setting id="xLiveTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30081" default="" />
-        <setting id="AutotuneInternetTV" type="bool" label="30082" visible="eq(-8,true)" default="false"/>
-      	<setting id="xInternetTV" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30083" default="" />
-        <setting id="AutotuneLivestream" type="bool" label="30084" visible="eq(-10,true)" default="false"/>
-        <setting id="xLivestream" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30085" default="" />
-        <setting id="AutotuneYoutube" type="bool" label="30086" visible="eq(-12,true)" default="false"/>
-      	<setting id="xYoutube" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30087" default="" />
-        <setting id="AutotuneRSS" type="bool" label="30088" visible="eq(-14,true)" default="false"/>
-        <setting id="xRSS" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30089" default="" />
-        <setting id="Restore" type="bool" label="30090" visible="!eq(-16,true)" default="false"/>
-      	<setting id="Warning2" type="bool" subsetting="true" label="30091" visible="eq(-1,true)" default="false" action="RunScript($CWD/restore.py)"/> />
-    	<setting label="30092" type="lsep" visible="!eq(-18,false)" />
+      	<setting id="Autotune" type="bool" label="30071" default="false"/>
+      	<setting id="ATClean" type="bool" label="30072" subsetting="true" visible="eq(-1,true)" default="false"/>
+        <setting id="autoFindLive" type="bool" label="30079" subsetting="true" visible="eq(-2,true)" default="false"/>
+      	<setting id="autoFindLiveUSTVnow" type="bool" label="30080" subsetting="true" visible="eq(-1,true)" default="false"/>
+      	<setting id="autoFindLiveHDhomerun" type="bool" label="30081" subsetting="true" visible="eq(-2,true)" default="false"/>
+        <setting id="autoFindNetworks" type="bool" label="30073" subsetting="true" visible="eq(-5,true)" default="false"/>
+      	<setting id="autoFindStudios" type="bool" label="30074" subsetting="true" visible="eq(-6,true)" default="false"/>
+      	<setting id="autoFindTVGenres" type="bool" label="30075" subsetting="true" visible="eq(-7,true)" default="false"/>
+      	<setting id="autoFindMovieGenres" type="bool" label="30076" subsetting="true" visible="eq(-8,true)" default="false"/>
+      	<setting id="autoFindMixGenres" type="bool" label="30077" subsetting="true" visible="eq(-9,true)" default="false"/>
+      	<setting id="autoFindMusicGenres" type="bool" label="30078" subsetting="true" visible="eq(-10,true)" default="false"/>
+      	<setting id="autoFindMusicVideos" type="bool" label="30082" subsetting="true" visible="eq(-11,true)" default="false"/>
+      	<setting id="autoFindMusicVideosYoutube" type="bool" label="30083" subsetting="true" visible="eq(-1,true)" default="false"/>
+      	<setting id="autoFindMusicVideosVevoTV" type="bool" label="30084" subsetting="true" visible="eq(-2,true)" default="false"/>
+      	<setting id="autoFindMusicVideosLocal" type="folder" source="auto" label="30085" subsetting="true" visible="eq(-3,true)" default=""/>
+        <setting id="ATRestore" type="bool" label="30097" default="false"/>
+      	<setting id="Warning2" type="bool" subsetting="true" label="30098" visible="eq(-1,true)" default="false" action="RunScript($CWD/restore.py)"/> />
+    	<setting label="30099" type="lsep" default="false" />
     </category>
     
     <category label="30998">
