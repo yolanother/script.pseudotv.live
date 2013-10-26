@@ -51,7 +51,6 @@ class ChannelList:
         self.showGenreList = []
         self.movieGenreList = []
         self.musicGenreList = []
-        # self.ustvnow = []
         self.showList = []
         self.channels = []
         self.videoParser = VideoParser()
@@ -146,237 +145,7 @@ class ChannelList:
     def log(self, msg, level = xbmc.LOGDEBUG):
         log('ChannelList: ' + msg, level)
 
-    
-    def autoTune(self):
-        self.log('autoTune')
-        
-        # # delete settings2.xml
-        settingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.xml'))
-        if  FileAccess.exists(settingsFile):
-            try:
-                os.remove(settingsFile)
-            except:
-                self.log("Unable to delete " + str(settingsFile))
 
-        channelNum = 0
-        
-        self.updateDialog = xbmcgui.DialogProgress()
-        self.updateDialog.create("PseudoTV Live", "Auto Tune")
-        
-        self.updateDialogProgress = 10
-        # LiveTV - Hdhomerun
-        
-        self.updateDialogProgress = 15
-        # LiveTV - USTVNOW
-        if REAL_SETTINGS.getSetting("autoFindLive") == "true" and REAL_SETTINGS.getSetting("autoFindLiveUSTVnow") == "true" :
-            self.log("Adding Live USTVnow Channel")
-            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding USTVnow Channel","")
-            for i in range(1):
-                channelNum = channelNum + 1
-                # add network presets
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "8")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", "I27.28460898.microsoft.com")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_2", "plugin://plugin.video.ustvnow/?name=ABC&mode=play")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_3", "ustvnow")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rulecount", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_id", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_opt_1", "ABC USTVNOW")  
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_type", "8")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_1", "I21.28459588.microsoft.com")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_2", "plugin://plugin.video.ustvnow/?name=CBS&mode=play")    
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_3", "ustvnow")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rulecount", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_id", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_opt_1", "CBS USTVNOW") 
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 1) + '_changed', 'true')
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_type", "8")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_1", "I15.28461494.microsoft.com")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_2", "plugin://plugin.video.ustvnow/?name=CW&mode=play")  
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_3", "ustvnow")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rulecount", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rule_1_id", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rule_1_opt_1", "CW USTVNOW")
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 2) + '_changed', 'true')
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_type", "8")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_1", "I43.28457987.microsoft.com")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_2", "plugin://plugin.video.ustvnow/?name=FOX&mode=play")   
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_3", "ustvnow")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rulecount", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rule_1_id", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rule_1_opt_1", "FOX USTVNOW")  
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 3) + '_changed', 'true')
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_type", "8")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_1", "I8.28460167.microsoft.com")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_2", "plugin://plugin.video.ustvnow/?name=NBC&mode=play")     
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_3", "ustvnow")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_rulecount", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_rule_1_id", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 4) + "_rule_1_opt_1", "NBC USTVNOW")  
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 4) + '_changed', 'true')
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_type", "8")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_1", "I33.28455626.microsoft.com")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_2", "plugin://plugin.video.ustvnow/?name=PBS&mode=play")   
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_3", "ustvnow")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_rulecount", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_rule_1_id", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 5) + "_rule_1_opt_1", "PBS USTVNOW")
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 5) + '_changed', 'true')
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_type", "8")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_1", "I238.28455933.microsoft.com")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_2", "plugin://plugin.video.ustvnow/?name=My9&mode=play")  
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_3", "ustvnow")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_rulecount", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_rule_1_id", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_rule_1_opt_1", "MY9 USTVNOW")  
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 6) + '_changed', 'true')
-
-        
-        self.updateDialogProgress = 20
-        #TV - Networks/Genres
-        self.log("autoFindNetworks " + str(REAL_SETTINGS.getSetting("autoFindNetworks")))
-        self.log("autoFindTVGenres " + str(REAL_SETTINGS.getSetting("autoFindTVGenres")))
-        if (REAL_SETTINGS.getSetting("autoFindNetworks") == "true" or REAL_SETTINGS.getSetting("autoFindTVGenres") == "true"):
-            self.log("Searching for TV Channels")
-            self.updateDialog(self.updateDialogProgress,"Auto Tune","Searching for TV Channels","")
-            self.fillTVInfo()
-
-        # need to add check for auto find network channels
-        self.updateDialogProgress = 25
-        if REAL_SETTINGS.getSetting("autoFindNetworks") == "true":
-            self.log("Adding TV Networks")
-            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding TV Networks","")
-            for i in range(len(self.networkList)):
-                channelNum = channelNum + 1
-                # add network presets
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "1")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.networkList[i]))
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
-                self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding TV Network",str(self.networkList[i]))
-
-        self.updateDialogProgress = 30
-        if REAL_SETTINGS.getSetting("autoFindTVGenres") == "true":
-            self.log("Adding TV Genres")
-            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding TV Genres","")
-            for i in range(len(self.showGenreList)):
-                channelNum = channelNum + 1
-                # add network presets
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "3")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.showGenreList[i]))
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
-                self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding TV Genres",str(self.showGenreList[i]) + " TV")
-        
-        self.updateDialogProgress = 40
-        self.log("autoFindStudios " + str(REAL_SETTINGS.getSetting("autoFindStudios")))
-        self.log("autoFindMovieGenres " + str(REAL_SETTINGS.getSetting("autoFindMovieGenres")))
-        if (REAL_SETTINGS.getSetting("autoFindStudios") == "true" or REAL_SETTINGS.getSetting("autoFindMovieGenres") == "true"):
-            self.updateDialog(self.updateDialogProgress,"Auto Tune","Searching for Movie Channels","")
-            self.fillMovieInfo()
-
-        self.updateDialogProgress = 50
-        if REAL_SETTINGS.getSetting("autoFindStudios") == "true":
-            self.log("Adding Movie Studios")
-            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Movie Studios","")
-            for i in range(len(self.studioList)):
-                channelNum = channelNum + 1
-                self.updateDialogProgress = self.updateDialogProgress + (10/len(self.studioList))
-                # add network presets
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "2")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.studioList[i]))
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
-                self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Movie Studios",str(self.studioList[i]))
-
-        self.updateDialogProgress = 60
-        if REAL_SETTINGS.getSetting("autoFindMovieGenres") == "true":
-            self.log("Adding Movie Genres")
-            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Movie Genres","")
-            for i in range(len(self.movieGenreList)):
-                channelNum = channelNum + 1
-                self.updateDialogProgress = self.updateDialogProgress + (10/len(self.movieGenreList))
-                # add network presets
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "4")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.movieGenreList[i]))
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
-                self.updateDialog(updateDialogProgress,"Auto Tune","Adding Movie Genres","Found " + str(self.movieGenreList[i]) + " Movies")
-
-        self.updateDialogProgress = 65
-        self.log("autoFindMixGenres " + str(REAL_SETTINGS.getSetting("autoFindMixGenres")))
-        if REAL_SETTINGS.getSetting("autoFindMixGenres") == "true":
-            self.updateDialog(self.updateDialogProgress,"Auto Tune","Searching for Mixed Channels","")
-            self.fillMixedGenreInfo()
-        
-        self.updateDialogProgress = 70
-        if REAL_SETTINGS.getSetting("autoFindMixGenres") == "true":
-            self.log("Adding Mixed Genres")
-            self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Mixed Genres","")
-            for i in range(len(self.mixedGenreList)):
-                channelNum = channelNum + 1
-                # add network presets
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "5")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.mixedGenreList[i]))
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
-                self.updateDialog(updateDialogProgress,"Auto Tune","Adding Mixed Genres",str(self.mixedGenreList[i]) + " Mix")
-
-        self.updateDialogProgress = 80
-        self.log("autoFindMusicGenres " + str(REAL_SETTINGS.getSetting("autoFindMusicGenres")))
-        if REAL_SETTINGS.getSetting("autoFindMusicGenres") == "true":
-            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Searching for Music Channels","")
-            self.fillMusicInfo()
-
-        self.updateDialogProgress = 85
-        #Music Genre
-        if REAL_SETTINGS.getSetting("autoFindMusicGenres") == "true":
-            self.log("Adding Music Genres")
-            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Genres","")
-            for i in range(len(self.musicGenreList)):
-                channelNum = channelNum + 1
-                # add network presets
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "12")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(self.musicGenreList[i]))
-                ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_2", "0")
-                ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
-                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Genres",str(self.musicGenreList[i]) + " Music")
-
-        self.updateDialogProgress = 90
-
-        self.updateDialogProgress = 95
-        
-
-        # ADDON_SETTINGS.writeSettings()
-
-        # set max channels
-        # self.MaxChannels()
-
-        # reset auto tune settings
-        REAL_SETTINGS.setSetting("autoFindNetworks","false")
-        REAL_SETTINGS.setSetting("autoFindStudios","false")
-        REAL_SETTINGS.setSetting("autoFindTVGenres","false")
-        REAL_SETTINGS.setSetting("autoFindMovieGenres","false")
-        REAL_SETTINGS.setSetting("autoFindMixGenres","false")
-        REAL_SETTINGS.setSetting("autoFindTVShows","false")
-        REAL_SETTINGS.setSetting("autoFindMusicGenres","false")
-        REAL_SETTINGS.setSetting("autoFindLive","false")
-        REAL_SETTINGS.setSetting('autoFindLiveUSTVnow', "False")
-        REAL_SETTINGS.setSetting('ATClean', "False")
-        REAL_SETTINGS.setSetting('Autotune', "False")
-        
-        # force a reset
-        REAL_SETTINGS.setSetting("ForceChannelReset","1")
-
-        self.updateDialog.close()
 
     # Determine the maximum number of channels by opening consecutive
     # playlists until we don't find one
@@ -976,7 +745,16 @@ class ChannelList:
 
     def createMusicPlaylist(self, genre, channelname):
         self.log("createMusicPlaylist")
-        limit = 1000
+    
+        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
+            limit = 100
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
+            limit = 250    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
+            limit = 500    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
+            limit = 0
+            
         pltype = "songs"
         genre = genre.lower()
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
@@ -997,6 +775,15 @@ class ChannelList:
     
     def createNetworkPlaylist(self, network):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Network_' + network + '.xsp')
+        
+        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
+            limit = 100
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
+            limit = 250    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
+            limit = 500    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
+            limit = 0
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -1018,7 +805,7 @@ class ChannelList:
                 fle.write('    <rule field="tvshow" operator="is">' + theshow + '</rule>\n')
                 added = True
 
-        self.writeXSPFooter(fle, 0, "random")
+        self.writeXSPFooter(fle, limit, "random")
         fle.close()
 
         if added == False:
@@ -1029,7 +816,16 @@ class ChannelList:
 
     def createShowPlaylist(self, show, setting2):
         order = 'random'
-
+        
+        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
+            limit = 100
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
+            limit = 250    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
+            limit = 500    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
+            limit = 0
+        
         try:
             setting = int(setting2)
 
@@ -1049,7 +845,7 @@ class ChannelList:
         self.writeXSPHeader(fle, 'episodes', self.getChannelName(6, show))
         show = self.cleanString(show)
         fle.write('    <rule field="tvshow" operator="is">' + show + '</rule>\n')
-        self.writeXSPFooter(fle, 0, order)
+        self.writeXSPFooter(fle, limit, order)
         fle.close()
         return flename
 
@@ -1082,6 +878,15 @@ class ChannelList:
     
     def createGenreMixedPlaylist(self, genre):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Mixed_' + genre + '.xsp')
+        
+        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
+            limit = 100
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
+            limit = 250    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
+            limit = 500    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
+            limit = 0
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -1094,13 +899,22 @@ class ChannelList:
         self.writeXSPHeader(fle, 'mixed', self.getChannelName(5, genre))
         fle.write('    <rule field="playlist" operator="is">' + epname + '</rule>\n')
         fle.write('    <rule field="playlist" operator="is">' + moname + '</rule>\n')
-        self.writeXSPFooter(fle, 0, "random")
+        self.writeXSPFooter(fle, limit, "random")
         fle.close()
         return flename
 
 
     def createGenrePlaylist(self, pltype, chtype, genre):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
+        
+        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
+            limit = 100
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
+            limit = 250    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
+            limit = 500    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
+            limit = 0
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -1111,13 +925,22 @@ class ChannelList:
         self.writeXSPHeader(fle, pltype, self.getChannelName(chtype, genre))
         genre = self.cleanString(genre)
         fle.write('    <rule field="genre" operator="is">' + genre + '</rule>\n')
-        self.writeXSPFooter(fle, 0, "random")
+        self.writeXSPFooter(fle, limit, "random")
         fle.close()
         return flename
 
 
     def createStudioPlaylist(self, studio):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Studio_' + studio + '.xsp')
+        
+        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
+            limit = 100
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
+            limit = 250    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
+            limit = 500    
+        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
+            limit = 0
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -1128,7 +951,7 @@ class ChannelList:
         self.writeXSPHeader(fle, "movies", self.getChannelName(2, studio))
         studio = self.cleanString(studio)
         fle.write('    <rule field="studio" operator="is">' + studio + '</rule>\n')
-        self.writeXSPFooter(fle, 0, "random")
+        self.writeXSPFooter(fle, limit, "random")
         fle.close()
         return flename
 
@@ -1970,8 +1793,7 @@ class ChannelList:
                         #adjust the duration of the current show
                         if now > startDate and now < stopDate:
                             try:
-                                #dur = ((stopDate - startDate).seconds)
-                                dur = ((stopDate - startDate).seconds) - ((now - startDate).seconds)
+                                dur = ((stopDate - startDate).seconds)
                                 self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
                                 self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
                             except:
@@ -1992,12 +1814,14 @@ class ChannelList:
 
                         if tvdbid > 0:
                             # tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + str(tvposterurl) + '\n' + url
-                            tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + '\n' + url
+                            tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description  + '\n' + url
                         elif imdbid > 0:
                             # tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description + "//" + str(moviePosterUrl) + '\n' + url
-                            tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description + "//" + '\n' + url
+                            tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description +  '\n' + url
                         else:
-                            tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + '\n' + url                       
+
+
+                            tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url                       
 
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
 
@@ -2081,14 +1905,34 @@ class ChannelList:
 
         return showList
 
+
+
+
         
     def createYoutubeFilelist(self, setting1, setting2, setting3, channel):
         showList = []
         seasoneplist = []
         showcount = 0        
-        limitcount = 0   
-        limit = int(setting3)
-             
+        limitcount = 0
+        limit = 0
+        reallimit = 0
+        
+        if setting3 == None:
+            limit = reallimit
+        else:
+            limit = int(setting3)
+            
+        if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
+            reallimit = 50
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 1:
+            reallimit = 100    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 2:
+            reallimit = 150    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 3:
+            reallimit = 200    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 4:
+            reallimit = 250
+ 
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing YoutubeTV")
         
@@ -2113,22 +1957,22 @@ class ChannelList:
                 self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Channel" + ", Limited to = " + str(setting3))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'channel')
                 
-                if setting3 == '50':
+                if limit == '50':
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '100':
+                elif limit == '100':
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '150':
+                elif limit == '150':
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '200':
+                elif limit == '200':
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
@@ -2136,6 +1980,17 @@ class ChannelList:
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=151&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                elif limit == '250':
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=101&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=151&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=201&max-results=50'
                     feed = feedparser.parse(youtubechannel)
             
                 for i in range(len(feed['entries'])):
@@ -2200,7 +2055,7 @@ class ChannelList:
                     url = feed.entries[i].media_player['url']
                     url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("&feature=youtube_gdata_player", "")     
 
-                    if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
+                    if REAL_SETTINGS.getSetting('Includestrms') == "true":
                         self.log("Building YoutubeTV Channel Strms ")
                     
                         if not os.path.exists(os.path.join(path, showtitle)):
@@ -2265,22 +2120,22 @@ class ChannelList:
                 self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist" + ", Limited to = " + str(setting3))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'playlist')
 
-                if setting3 == '50':
+                if limit == '50' or reallimit == 50:
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '100':
+                elif limit == '100':
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '150':
+                elif limit == '150':
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '200':
+                elif limit == '200':
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
@@ -2288,6 +2143,17 @@ class ChannelList:
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=151&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                elif limit == '250':
+                    youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=101&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=151&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=201&max-results=50'
                     feed = feedparser.parse(youtubechannel)
 
                 for i in range(len(feed['entries'])):
@@ -2351,7 +2217,7 @@ class ChannelList:
                     url = feed.entries[i].media_player['url']
                     url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=playlists&app=youtube_gdata", "").replace("&feature=youtube_gdata_player", "")
                                             
-                    if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
+                    if REAL_SETTINGS.getSetting('Includestrms') == "true":
                         self.log("Building YoutubeTV Playlist Strms ")
                     
                         if not os.path.exists(os.path.join(path, showtitle)):
@@ -2416,22 +2282,22 @@ class ChannelList:
                 self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription" + ", Limited to = " + str(setting3))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'subscriptions')
 
-                if setting3 == '50':
+                if limit == '50' or reallimit == 50:
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '100':
+                elif limit == '100':
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '150':
+                elif limit == '150':
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif setting3 == '200':
+                elif limit == '200':
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
@@ -2439,6 +2305,17 @@ class ChannelList:
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=151&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                elif limit == '250':
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=101&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=151&max-results=50'
+                    feed = feedparser.parse(youtubechannel)
+                    youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=201&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 
                 for i in range(len(feed['entries'])):
@@ -2502,7 +2379,7 @@ class ChannelList:
                     url = feed.entries[i].media_player['url']
                     url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
                     
-                    if REAL_SETTINGS.getSetting('IncludeYoutubeTVstrms') == "true":
+                    if REAL_SETTINGS.getSetting('Includestrms') == "true":
                         self.log("Building YoutubeTV Subscription Strms ")
                     
                         if not os.path.exists(os.path.join(path, showtitle)):
@@ -2576,8 +2453,25 @@ class ChannelList:
         showList = []
         seasoneplist = []
         showcount = 0        
-        limitcount = 0   
-        limit = int(setting3)
+        limitcount = 0
+        limit = 0
+        reallimit = 0
+        
+        if setting3 == None:
+            limit = reallimit
+        else:
+            limit = int(setting3)
+            
+        if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
+            reallimit = 50
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 1:
+            reallimit = 100    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 2:
+            reallimit = 150    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 3:
+            reallimit = 200    
+        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 4:
+            reallimit = 250
                
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing RSS")
@@ -2671,7 +2565,7 @@ class ChannelList:
                     duration = round(duration*60.0)
                     duration = int(duration)
                     
-                    if REAL_SETTINGS.getSetting('IncludeRSSstrms') == "true":
+                    if REAL_SETTINGS.getSetting('Includestrms') == "true":
                         self.log("buildRSSFileList, Building RSS Strms ")
                 
                         if not os.path.exists(os.path.join(path, showtitle)):

@@ -122,24 +122,31 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.log('onInit')
         self.channelList = ChannelList()
         
-        if REAL_SETTINGS.getSetting("ATClean") == "true":
-            self.log('Autotune onInit')
+        if REAL_SETTINGS.getSetting("Autotune") == "true" and REAL_SETTINGS.getSetting("Warning1") == "true":
+            self.log('Autotune onInit') 
             settingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.xml'))
             nsettingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.bak.xml'))
             
             #Backup and Delete old settings2.xml before autotune runs.
-            if FileAccess.exists(settingsFile) and FileAccess.exists(nsettingsFile) and REAL_SETTINGS.getSetting("ATClean") == "true":
+            if FileAccess.exists(settingsFile) and FileAccess.exists(nsettingsFile):
                 os.remove(nsettingsFile)
                 self.log('Autotune, Deleted Old Backup') 
-            elif FileAccess.exists(settingsFile) and REAL_SETTINGS.getSetting("ATClean") == "true":
+            elif FileAccess.exists(settingsFile):
                 FileAccess.rename(settingsFile, nsettingsFile)
-
+  
                 if FileAccess.exists(nsettingsFile):
-                    self.log('Autotune, Settings2 Backup Complete')                
+                    self.log('Autotune, Settings2 Backup Complete')
+                    # self.channelList.autoTune()
                 else:
                     self.log('Autotune, Settings2 Backup Failed')
         
-        self.channelList.autoTune()
+        if REAL_SETTINGS.getSetting("ATRestore") == "true" and REAL_SETTINGS.getSetting("Warning2") == "true":
+            if FileAccess.exists(settingsFile):
+                os.remove(settingsFile)
+                FileAccess.rename(nsettingsFile, settingsFile)
+            
+        
+        
         
         if FileAccess.exists(GEN_CHAN_LOC) == False:
             try:
@@ -234,17 +241,24 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
 
             # del dlg
 
+        # if self.maxChannels == 0:
+            # self.Error('Unable to find any channels. Please configure the addon.')
+            # return
+
         # found = False
 
         # for i in range(self.maxChannels):
             # if self.channels[i].isValid:
+
+
+
                 # found = True
                 # break
 
         # if found == False:
             # self.Error("Unable to populate channels. Please verify that you", "have scraped media in your library and that you have", "properly configured channels.")
-            # return
 
+            # return
         if self.sleepTimeValue > 0:
             self.sleepTimer = threading.Timer(self.sleepTimeValue, self.sleepAction)
 
@@ -445,45 +459,64 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             self.log('Random on.  Disabling.')
             xbmc.PlayList(xbmc.PLAYLIST_MUSIC).unshuffle()
 
+        chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(self.currentChannel) + '_type'))
         self.log("repeat all");
         xbmc.executebuiltin("PlayerControl(repeatall)")
         curtime = time.time()
         timedif = (curtime - self.channels[self.currentChannel - 1].lastAccessTime)
 
+        
+       
+			   
         if self.channels[self.currentChannel - 1].isPaused == False:
+         
             # adjust the show and time offsets to properly position inside the playlist
-            while self.channels[self.currentChannel - 1].showTimeOffset + timedif > self.channels[self.currentChannel - 1].getCurrentDuration():
-                timedif -= self.channels[self.currentChannel - 1].getCurrentDuration() - self.channels[self.currentChannel - 1].showTimeOffset
-                self.channels[self.currentChannel - 1].addShowPosition(1)
-                self.channels[self.currentChannel - 1].setShowTime(0)
+            #for Live TV get the first item in playlist convert to epoch time  add duration until we get to the current item
+            if chtype == 8:
+                 self.channels[self.currentChannel - 1].setShowPosition(0)
+                 tmpDate = self.channels[self.currentChannel - 1].getItemEpisodeTitle(0)
+                 self.log("overlay tmpdate " + str(tmpDate))
+                 t = time.strptime(tmpDate, '%Y-%m-%d %H:%M:%S')
+                 epochBeginDate = time.mktime(t)
+                 #beginDate = datetime.datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
+                 #index til we get to the current show
+                 while epochBeginDate + self.channels[self.currentChannel - 1].getCurrentDuration() <  curtime:
+                    self.log('epoch '+ str(epochBeginDate) + ', ' + 'time ' + str(curtime))
+                    epochBeginDate += self.channels[self.currentChannel - 1].getCurrentDuration()
+                    self.channels[self.currentChannel - 1].addShowPosition(1)
+                    self.log('live tv overlay while loop')
+            else:   #loop  for other channel types
+                 while self.channels[self.currentChannel - 1].showTimeOffset + timedif > self.channels[self.currentChannel - 1].getCurrentDuration():
+                    timedif -= self.channels[self.currentChannel - 1].getCurrentDuration() - self.channels[self.currentChannel - 1].showTimeOffset
+                    self.channels[self.currentChannel - 1].addShowPosition(1)
+                    self.channels[self.currentChannel - 1].setShowTime(0)
+                    self.log('while loop')
 
-        # First, check to see if the video is a...
-        if self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[-4:].lower() == 'strm':
-            self.log("Ignoring a stop because of a strm")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
-            self.log("Ignoring a stop because of a hdhomerun")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'plugin':
-            self.log("Ignoring a stop because of a plugin")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtmp':
-            self.log("Ignoring a stop because of a rtmp")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'mms':
-            self.log("Ignoring a stop because of a mms")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtsp':
-            self.log("Ignoring a stop because of a rtsp")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'http':
-            self.log("Ignoring a stop because of a http")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'upnp':
-            self.log("Ignoring a stop because of a upnp")
-            self.Player.ignoreNextStop = True
-
-
+        # # First, check to see if the video is a...
+        # if self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[-4:].lower() == 'strm':
+            # self.log("Ignoring a stop because of a strm")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
+            # self.log("Ignoring a stop because of a hdhomerun")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'plugin':
+            # self.log("Ignoring a stop because of a plugin")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtmp':
+            # self.log("Ignoring a stop because of a rtmp")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'mms':
+            # self.log("Ignoring a stop because of a mms")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtsp':
+            # self.log("Ignoring a stop because of a rtsp")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'http':
+            # self.log("Ignoring a stop because of a http")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'upnp':
+            # self.log("Ignoring a stop because of a upnp")
+            # self.Player.ignoreNextStop = True
         self.log("about to mute");
         # Mute the channel before changing
         xbmc.executebuiltin("Mute()");
@@ -583,6 +616,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
     def setShowInfo(self):
         self.log('setShowInfo')
 
+        chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(self.currentChannel) + '_type'))
         if self.infoOffset > 0:
             self.getControl(502).setLabel('COMING UP:')
         elif self.infoOffset < 0:
@@ -604,12 +638,27 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 if self.channels[self.currentChannel - 1].getItemDuration(position) >= self.shortItemLength:
                     curoffset += 1
         else:
-            position = xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition() + self.infoOffset
+            #same logic as in setchannel; loop till we get the current show
+            if chtype == 8:
+                 self.channels[self.currentChannel - 1].setShowPosition(0)
+                 tmpDate = self.channels[self.currentChannel - 1].getItemEpisodeTitle(0)
+                 t = time.strptime(tmpDate, '%Y-%m-%d %H:%M:%S')
+                 epochBeginDate = time.mktime(t)
+                 position = self.channels[self.currentChannel - 1].playlistPosition
+                 #beginDate = datetime.datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
+                 #loop till we get to the current show this is done to display the correct show on the info listing for Live TV types
+                 while epochBeginDate + self.channels[self.currentChannel - 1].getCurrentDuration() <  time.time():
+                    epochBeginDate += self.channels[self.currentChannel - 1].getCurrentDuration()
+                    self.channels[self.currentChannel - 1].addShowPosition(1)
+                    position = self.channels[self.currentChannel - 1].playlistPosition
+            else: #original code
+                position = xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition() + self.infoOffset
 
+        #self.log('setshowposition ' + str(position))
         self.getControl(503).setLabel(self.channels[self.currentChannel - 1].getItemTitle(position))
         self.getControl(504).setLabel(self.channels[self.currentChannel - 1].getItemEpisodeTitle(position))
         self.getControl(505).setLabel(self.channels[self.currentChannel - 1].getItemDescription(position))
-        self.getControl(506).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '.png')
+        self.getControl(506).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '_c.png')
         self.log('setShowInfo return')
 
 
@@ -648,6 +697,8 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         if self.showChannelBug == True:
             try:
                 self.getControl(103).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '.png')
+                # add label for color channel bug
+                # self.getControl(10?).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '_c.png')
                 self.getControl(300).setLabel(self.channels[self.currentChannel - 1].name)
             except:
                 pass
@@ -1101,6 +1152,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                     if self.channels[i].isValid:
                         if self.channels[i].mode & MODE_RESUME == 0:
                             ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_time', str(int(curtime - self.timeStarted + self.channels[i].totalTimePlayed)))
+                            self.log("xxxxxx6 " + str(i))
                         else:
                             if i == self.currentChannel - 1:
                                 # Determine pltime...the time it at the current playlist position
@@ -1111,6 +1163,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                                     pltime += self.channels[i].getItemDuration(pos)
 
                                 ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_time', str(pltime + self.lastPlayTime))
+                                
                             else:
                                 tottime = 0
 
@@ -1119,6 +1172,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
 
                                 tottime += self.channels[i].showTimeOffset
                                 ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_time', str(int(tottime)))
+                               
                                 
                 self.storeFiles()
 

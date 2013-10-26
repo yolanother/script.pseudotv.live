@@ -1,0 +1,1 @@
+mc2xml.exe -f -a -A -L -s -5 -d 48 -g 17101 -D ustvnow.dat -C ustvnow.chl -U -o ustvnow.xml
