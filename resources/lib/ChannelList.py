@@ -1916,11 +1916,6 @@ class ChannelList:
         limitcount = 0
         limit = 0
         reallimit = 0
-        
-        if setting3 == None:
-            limit = reallimit
-        else:
-            limit = int(setting3)
             
         if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
             reallimit = 50
@@ -1932,6 +1927,11 @@ class ChannelList:
             reallimit = 200    
         elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 4:
             reallimit = 250
+                 
+        if setting3 == None:
+            limit = str(reallimit)
+        else:
+            limit = setting3
  
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing YoutubeTV")
@@ -1954,7 +1954,7 @@ class ChannelList:
                 break
                 
             if event == "end" and setting2 == '1': #youtubechannel
-                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Channel" + ", Limited to = " + str(setting3))
+                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Channel" + ", Limited to = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'channel')
                 
                 if limit == '50':
@@ -2113,11 +2113,11 @@ class ChannelList:
                     showcount += 1
                     limitcount += 1 
             
-                    if limitcount == limit:
+                    if limitcount == int(limit):
                         break                    
                    
             elif event == "end" and setting2 == '2': #youtubeplaylist 
-                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist" + ", Limited to = " + str(setting3))
+                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist" + ", Limited to = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'playlist')
 
                 if limit == '50' or reallimit == 50:
@@ -2275,11 +2275,11 @@ class ChannelList:
                     showcount += 1
                     limitcount += 1 
             
-                    if limitcount == limit:
+                    if limitcount == int(limit):
                         break   
             
             elif event == "end" and setting2 == '3': #subscriptions 
-                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription" + ", Limited to = " + str(setting3))
+                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription" + ", Limited to = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'subscriptions')
 
                 if limit == '50' or reallimit == 50:
@@ -2437,10 +2437,10 @@ class ChannelList:
                     showcount += 1
                     limitcount += 1 
                     
-                    if limitcount == limit:
+                    if limitcount == int(limit):
                         break         
                         
-            if limitcount == limit:
+            if limitcount == int(limit):
                 break    
     
             root.clear()
@@ -2489,7 +2489,7 @@ class ChannelList:
                 break
                 
             if event == "end" and setting2 == '1': #RSS
-                self.log("buildRSSFileList, RSS " + ", Limited to = " + str(setting3))
+                self.log("buildRSSFileList, RSS " + ", Limited to = " + str(limit))
             
                 rssfeed = setting1
                 feed = feedparser.parse(rssfeed)
@@ -2622,10 +2622,10 @@ class ChannelList:
                     showcount += 1
                     limitcount += 1 
                     
-                    if limitcount == limit:
+                    if limitcount == int(limit):
                         break         
                         
-            if limitcount == limit:
+            if limitcount == int(limit):
                 break    
     
             root.clear()
