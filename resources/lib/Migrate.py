@@ -136,7 +136,7 @@ class Migrate:
 
         # LiveTV - USTVNOW
         self.updateDialogProgress = 15
-        if Globals.REAL_SETTINGS.getSetting("autoFindLive") == "true" and Globals.REAL_SETTINGS.getSetting("autoFindLiveUSTVnow") == "true" :
+        if Globals.REAL_SETTINGS.getSetting("autoFindLiveUSTVnow") == "true" :
             self.log("Adding Live USTVnow Channel")
             self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding USTVnow Channel","")
             for i in range(1):
@@ -320,7 +320,7 @@ class Migrate:
 
         self.updateDialogProgress = 90
         #Music Videos
-        if Globals.REAL_SETTINGS.getSetting("autoFindMusicVideos") == "true" and Globals.REAL_SETTINGS.getSetting("autoFindMusicVideosVevoTV") == "true":
+        if Globals.REAL_SETTINGS.getSetting("autoFindMusicVideosVevoTV") == "true":
             self.log("Adding Music Videos")
             self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Videos","")
             for i in range(1):
@@ -338,7 +338,7 @@ class Migrate:
                 Globals.ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
         self.updateDialogProgress = 95
         
-        if Globals.REAL_SETTINGS.getSetting("autoFindMusicVideos") == "true" and Globals.REAL_SETTINGS.getSetting("autoFindMusicVideosLocal") != None:
+        if and Globals.REAL_SETTINGS.getSetting("autoFindMusicVideosLocal") != None:
             self.log("Adding Music Videos")
             self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Videos","")
             LocalVideo = str(Globals.REAL_SETTINGS.getSetting('autoFindMusicVideosLocal'))

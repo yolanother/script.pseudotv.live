@@ -40,6 +40,10 @@
     <category label="30040">
         <setting id="ChannelDelay" type="enum" label="30041" default="0" values="None|0.25|0.5|0.75|1.0|1.25|1.5|1.75|2.0"/>
         <setting type="action" label="30042" action="RunScript($CWD/defrag.py)"/>
+        <setting label="30043" type="lsep"/>
+        <setting id="enable" type="bool" label="30044" subsetting="true" default="false"/>
+        <setting id="timer_amount" type="enum" values="0|5|10|15|20" label="30045" subsetting="true" visible="eq(-1,true)" default="0"/>		
+        <setting id="notify" type="bool" label="30046" subsetting="true" visible="eq(-2,true)" default="false"/>
     </category>
 
    <category label="30050">
@@ -49,7 +53,7 @@
         <setting label="30061" type="lsep"/>
         <setting id="Youtubelimit" subsetting="true" type="enum" label="30059" values="50|100|150|200|250" default="0"/>
         <setting id="Includestrms" subsetting="true" type="bool" label="30056" default="false"/>
-        <!-- <setting label="30060" type="lsep"/> -->
+        <setting label="30060" type="lsep"/>
         <!-- <setting id="RSSlimit" subsetting="true" type="enum" label="30059" values="100|250|500|1000" default="0"/> -->
         <!-- <setting id="IncludeRSSstrms" subsetting="true" type="bool" label="30056" default="false"/> -->
     </category>
@@ -57,21 +61,24 @@
     <category label="30070">
       	<setting id="Autotune" type="bool" label="30071" default="false"/>
       	<setting id="Warning1" type="bool" label="30072" subsetting="true" visible="eq(-1,true)" default="false"/>
-        <setting id="autoFindLive" type="bool" label="30079" subsetting="true" visible="eq(-1,true)" default="false"/>
-      	<setting id="autoFindLiveUSTVnow" type="bool" label="30080" subsetting="true" visible="eq(-2,true)" default="false"/>
+        <setting type="lsep" label="30079" visible="eq(-1,true)"/>
+      	<setting id="autoFindLiveUSTVnow" type="bool" label="30080" subsetting="true" visible="(System.HasAddon(plugin.video.ustvnow) + eq(-2,true)]" default="t"/>
       	<setting id="autoFindLiveHDhomerun" type="bool" label="30081" subsetting="true" visible="eq(-3,true)" default="false"/>
-        <setting id="autoFindNetworks" type="bool" label="30073" subsetting="true" visible="eq(-4,true)" default="false"/>
-      	<setting id="autoFindStudios" type="bool" label="30074" subsetting="true" visible="eq(-5,true)" default="false"/>
-      	<setting id="autoFindTVGenres" type="bool" label="30075" subsetting="true" visible="eq(-6,true)" default="false"/>
-      	<setting id="autoFindMovieGenres" type="bool" label="30076" subsetting="true" visible="eq(-7,true)" default="false"/>
-      	<setting id="autoFindMixGenres" type="bool" label="30077" subsetting="true" visible="eq(-8,true)" default="false"/>
-      	<setting id="autoFindMusicGenres" type="bool" label="30078" subsetting="true" visible="eq(-9,true)" default="false"/>
-      	<setting id="autoFindMusicVideos" type="bool" label="30082" subsetting="true" visible="eq(-10,true)" default="false"/>
-      	<setting id="autoFindMusicVideosYoutube" type="bool" label="30083" subsetting="true" visible="eq(-1,true)" default="false"/>
-      	<setting id="autoFindMusicVideosVevoTV" type="bool" label="30084" subsetting="true" visible="eq(-2,true)" default="false"/>
-      	<setting id="autoFindMusicVideosLocal" type="folder" source="auto" label="30085" subsetting="true" visible="eq(-3,true)" default=""/>
-        <setting id="ATLimit" label="30059" subsetting="true" type="enum" values="100|250|500|Unlimited" visible="eq(-14,true)" default="0"/>
-        <setting id="ATRestore" type="bool" label="30097" default="false"/>
+        <setting type="lsep" label="30095" visible="eq(-4,true)"/>
+        <setting id="autoFindNetworks" type="bool" label="30073" subsetting="true" visible="eq(-5,true)" default="false"/>
+      	<setting id="autoFindStudios" type="bool" label="30074" subsetting="true" visible="eq(-6,true)" default="false"/>
+      	<setting id="autoFindTVGenres" type="bool" label="30075" subsetting="true" visible="eq(-7,true)" default="false"/>
+      	<setting id="autoFindMovieGenres" type="bool" label="30076" subsetting="true" visible="eq(-8,true)" default="false"/>
+      	<setting id="autoFindMixGenres" type="bool" label="30077" subsetting="true" visible="eq(-9,true)" default="false"/>
+      	<setting type="lsep" label="30094" visible="eq(-10,true)"/>
+        <setting id="autoFindMusicGenres" type="bool" label="30078" subsetting="true" visible="eq(-11,true)" default="false"/>
+      	<setting type="lsep" label="30082" visible="eq(-12,true)"/>
+      	<setting id="autoFindMusicVideosYoutube" type="bool" label="30083" subsetting="true" visible="eq(-13,true)" default="false"/>
+      	<setting id="autoFindMusicVideosVevoTV" type="bool" label="30084" subsetting="true" visible="eq(-14,true)" default="false"/>
+      	<setting id="autoFindMusicVideosLocal" type="folder" source="auto" label="30085" subsetting="true" visible="eq(-15,true)" default=""/>
+        <setting type="lsep" label="30096" visible="eq(-16,true)"/>
+        <setting id="ATLimit" label="30059" subsetting="true" type="enum" values="100|250|500|Unlimited" visible="eq(-17,true)" default="0"/>
+        <setting id="ATRestore" type="bool" label="30097" visible="eq(-19,false) "default="false"/>
       	<setting id="Warning2" type="bool" subsetting="true" label="30098" visible="eq(-1,true)" default="false" action="RunScript($CWD/restore.py)"/> />
     </category>
     
