@@ -44,7 +44,7 @@
     <string id="30057">Include RSS</string>
     <string id="30059">Media Limit Per Channel</string>
     <string id="30060">RSS Options</string>
-    <string id="30061">Youtube Options</string>
+    <string id="30061">Youtube/RSS Options</string>
     <string id="30062">LiveTV Options</string>
 <string id="30070">AutoTune</string>
     <string id="30071">Enable Autotune</string>
@@ -62,9 +62,8 @@
     <string id="30083">Using Youtube? (Coming Soon)</string>
 	<string id="30084">Using VevoTV? (USA Only)</string>
     <string id="30085">Using Local Directory?</string>
-    <string id="30097">Restore Pre-Autotune Configuration</string>
+    <string id="30097">Restore Pre-Autotune Configuration (Coming Soon)</string>
     <string id="30098">Warning!! this will delete the current channels</string>
-    <string id="30099">Depending on the size of your media library this process may take a while.</string>
 <string id="30998">BCTs</string>
     <string id="30999">(Coming Soon)</string>
     <string id="30100">Bumpers</string>   

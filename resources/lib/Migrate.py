@@ -276,7 +276,7 @@ class Migrate:
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.movieGenreList[i]))
                 Globals.ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
-                self.updateDialog(self.updateDialogProgress,"Auto Tune","Adding Movie Genres","Found " + str(chanlist.movieGenreList[i]) + " Movies")
+                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Movie Genres","Found " + str(chanlist.movieGenreList[i]) + " Movies")
 
         self.updateDialogProgress = 65
         self.log("autoFindMixGenres " + str(Globals.REAL_SETTINGS.getSetting("autoFindMixGenres")))
