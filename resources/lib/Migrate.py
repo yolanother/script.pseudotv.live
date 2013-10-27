@@ -338,7 +338,7 @@ class Migrate:
                 Globals.ADDON_SETTINGS.setSetting('Channel_' + str(channelNum) + '_changed', 'true')
         self.updateDialogProgress = 95
         
-        if and Globals.REAL_SETTINGS.getSetting("autoFindMusicVideosLocal") != None:
+        if Globals.REAL_SETTINGS.getSetting("autoFindMusicVideosLocal") != None:
             self.log("Adding Music Videos")
             self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Videos","")
             LocalVideo = str(Globals.REAL_SETTINGS.getSetting('autoFindMusicVideosLocal'))
