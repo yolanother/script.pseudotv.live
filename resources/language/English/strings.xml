@@ -34,7 +34,7 @@
 <string id="30040">Tweaks</string>
     <string id="30041">Channel Change Delay(in seconds)</string>
     <string id="30042">Optimize Configurations (defrag settings2.xml)</string>
-    <string id="30043">Autostart Options (Coming Soon)</string>
+    <string id="30043">Autostart Options</string>
     <string id="30044">Activate Service</string>
     <string id="30045">Delay Service (seconds)</string>
     <string id="30046">Show Notification</string>
