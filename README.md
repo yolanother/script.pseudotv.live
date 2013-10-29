@@ -9,11 +9,15 @@ Special thanks to:
 ------------------
     - XBMC - Foundation
 
-    - jason102, angrycamel, bradvido88 - Core Code and inspiration.
+    - jason102, angrycamel, jtucker1972 and bradvido88 - Core Code and inspiration.
 
     - thedarkonaut, tman12 - Skinning ideas and core code.
-    
+
     - peppy6582 - RSS/Youtube parsing core code.
+
+    - earlieb - EPG Sync Fix.
+
+    - Steveb1968 - Autostart core code.
 
     - scilz - Internet stream sourcing... 
 
@@ -21,7 +25,7 @@ Special thanks to:
 
     - mwkurt, XvMMvX, spyder - Forum Help and support.
 
-    - badkarma, Vidar, Or121 - Alpha testers (if I forgot you PM me)
+    * All work is either original, or a modified code from the properly credited creators
 
 --------
 FU List:
