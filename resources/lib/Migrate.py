@@ -113,8 +113,8 @@ class Migrate:
         chanlist = ChannelList.ChannelList()
         chanlist.needsreset = True
         chanlist.makenewlists = True
-        # chanlist.createlist = True
         chanlist.background = True
+        # chanlist.createlist = True
         # self.clearPlaylistHistory(channel)
         
         # delete settings2.xml
@@ -206,7 +206,6 @@ class Migrate:
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 6) + "_rule_1_opt_1", "MY9 USTVNOW")  
                 Globals.ADDON_SETTINGS.setSetting('Channel_' + str(channelNum + 6) + '_changed', 'true')
 
-        
         #TV - Networks/Genres
         self.updateDialogProgress = 20
         self.log("autoFindNetworks " + str(Globals.REAL_SETTINGS.getSetting("autoFindNetworks")))
@@ -321,8 +320,8 @@ class Migrate:
         self.updateDialogProgress = 90
         #Music Videos
         if Globals.REAL_SETTINGS.getSetting("autoFindMusicVideosVevoTV") == "true":
-            self.log("Adding Music Videos")
-            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Videos","")
+            self.log("Adding VevoTV Music Videos")
+            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding VevoTV Music Videos","")
             for i in range(1):
                 channelNum = channelNum + 1
                 # add VevoTV presets
@@ -339,8 +338,8 @@ class Migrate:
         self.updateDialogProgress = 95
         
         if Globals.REAL_SETTINGS.getSetting("autoFindMusicVideosLocal") != None:
-            self.log("Adding Music Videos")
-            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Videos","")
+            self.log("Adding Local Music Videos")
+            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Local Music Videos","")
             LocalVideo = str(Globals.REAL_SETTINGS.getSetting('autoFindMusicVideosLocal'))
             for i in range(1):
                 channelNum = channelNum + 1
@@ -379,182 +378,11 @@ class Migrate:
         Globals.REAL_SETTINGS.setSetting("ForceChannelReset","true")
         
         self.updateDialog.close()
-    
-    # Old PTV tuning...
-    # def initializeChannels(self):
-        # updatedlg = xbmcgui.DialogProgress()
-        # updatedlg.create("PseudoTV", "Initializing")
-        # updatedlg.update(1, "Initializing", "Initial Channel Setup")
-        # chanlist = ChannelList.ChannelList()
-        # chanlist.background = True
-        # chanlist.fillTVInfo(True)
-        # updatedlg.update(30)
-        # chanlist.fillMovieInfo(True)
-        # updatedlg.update(60)
-        # # Now create TV networks, followed by mixed genres, followed by TV genres, and finally movie genres
-        # currentchan = 1
-        # mixedlist = []
 
-        # for item in chanlist.showGenreList:
-            # curitem = item[0].lower()
-
-            # for a in chanlist.movieGenreList:
-                # if curitem == a[0].lower():
-                    # mixedlist.append([item[0], item[1], a[1]])
-                    # break
-
-        # mixedlist.sort(key=lambda x: x[1] + x[2], reverse=True)
-        # currentchan = self.initialAddChannels(chanlist.networkList, 1, currentchan)
-        # updatedlg.update(70)
-
-        # # Mixed genres
-        # if len(mixedlist) > 0:
-            # added = 0.0
-
-            # for item in mixedlist:
-                # if item[1] > 2 and item[2] > 1:
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", "5")
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
-                    # added += 1.0
-                    # currentchan += 1
-                    # itemlow = item[0].lower()
-
-                    # # Remove that genre from the shows genre list
-                    # for i in range(len(chanlist.showGenreList)):
-                        # if itemlow == chanlist.showGenreList[i][0].lower():
-                            # chanlist.showGenreList.pop(i)
-                            # break
-
-                    # # Remove that genre from the movie genre list
-                    # for i in range(len(chanlist.movieGenreList)):
-                        # if itemlow == chanlist.movieGenreList[i][0].lower():
-                            # chanlist.movieGenreList.pop(i)
-                            # break
-
-                    # if added > 10:
-                        # break
-
-                    # updatedlg.update(int(70 + 10.0 / added))
-
-        # updatedlg.update(80)
-        # currentchan = self.initialAddChannels(chanlist.showGenreList, 3, currentchan)
-        # updatedlg.update(90)
-        # currentchan = self.initialAddChannels(chanlist.movieGenreList, 4, currentchan)
-        # updatedlg.close()
-
-        # if currentchan > 1:
-            # return True
-
-        # return False
-        
-        # InternetTV - addons.ini
-        # elif Globals.REAL_SETTINGS.getSetting("AutotuneADDONS") == "true":
-            # self.log('Autotune, AutotuneADDONS')
-            # updatedlg.update(1, "Autotune", "Populating addons...")
-            # Globals.REAL_SETTINGS.setSetting('AutotuneADDONS', "False")
-            # self.addonsFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('addons'), 'addons.ini'))
-            # self.addonsParser = ConfigParser.ConfigParser(dict_type=OrderedDict)
-            # self.addonsParser.optionxform = lambda option: option
-            # matches = list()
-            # try:
-                # self.addonsParser.read(self.addonsFile)
-            # except:
-                # print 'unable to parse addons.ini'
-        
-            # for id in self.getAddons():
-                # try:
-                    # xbmcaddon.Addon(id)
-                # except Exception:
-                    # continue # ignore addons that are not installed
-
-                # for (label, stream) in self.getAddonStreams(id):
-                    # matches.append((id, label, stream))         
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_type", "9")
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_1", "5400")
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2", "+stream +")
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rulecount", "1")
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_id", "1")
-                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_rule_1_opt_1", "+ label +")  
-
-                # if len(matches) == 1:
-                    # return matches[0][2]
-                # else:
-                    # return matches
-            
-        # InternetTV - Livestream
-        # elif Globals.REAL_SETTINGS.getSetting("AutotuneLivestream") == "true":
-            # self.log('Autotune, AutotuneLivestream')
-            # Globals.REAL_SETTINGS.setSetting('AutotuneLivestream', "False") 
-                
-            
-        # InternetTV - Music Videos - VevoTV
-        # elif Globals.REAL_SETTINGS.getSetting("AutotuneVevoTV") == "true":
-            # self.log('Autotune, AutotuneVevoTV')
-            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", "9")
-            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", "5400")
-            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_2", "rtmp://vevohp2livefs.fplive.net:1935/vevohp2live-live/ playpath=stream2272000 swfUrl=http://cache.vevo.com/livepassdl.conviva.com/ver/2.64.0.68610/LivePassModuleMain_osmf.swf")
-            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_3", "VevoTV")
-            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_4", "Sit back and enjoy a 24/7 stream of music videos on VEVO TV.")
-            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_rulecount", "1")
-            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_rule_1_id", "1")
-            # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_rule_1_opt_1", "VevoTV")  
-            # Globals.REAL_SETTINGS.setSetting('AutotuneVevoTV', "False") 
-   
-        # # # Music Genre
-        # if Globals.REAL_SETTINGS.getSetting("AutotuneMusic") == "true":
-            # self.log('Autotune, AutotuneMusic')
-            # chanlist.fillMusicInfo(True)
-            # Globals.REAL_SETTINGS.setSetting('AutotuneMusic', "False")               
-            # currentchan = self.initialAddChannels(chanlist.musicGenreList, 12, currentchan)
-            # updatedlg.update(15)   
-        
-        # updatedlg.close()
-        # Globals.REAL_SETTINGS.setSetting('Autotune', "False")
-        # Globals.REAL_SETTINGS.setSetting('ATClean', "False")
-
+    #read addons.ini
     def getAddons(self):
         return self.addonsParser.sections()
 
     def getAddonStreams(self, id):
         return self.addonsParser.items(id)
         
-    def initialAddChannels(self, thelist, chantype, currentchan):
-        if len(thelist) > 0:
-            counted = 0
-            lastitem = 0
-            curchancount = 1
-            lowerlimit = 1
-            lowlimitcnt = 0
-
-            for item in thelist:
-                if item[1] > lowerlimit:
-                    if item[1] != lastitem:
-                        if curchancount + counted <= 10 or counted == 0:
-                            counted += curchancount
-                            curchancount = 1
-                            lastitem = item[1]
-                        else:
-                            break
-                    else:
-                        curchancount += 1
-
-                    lowlimitcnt += 1
-
-                    if lowlimitcnt == 3:
-                        lowlimitcnt = 0
-                        lowerlimit += 1
-                else:
-                    break
-
-            if counted > 0:
-                for item in thelist:
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", str(chantype))
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
-                    counted -= 1
-                    currentchan += 1
-
-                    if counted == 0:
-                        break
-
-        return currentchan
-   

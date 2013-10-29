@@ -43,6 +43,7 @@ from tvdb import *
 from tmdb import *
 
 
+
 class ChannelList:
     def __init__(self):
         self.networkList = []
@@ -142,8 +143,11 @@ class ChannelList:
         return self.channels
 
 
+
     def log(self, msg, level = xbmc.LOGDEBUG):
         log('ChannelList: ' + msg, level)
+
+
 
 
 
@@ -183,6 +187,7 @@ class ChannelList:
                 ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_changed', "True")
 
         self.log('findMaxChannels return ' + str(self.maxChannels))
+
 
 
     def determineWebServer(self):
@@ -466,6 +471,7 @@ class ChannelList:
         return returnval
 
 
+
     def clearPlaylistHistory(self, channel):
         self.log("clearPlaylistHistory")
 
@@ -510,6 +516,7 @@ class ChannelList:
                     ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_time', str(self.channels[channel - 1].totalTimePlayed))
 
 
+
     def getChannelName(self, chtype, setting1):
         self.log('getChannelName ' + str(chtype))
 
@@ -518,14 +525,12 @@ class ChannelList:
 
         if chtype == 0:
             return self.getSmartPlaylistName(setting1)
-        elif chtype == 1 or chtype == 2 or chtype == 5 or chtype == 6:
+        elif chtype == 1 or chtype == 2 or chtype == 5 or chtype == 6 or chtype == 12:
             return setting1
         elif chtype == 3:
             return setting1 + " TV"
         elif chtype == 4:
             return setting1 + " Movies"
-        elif chtype == 12:
-            return setting1 + " Music"
         elif chtype == 7:
             if setting1[-1] == '/' or setting1[-1] == '\\':
                 return os.path.split(setting1[:-1])[1]
@@ -576,7 +581,6 @@ class ChannelList:
             
         elif chtype == 8: # LiveTV
             self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
-            xmltv = setting3
             #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
             if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
                 self.log("Building LiveTV using tuner0")
@@ -584,6 +588,11 @@ class ChannelList:
             else:
                 self.log("Building LiveTV using tuner1")
                 setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
+            
+            if setting3 != None:
+                xmltv = setting3
+            else:
+                setting3 = 'xmltv'
             
             try:
                 self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) + '.xml'))
@@ -627,6 +636,7 @@ class ChannelList:
             except:
                 self.log("makeChannelList Unable to open the smart playlist " + fle, xbmc.LOGERROR)
                 return False
+
 
             try:
                 dom = parse(xml)
@@ -693,6 +703,7 @@ class ChannelList:
         return True
 
 
+
     def makeTypePlaylist(self, chtype, setting1, setting2):
         if chtype == 1:
             if len(self.networkList) == 0:
@@ -732,19 +743,15 @@ class ChannelList:
                 self.fillTVInfo()
             return self.createShowPlaylist(setting1, setting2)    
             
-        # elif chtype == 12:
-            # if len(self.musicGenreList) == 0:
-                # self.fillMusicInfo()
-            # return self.createMusicPlaylist(setting1, setting2)
-            
         elif chtype == 12:
             if len(self.musicGenreList) == 0:
                 self.fillMusicInfo()
             return self.createGenrePlaylist('songs', chtype, setting1)
-
+            
 
     def createMusicPlaylist(self, genre, channelname):
         self.log("createMusicPlaylist")
+        flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'songs_' + genre + '.xsp')
     
         if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
             limit = 100
@@ -754,10 +761,6 @@ class ChannelList:
             limit = 500    
         elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
             limit = 0
-            
-        pltype = "songs"
-        genre = genre.lower()
-        flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
         
         try:
             fle = FileAccess.open(flename, "w")
@@ -765,11 +768,26 @@ class ChannelList:
             self.Error('Unable to open the cache file ' + flename, xbmc.LOGERROR)
             return ''
         
-        self.writeXSPHeader(fle, pltype, channelname, 'all')
-        genre = self.cleanString(genre)
-        fle.write('    <rule field="genre" operator="is">' + genre + '</rule>\n')
+        self.writeXSPHeader(fle, "songs", self.getChannelName(1, genre))
+        genre = genre.lower()
+        added = False
+        
+        for i in range(len(self.showList)):
+            if self.threadPause() == False:
+                fle.close()
+                return ''
+
+            if self.musicGenreList[i][1].lower() == genre:
+                theshow = self.cleanString(self.musicGenreList[i][0])
+                fle.write('    <rule field="songs" operator="is">' + theshow + '</rule>\n')
+                added = True
+
         self.writeXSPFooter(fle, limit, "random")
         fle.close()
+
+        if added == False:
+            return ''
+
         return flename
     
     
@@ -784,6 +802,7 @@ class ChannelList:
             limit = 500    
         elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
             limit = 0
+
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -812,6 +831,7 @@ class ChannelList:
             return ''
 
         return flename
+
 
 
     def createShowPlaylist(self, show, setting2):
@@ -888,6 +908,7 @@ class ChannelList:
         elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
             limit = 0
 
+
         try:
             fle = FileAccess.open(flename, "w")
         except:
@@ -915,6 +936,7 @@ class ChannelList:
             limit = 500    
         elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
             limit = 0
+
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -1076,23 +1098,7 @@ class ChannelList:
         newstr = newstr.replace('&gt;', '>')
         newstr = newstr.replace('&lt;', '<')
         return uni(newstr)
-        
-        
-    # def fillLiveTVInfo(self):
-        # self.log("fillLiveTVInfo")        
-        # try:
-            # self.LiveTVFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xLiveTV'), 'LiveTV.xml'))
-        # except:
-            # self.log("fillLiveTVInfo, Could not determine path for LiveTV.xml")
-            # return       
-        
-        # f = FileAccess.open(self.LiveTVFile, "rb")       
-        
-        # if self.background == False:
-            # self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "adding USTVnow", "parsing addon")
-
-        # feedsNode = dom.getElementsByTagName('feed')
-        
+               
             
     def fillMusicInfo(self, sortbycount = False):
         self.log("fillMusicInfo")
@@ -1404,6 +1410,7 @@ class ChannelList:
         self.log("fillMovieInfo return " + str(self.studioList))
 
 
+
     def makeMixedList(self, list1, list2):
         self.log("makeMixedList")
         newlist = []
@@ -1602,6 +1609,9 @@ class ChannelList:
         cpAPI = CouchPotato(REAL_SETTINGS.getSetting('couchpotato.baseurl'),REAL_SETTINGS.getSetting('couchpotato.apikey'))
         elements_parsed = 0
         xmltv = setting3
+        
+        if setting3 != None:
+            setting3 = 'xmltv'
         
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing LiveTV")
@@ -1821,6 +1831,7 @@ class ChannelList:
                         else:
 
 
+
                             tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url                       
 
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
@@ -1904,6 +1915,7 @@ class ChannelList:
             root.clear()
 
         return showList
+
 
 
 
@@ -2681,6 +2693,7 @@ class ChannelList:
             mydir = mydir.replace("\\", "\\\\")
 
         return mydir
+
 
 
     def getSmartPlaylistType(self, dom):

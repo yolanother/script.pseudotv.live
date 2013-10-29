@@ -144,10 +144,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             if FileAccess.exists(settingsFile):
                 os.remove(settingsFile)
                 FileAccess.rename(nsettingsFile, settingsFile)
-            
-        
-        
-        
+
         if FileAccess.exists(GEN_CHAN_LOC) == False:
             try:
                 FileAccess.makedirs(GEN_CHAN_LOC)
@@ -658,7 +655,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.getControl(503).setLabel(self.channels[self.currentChannel - 1].getItemTitle(position))
         self.getControl(504).setLabel(self.channels[self.currentChannel - 1].getItemEpisodeTitle(position))
         self.getControl(505).setLabel(self.channels[self.currentChannel - 1].getItemDescription(position))
-        self.getControl(506).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '_c.png')
+        self.getControl(506).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '.png')
         self.log('setShowInfo return')
 
 

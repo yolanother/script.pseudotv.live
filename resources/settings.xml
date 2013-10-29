@@ -41,7 +41,7 @@
         <setting id="ChannelDelay" type="enum" label="30041" default="0" values="None|0.25|0.5|0.75|1.0|1.25|1.5|1.75|2.0"/>
         <setting type="action" label="30042" action="RunScript($CWD/defrag.py)"/>
         <setting label="30043" type="lsep"/>
-        <setting id="enable" type="bool" label="30044" subsetting="true" default="false"/>
+        <setting id="Auto_Start" type="bool" label="30044" subsetting="true" default="false"/>
         <setting id="timer_amount" type="enum" values="0|5|10|15|20" label="30045" subsetting="true" visible="eq(-1,true)" default="0"/>		
         <setting id="notify" type="bool" label="30046" subsetting="true" visible="eq(-2,true)" default="false"/>
     </category>
