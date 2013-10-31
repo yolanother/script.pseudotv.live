@@ -1945,7 +1945,7 @@ class ChannelList:
         elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 4:
             reallimit = 250
                  
-        if setting3 == None:
+        if setting3 == "":
             limit = str(reallimit)
         else:
             limit = setting3
@@ -2473,11 +2473,6 @@ class ChannelList:
         limitcount = 0
         limit = 0
         reallimit = 0
-        
-        if setting3 == None:
-            limit = reallimit
-        else:
-            limit = int(setting3)
             
         if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
             reallimit = 50
@@ -2489,6 +2484,11 @@ class ChannelList:
             reallimit = 200    
         elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 4:
             reallimit = 250
+                 
+        if setting3 == "":
+            limit = str(reallimit)
+        else:
+            limit = setting3
                
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing RSS")
