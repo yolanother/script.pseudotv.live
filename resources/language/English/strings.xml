@@ -49,7 +49,6 @@
     <string id="30056">Optionally Generate Strms/NFOs</string>
     <string id="30057">Include RSS</string>
     <string id="30059">Media Limit Per Channel</string>
-    <string id="30060">RSS Options</string>
     <string id="30061">Youtube/RSS Options</string>
     <string id="30062">LiveTV Options</string>
 <string id="30070">AutoTune</string>
@@ -67,7 +66,7 @@
 	<string id="30080">Find USTVNOW</string>
     <string id="30081">Find HDhomerun (Coming Soon)</string>
 	<string id="30082">Music Videos</string>
-    <string id="30083">Find Youtube (Coming Soon)</string>
+    <string id="30083">Find Youtube</string>
 	<string id="30084">Find VevoTV (USA Only)</string>
     <string id="30085">Find Local Directory</string>
     <string id="30096">Options</string>

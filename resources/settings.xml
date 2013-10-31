@@ -41,7 +41,7 @@
         <setting id="ChannelDelay" type="enum" label="30041" default="0" values="None|0.25|0.5|0.75|1.0|1.25|1.5|1.75|2.0"/>
         <setting type="action" label="30042" action="RunScript($CWD/defrag.py)"/>
         <setting label="30043" type="lsep"/>
-        <setting id="Auto_Start" type="bool" label="30044" subsetting="true" default="false"/>
+        <setting id="Auto_Start" type="bool" label="30044" default="false"/>
         <setting id="timer_amount" type="enum" values="0|5|10|15|20" label="30045" subsetting="true" visible="eq(-1,true)" default="0"/>		
         <setting id="notify" type="bool" label="30046" subsetting="true" visible="eq(-2,true)" default="false"/>
     </category>
@@ -49,10 +49,10 @@
    <category label="30050">
        	<setting id="IncludeIceLib" type="bool" label="30051" visible="eq(-1,!true)" default="true"/>
         <setting label="30062" type="lsep"/>
-        <setting id="xmltv" subsetting="true" type="folder" source="auto" label="30053" default="" />
+        <setting id="xmltv" type="folder" source="auto" label="30053" default="" />
         <setting label="30061" type="lsep"/>
-        <setting id="Youtubelimit" subsetting="true" type="enum" label="30059" values="50|100|150|200|250" default="0"/>
-        <setting id="Includestrms" subsetting="true" type="bool" label="30056" default="false"/>
+        <setting id="Youtubelimit" type="enum" label="30059" values="50|100|150|200|250" default="0"/>
+        <setting id="Includestrms" type="bool" label="30056" default="false"/>
         <setting label="30060" type="lsep"/>
         <!-- <setting id="RSSlimit" subsetting="true" type="enum" label="30059" values="100|250|500|1000" default="0"/> -->
         <!-- <setting id="IncludeRSSstrms" subsetting="true" type="bool" label="30056" default="false"/> -->
@@ -75,7 +75,7 @@
       	<setting type="lsep" label="30082" visible="eq(-12,true)"/>
       	<setting id="autoFindMusicVideosYoutube" type="bool" label="30083" subsetting="true" visible="eq(-13,true)" default="false"/>
       	<setting id="autoFindMusicVideosVevoTV" type="bool" label="30084" subsetting="true" visible="eq(-14,true)" default="false"/>
-      	<setting id="autoFindMusicVideosLocal" type="folder" source="auto" label="30085" subsetting="true" visible="eq(-15,true)" default=""/>
+      	<setting id="autoFindMusicVideosLocal" type="folder" source="auto" label="30085" subsetting="true" visible="eq(-15,true)" default="false"/>
         <setting type="lsep" label="30096" visible="eq(-16,true)"/>
         <setting id="ATLimit" label="30059" subsetting="true" type="enum" values="100|250|500|Unlimited" visible="eq(-17,true)" default="0"/>
         <setting id="ATRestore" type="bool" label="30097" visible="eq(-19,false) "default="false"/>

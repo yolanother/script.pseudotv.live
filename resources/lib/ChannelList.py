@@ -577,8 +577,13 @@ class ChannelList:
 
         if chtype == 7:
             fileList = self.createDirectoryPlaylist(setting1)
-            israndom = True
-            
+            israndom = True                    
+    
+        # elif chtype == 7: # folder based
+            # # chsetting1 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_1")
+            # # self.makeChannelListFromFolder(channel, chsetting1, location)
+            # fileList = self.makeChannelListFromFolder(channel, setting1)
+     
         elif chtype == 8: # LiveTV
             self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
             #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
@@ -607,7 +612,7 @@ class ChannelList:
             fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel) 
             
         elif chtype == 10: # Youtube
-            self.log("Building YoutubeTV Channel " + setting1 + " using type " + setting2 + "...")
+            self.log("Building Youtube Channel " + setting1 + " using type " + setting2 + "...")
             fileList = self.createYoutubeFilelist(setting1, setting2, setting3, channel)
             
         elif chtype == 11: # RSS/iTunes/feedburner/Podcast
@@ -1946,7 +1951,7 @@ class ChannelList:
             limit = setting3
  
         if self.background == False:
-            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing YoutubeTV")
+            self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing Youtube")
         
         try:
             self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
@@ -2068,7 +2073,7 @@ class ChannelList:
                     url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("&feature=youtube_gdata_player", "")     
 
                     if REAL_SETTINGS.getSetting('Includestrms') == "true":
-                        self.log("Building YoutubeTV Channel Strms ")
+                        self.log("Building Youtube Channel Strms ")
                     
                         if not os.path.exists(os.path.join(path, showtitle)):
                             os.makedirs(os.path.join(path, showtitle))
@@ -2230,7 +2235,7 @@ class ChannelList:
                     url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=playlists&app=youtube_gdata", "").replace("&feature=youtube_gdata_player", "")
                                             
                     if REAL_SETTINGS.getSetting('Includestrms') == "true":
-                        self.log("Building YoutubeTV Playlist Strms ")
+                        self.log("Building Youtube Playlist Strms ")
                     
                         if not os.path.exists(os.path.join(path, showtitle)):
                             os.makedirs(os.path.join(path, showtitle))
@@ -2392,7 +2397,7 @@ class ChannelList:
                     url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
                     
                     if REAL_SETTINGS.getSetting('Includestrms') == "true":
-                        self.log("Building YoutubeTV Subscription Strms ")
+                        self.log("Building Youtube Subscription Strms ")
                     
                         if not os.path.exists(os.path.join(path, showtitle)):
                             os.makedirs(os.path.join(path, showtitle))
@@ -2705,3 +2710,312 @@ class ChannelList:
         except:
             self.log("Unable to get the playlist type.", xbmc.LOGERROR)
             return ''
+
+    
+    # def makeChannelListFromFolder(self, channel, folder, location):
+        # self.log("makeChannelListFromFolder")
+        # folder = self.uncleanString(folder)
+        # fileList = []
+        # self.videoParser = VideoParser()
+        # # set the types of files we want in our folder based file list
+        # flext = [".avi",".mp4",".m4v",".3gp",".3g2",".f4v",".flv",".mkv",".flv"]
+        # # get limit
+        # limit = REAL_SETTINGS.getSetting("limit")
+
+        # chname = self.uncleanString(ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_rule_1_opt_1")
+        # ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_time', '0')
+
+        # self.line2 = "Creating Channel " + str(channel) + " - " + str(chname)
+        # self.line3 = ""
+        # self.updateDialog(self.progress,self.line1,self.line2,self.line3)
+        
+        # # make sure folder exist
+        # if os.path.exists(folder):
+            # self.log("Scanning Folder")
+            # self.line3 = "Scanning Folder"
+            # self.updateDialog(self.progress,self.line1,self.line2,self.line3)
+            # # get a list of filenames from the folder
+            # fnlist = []
+            # for root, subFolders, files in os.walk(folder):            
+                # for file in files:
+                    # self.log("file found " + str(file) + " checking for valid extension")
+                    # # get file extension
+                    # basename, extension = os.path.splitext(file)
+                    # if extension in flext:
+                        # self.log("adding file " + str(file))
+                        # fnlist.append(os.path.join(root,file))
+
+            # # randomize list
+            # random.shuffle(fnlist)
+
+            # numfiles = 0
+            # if len(fnlist) < limit:
+                # limit = len(fnlist)
+
+            # self.line3 = "Adding Files to Channel"
+            # self.updateDialog(self.progress,self.line1,self.line2,self.line3)
+                
+            # for i in range(limit):
+                # fpath = fnlist[i]
+                # # get metadata for file
+                # title = self.getTitle(fpath)
+                # showtitle = self.getShowTitle(fpath)
+                # theplot = self.getThePlot(fpath)
+                # # get durations
+                # dur = self.videoParser.getVideoLength(fpath)
+                # if dur > 0:
+                    # # add file to file list
+                    # tmpstr = str(dur) + ',' + title + "//" + showtitle + "//" + theplot
+                    # tmpstr = tmpstr[:600]
+                    # tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                    # tmpstr = tmpstr + '\n' + fpath.replace("\\\\", "\\")
+                    # fileList.append(tmpstr)
+        # else:
+            # self.log("Unable to open folder " + str(folder))
+            
+        # # trailers bumpers commercials
+        # # check if fileList contains files
+        # if len(fileList) == 0:
+            # offair = REAL_SETTINGS.getSetting("offair")
+            # offairFile = REAL_SETTINGS.getSetting("offairfile")            
+            # if offair and len(offairFile) > 0:
+                # self.line3 = "Channel is Off Air"
+                # self.updateDialog(self.progress,self.line1,self.line2,self.line3)
+                # dur = self.videoParser.getVideoLength(offairFile)
+                # # insert offair video file
+                # if dur > 0:
+                    # numFiles = int((60 * 60 * 24)/dur)
+                    # for i in range(numFiles):
+                        # tmpstr = str(dur) + ','
+                        # title = "Off Air"
+                        # showtitle = "Off Air"
+                        # theplot = "This channel is currently off the air"
+                        # tmpstr = str(dur) + ',' + showtitle + "//" + title + "//" + theplot
+                        # tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                        # tmpstr = tmpstr + '\n' + offairFile.replace("\\\\", "\\")
+                        # fileList.append(tmpstr)
+                # ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_offair","1")
+                # ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_2",MODE_SERIAL)
+        # else:
+            # ADDON_SETTINGS.setSetting("Channel_" + str(channel) + "_offair","0")
+            # commercials = REAL_SETTINGS.getSetting("commercials")
+            # commercialsfolder = REAL_SETTINGS.getSetting("commercialsfolder")
+            # commercialInterval = 0            
+            # bumpers = REAL_SETTINGS.getSetting("bumpers")
+            # bumpersfolder = REAL_SETTINGS.getSetting("bumpersfolder")
+            # bumperInterval = 0
+            # if (commercials == "true" and os.path.exists(commercialsfolder)) or (bumpers == "true" and os.path.exists(bumpersfolder)):
+                # if (commercials == "true" and os.path.exists(commercialsfolder)) :
+                    # commercialInterval = self.getCommercialInterval(channel, len(fileList))
+                    # commercialNum = self.getCommercialNum(channel, len(fileList))
+                # else:
+                    # commercialInterval = 0
+                    # commercialNum = 0                        
+                # if (bumpers == "true" and os.path.exists(bumpersfolder)):
+                    # bumperInterval = self.getBumperInterval(channel, len(fileList))
+                    # bumperNum = self.getBumperNum(channel, len(fileList))
+                # else:
+                    # bumperInterval = 0
+                    # bumperNum = 0                        
+                # trailerInterval = 0
+                # trailerNum = 0
+                # trailers = False
+                # bumpers = False
+                # commercials = False
+                
+                # if not int(bumperInterval) == 0:
+                    # bumpers = True
+                # if not int(commercialInterval) == 0:
+                    # commercials = True
+                
+                # fileList = self.insertFiles(channel, fileList, commercials, bumpers, trailers, commercialInterval, bumperInterval, trailerInterval, commercialNum, bumperNum, trailerNum)
+
+        # # write m3u
+        # self.writeFileList(channel, fileList, location)
+    
+    
+    # def getBumpersList(self, channel):
+        # self.log("getBumpersList")
+        # bumpersList = []
+        # chname = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_rule_1_opt_1")
+        # type = "bumpers"
+
+        # try:
+            # metafile = open(META_LOC + str(type) + ".meta", "r")
+        # except:
+            # self.Error('Unable to open the meta file ' + META_LOC + str(type) + '.meta', xbmc.LOGERROR)
+            # return False
+
+        # for file in metafile:
+            # # filter by channel name
+            # bumperMeta = []
+            # bumperMeta = file.split('|')
+            # thepath = bumperMeta[0]
+            # basepath = os.path.dirname(thepath)
+            # chfolder = os.path.split(basepath)[1]
+            # # bumpers are channel specific
+            # if chfolder == chname:
+                # bumpersList.append(file)
+
+        # metafile.close()
+
+        # return bumpersList
+
+
+    # def getCommercialsList(self, channel):
+        # self.log("getCommercialsList")
+        # commercialsList = []
+        # chname = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_rule_1_opt_1")
+        # type = "commercials"
+        # channelOnlyCommercials = False
+
+        # try:
+            # metafile = open(META_LOC + str(type) + ".meta", "r")
+        # except:
+            # self.Error('Unable to open the meta file ' + META_LOC + str(type) + '.meta', xbmc.LOGERROR)
+            # return False
+
+        # for file in metafile:
+            # # filter by channel name
+            # commercialMeta = []
+            # commercialMeta = file.split('|')
+            # thepath = commercialMeta[0]
+            # basepath = os.path.dirname(thepath)
+            # chfolder = os.path.split(basepath)[1]
+            # if chfolder == chname:
+                # if channelOnlyCommercials:
+                    # # channel specific trailers are in effect
+                    # commercialsList.append(file)
+                # else:
+                    # # reset list to only contain channel specific trailers
+                    # channelOnlyCommercials = True
+                    # commercialsList = []
+                    # commercialsList.append(file)
+            # else:
+                # if not channelOnlyCommercials:
+                    # commercialsList.append(file)
+
+        # metafile.close()
+
+        # return commercialsList
+
+
+    # def getTrailersList(self, channel):
+        # self.log("getTrailersList")
+        # trailersList = []
+        # chname = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_rule_1_opt_1")
+        # type = "trailers"
+        # channelOnlyTrailers = False
+
+        # try:
+            # metafile = open(META_LOC + str(type) + ".meta", "r")
+        # except:
+            # self.log('Unable to open the meta file ' + META_LOC + str(type) + '.meta')
+            # return False
+
+        # for file in metafile:
+            # # filter by channel name
+            # trailerMeta = []
+            # trailerMeta = file.split('|')
+            # thepath = trailerMeta[0]
+            # basepath = os.path.dirname(thepath)
+            # chfolder = os.path.split(basepath)[1]
+            # if chfolder == chname:
+                # if channelOnlyTrailers:
+                    # # channel specific trailers are in effect
+                    # trailersList.append(file)
+                # else:
+                    # # reset list to only contain channel specific trailers
+                    # channelOnlyTrailers = True
+                    # trailersList = []
+                    # trailersList.append(file)
+            # else:
+                # if not channelOnlyTrailers:
+                    # trailersList.append(file)
+
+        # metafile.close()
+
+        # return trailersList
+
+
+    # def convertMetaToFile(self, metaFileStr):
+        # # parse file meta data
+        # metaFile = []
+        # metaFile = metaFileStr.split('|')
+        # thepath = metaFile[0]
+        # dur = metaFile[1]
+        # title = metaFile[2]
+        # showtitle = metaFile[3]
+        # theplot = metaFile[4]
+        # # format to file list structure
+        # tmpstr = str(dur) + ','
+        # tmpstr += showtitle + "//" + title + "//" + theplot
+        # tmpstr = tmpstr[:600]
+        # tmpstr = tmpstr.replace("\\n", " ").replace("\n", " ").replace("\r", " ").replace("\\r", " ").replace("\\\"", "\"")
+        # tmpstr = tmpstr + '\n' + thepath.replace("\\\\", "\\")
+        # return tmpstr
+    
+
+    # def insertFiles(self, channel, fileList, commercials, bumpers, trailers, cinterval, binterval, tinterval, cnum, bnum, tnum):
+        # newFileList = []
+        
+        # if bumpers:
+            # bumpersList = []
+            # bumpersList = self.getBumpersList(channel)
+            
+        # if commercials:
+            # commercialsList = []
+            # commercialsList = self.getCommercialsList(channel)
+        
+        # if trailers:
+            # trailersList = []
+            # trailersList = self.getTrailersList(channel)
+        
+        # for i in range(len(fileList)):
+            # newFileList.append(fileList[i])
+            # if commercials:
+                # self.line3 = "Inserting Commercials"
+                # self.updateDialog(self.progress,self.line1,self.line2,self.line3)
+                # if len(commercialsList) > 0:
+                    # if (i+1) % cinterval == 0:
+                        # for n in range(int(cnum)):
+                            # commercialFile = random.choice(commercialsList)
+                            # if len(commercialFile) > 0:
+                                # newFileList.append(self.convertMetaToFile(commercialFile))
+                            # else:
+                                # self.log('insertFiles: Unable to get commercial')                                        
+                # else:
+                    # self.log("No valid commercials available")
+
+            # if bumpers:
+                # self.line3 = "Inserting Bumpers"
+                # self.updateDialog(self.progress,self.line1,self.line2,self.line3)
+                # if len(bumpersList) > 0:
+                    # # mix in bumpers
+                    # if (i+1) % binterval == 0:
+                        # for n in range(int(bnum)):
+                            # bumperFile = random.choice(bumpersList)
+                            # if len(bumperFile) > 0:
+                                # newFileList.append(self.convertMetaToFile(bumperFile))
+                            # else:
+                                # self.log('insertFiles: Unable to get bumper')                                                                
+                # else:
+                    # self.log("No valid bumpers available")
+
+            # if trailers:
+                # self.line3 = "Inserting Trailers"
+                # self.updateDialog(self.progress,self.line1,self.line2,self.line3)
+                # if len(trailersList) > 0:
+                    # # mix in trailers
+                    # if (i+1) % tinterval == 0:
+                        # for n in range(int(tnum)):
+                            # trailerFile = random.choice(trailersList)
+                            # if len(trailerFile) > 0:
+                                # newFileList.append(self.convertMetaToFile(trailerFile))
+                            # else:
+                                # self.log('insertFiles: Unable to get trailer')
+                
+        # fileList = newFileList    
+
+        # return fileList
+        
