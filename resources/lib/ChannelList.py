@@ -29,6 +29,7 @@ import urllib2
 import feedparser
 
 from urllib import unquote
+from urllib import urlopen
 from xml.etree import ElementTree as ET
 from xml.dom.minidom import parse, parseString
 
@@ -586,6 +587,7 @@ class ChannelList:
      
         elif chtype == 8: # LiveTV
             self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
+            
             #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
             if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
                 self.log("Building LiveTV using tuner0")
@@ -594,17 +596,31 @@ class ChannelList:
                 self.log("Building LiveTV using tuner1")
                 setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
             
-            if setting3 != None:
-                xmltv = setting3
-            else:
-                setting3 = 'xmltv'
-            
-            try:
-                self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) + '.xml'))
-            except:
-                self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), 'xmltv.xml'))
+            if setting3 == 'ustvnow':
+                url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml'
+                try:
+                    self.xmlTvFile = url      
+                except:
+                    self.log("makeChannelList, Could not determine path of " + setting3 +".xml")
+                    return
+                
+                f = urlopen(url)    
 
-            if FileAccess.exists(self.xmlTvFile):
+            elif setting3 == "":
+                self.log("makeChannelList, xmltv = default")
+                setting3 = 'xmltv'
+                
+            else:
+                xmltv = 'setting3'
+                self.log("makeChannelList, xmltv = " + setting3)
+
+                try:
+                    self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) +'.xml'))
+                except:
+                    self.log("makeChannelList, Could not determine path of " + setting3 +".xml trying xmltv.xml")
+                    return
+                
+            if FileAccess.exists(self.xmlTvFile) or urlopen(url):
                 fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)
             
         elif chtype == 9: # InternetTV
@@ -1607,28 +1623,47 @@ class ChannelList:
     def buildLiveTVFileList(self, setting1, setting2, setting3, channel):
         showList = []
         seasoneplist = []
-        showcount = 0    
+        showcount = 0  
+        elements_parsed = 0
+        xmltv = setting3
         tmdbAPI = TMDB(REAL_SETTINGS.getSetting('tmdb.apikey'))
         tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
         sbAPI = SickBeard(REAL_SETTINGS.getSetting('sickbeard.baseurl'),REAL_SETTINGS.getSetting('sickbeard.apikey'))
         cpAPI = CouchPotato(REAL_SETTINGS.getSetting('couchpotato.baseurl'),REAL_SETTINGS.getSetting('couchpotato.apikey'))
-        elements_parsed = 0
-        xmltv = setting3
-        
-        if setting3 != None:
-            setting3 = 'xmltv'
         
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing LiveTV")
+            
+        if setting3 == 'ustvnow':
+            self.log("buildLiveTVFileList, xmltv = ustvnow")
+            url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml'
+            self.log("buildLiveTVFileList, url =" + url)
+            try:
+                self.xmlTvFile = url      
+            except:
+                self.log("buildLiveTVFileList, Could not determine path of" + setting3 +".xml")
+                return
+            
+            f = urlopen(url)       
 
-        try:
-            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) +'.xml'))
-        except:
-            self.log("buildLiveTVFileList, Could not determine path of" + setting3 +".xml trying xmltv.xml")
-            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), 'xmltv.xml'))
-            return
+        elif setting3 == "":
+            self.log("buildLiveTVFileList, xmltv = default")
+            setting3 = 'xmltv'
+            
+        else:
+            xmltv = 'setting3'
+            self.log("buildLiveTVFileList, xmltv = " + setting3)
 
-        f = FileAccess.open(self.xmlTvFile, "rb")
+            try:
+                self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) +'.xml'))
+            except:
+                self.log("buildLiveTVFileList, Could not determine path of" + setting3 +".xml trying xmltv.xml")
+                self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), 'xmltv.xml'))
+                return
+                
+            f = FileAccess.open(self.xmlTvFile, "rb")
+        
+
         context = ET.iterparse(f, events=("start", "end"))
         
         event, root = context.next()
