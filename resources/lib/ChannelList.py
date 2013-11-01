@@ -611,7 +611,7 @@ class ChannelList:
                 setting3 = 'xmltv'
                 
             else:
-                xmltv = 'setting3'
+                xmltv = setting3
                 self.log("makeChannelList, xmltv = " + setting3)
 
                 try:
@@ -1651,7 +1651,7 @@ class ChannelList:
             setting3 = 'xmltv'
             
         else:
-            xmltv = 'setting3'
+            xmltv = setting3
             self.log("buildLiveTVFileList, xmltv = " + setting3)
 
             try:
