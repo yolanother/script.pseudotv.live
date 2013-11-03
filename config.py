@@ -76,7 +76,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         migratemaster = Migrate()
         migratemaster.migrate()
         self.prepareConfig()
-        self.myRules = AdvancedConfig("script.pseudotv.AdvancedConfig.xml", ADDON_INFO, "default")
+        self.myRules = AdvancedConfig("script.pseudotv.live.AdvancedConfig.xml", ADDON_INFO, "default")
         self.log("onInit return")
 
 
@@ -148,6 +148,8 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             ADDON_SETTINGS.setSetting(setting1, self.getControl(182).getLabel())
         elif chantype == 6:
             ADDON_SETTINGS.setSetting(setting1, self.getControl(192).getLabel())
+        elif chantype == 12:
+            ADDON_SETTINGS.setSetting(setting1, self.getControl(992).getLabel())
 
             if self.getControl(194).isSelected():
                 ADDON_SETTINGS.setSetting(setting2, str(MODE_ORDERAIRDATE))
@@ -263,6 +265,10 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             self.changeListData(self.mixedGenreList, 182, -1)
         elif controlId == 181:      # Mixed Genre channel, right
             self.changeListData(self.mixedGenreList, 182, 1)
+        elif controlId == 990:      # Music Genre channel, left
+            self.changeListData(self.musicGenreList, 992, -1)
+        elif controlId == 991:      # Music Genre channel, right
+            self.changeListData(self.musicGenreList, 992, 1)
         elif controlId == 190:      # TV Show channel, left
             self.changeListData(self.showList, 192, -1)
         elif controlId == 191:      # TV Show channel, right
@@ -432,6 +438,8 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             self.getControl(172).setLabel(self.findItemInList(self.movieGenreList, chansetting1))
         elif chantype == 5:
             self.getControl(182).setLabel(self.findItemInList(self.mixedGenreList, chansetting1))
+        elif chantype == 12:
+            self.getControl(992).setLabel(self.findItemInList(self.musicGenreList, chansetting1))
         elif chantype == 6:
             self.getControl(192).setLabel(self.findItemInList(self.showList, chansetting1))
             self.getControl(194).setSelected(chansetting2 == str(MODE_ORDERAIRDATE))
@@ -524,9 +532,9 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         elif chantype == 9:
             return "InternetTV"
         elif chantype == 10:
-            return "YoutubeTV"
+            return "Youtube"
         elif chantype == 11:
-            return "rssTV"
+            return "RSS"
         elif chantype == 12:
             return "Music"
         elif chantype == 9999:
@@ -540,7 +548,7 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
         self.getControl(105).setVisible(False)
         self.getControl(106).setVisible(False)
         self.dlg = xbmcgui.DialogProgress()
-        self.dlg.create("PseudoTV", "Preparing Configuration")
+        self.dlg.create("PseudoTV Live", "Preparing Configuration")
         self.dlg.update(1)
         chnlst = ChannelList()        
         self.dlg.update(40)
@@ -620,11 +628,11 @@ class ConfigWindow(xbmcgui.WindowXMLDialog):
             elif chantype == 9:
                 newlabel = channame + " - InternetTV"
             elif chantype == 10:
-                newlabel = channame + " - YoutubeTV"            
+                newlabel = channame + " - Youtube"            
             elif chantype == 11:
-                newlabel = channame + " - rssTV"            
+                newlabel = channame + " - RSS"            
             elif chantype == 12:
-                newlabel = channame + " - Music"
+                newlabel = chansetting1 + " - Music"
             elif chantype == 7:
                 if chansetting1[-1] == '/' or chansetting1[-1] == '\\':
                     newlabel = os.path.split(chansetting1[:-1])[1]
