@@ -45,6 +45,7 @@ from tmdb import *
 
 
 
+
 class ChannelList:
     def __init__(self):
         self.networkList = []
@@ -76,6 +77,7 @@ class ChannelList:
         self.startMode = int(REAL_SETTINGS.getSetting("StartMode"))
         self.log('Start Mode is ' + str(self.startMode))
         self.backgroundUpdating = int(REAL_SETTINGS.getSetting("ThreadMode"))
+        self.incIceLibrary = REAL_SETTINGS.setSetting('IncludeIceLib', "true")
         self.incIceLibrary = REAL_SETTINGS.getSetting('IncludeIceLib') == "true"
         self.log("IceLibrary is " + str(self.incIceLibrary))
         self.showSeasonEpisode = REAL_SETTINGS.getSetting("ShowSeEp") == "true"
@@ -138,6 +140,7 @@ class ChannelList:
                     foundvalid = True
                     break
 
+
         self.updateDialog.update(100, "Update complete")
         self.updateDialog.close()
 
@@ -148,10 +151,7 @@ class ChannelList:
     def log(self, msg, level = xbmc.LOGDEBUG):
         log('ChannelList: ' + msg, level)
 
-
-
-
-
+        
     # Determine the maximum number of channels by opening consecutive
     # playlists until we don't find one
     def findMaxChannels(self):
@@ -188,7 +188,6 @@ class ChannelList:
                 ADDON_SETTINGS.setSetting('Channel_' + str(i + 1) + '_changed', "True")
 
         self.log('findMaxChannels return ' + str(self.maxChannels))
-
 
 
     def determineWebServer(self):
@@ -324,23 +323,16 @@ class ChannelList:
         try:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
-            # #disable force rebuild of livetv channels w/ TVDB and TMDB on every load
-            # if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):    
-            
-                # if chtype == 8:
-                    # self.log("Disable LiveTV Force rebuild")                    
-                    # needsreset = False
-                    # makenewlist = False
-                # elif chtype >=9:
-                    # self.log("Enable InternetTV Force rebuild")       
-                    # needsreset = True
-                    # makenewlist = True
-            
-            if chtype == 8:
+            #disable force rebuild for livetv channels w/ TVDB and TMDB, else force rebuild:
+            if chtype == 8 and REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):
+                self.log("Force LiveTV rebuild - Disabled")
+                needsreset = False
+                makenewlist = False
+            else:                
                 self.log("Force LiveTV rebuild")
                 needsreset = True
                 makenewlist = True
-                
+            
             if needsreset:
                 self.channels[channel - 1].isSetup = False
         except:
@@ -471,8 +463,7 @@ class ChannelList:
 
         return returnval
 
-
-
+        
     def clearPlaylistHistory(self, channel):
         self.log("clearPlaylistHistory")
 
@@ -517,7 +508,6 @@ class ChannelList:
                     ADDON_SETTINGS.setSetting('Channel_' + str(channel) + '_time', str(self.channels[channel - 1].totalTimePlayed))
 
 
-
     def getChannelName(self, chtype, setting1):
         self.log('getChannelName ' + str(chtype))
 
@@ -532,6 +522,16 @@ class ChannelList:
             return setting1 + " TV"
         elif chtype == 4:
             return setting1 + " Movies"
+        # elif chtype == 8:
+            # return setting1 + " LiveTV"
+        # elif chtype == 9:
+            # return setting1 + " InternetTV"
+        # elif chtype == 10:
+            # return setting1 + " Youtube"
+        # elif chtype == 11:
+            # return setting1 + " RSS"
+        # elif chtype == 12:
+            # return setting1 + " Music"
         elif chtype == 7:
             if setting1[-1] == '/' or setting1[-1] == '\\':
                 return os.path.split(setting1[:-1])[1]
@@ -568,8 +568,7 @@ class ChannelList:
         except:
             self.log("Unable to get the playlist name.", xbmc.LOGERROR)
             return ''
-
-
+    
     # Based on a smart playlist, create a normal playlist that can actually be used by us
     def makeChannelList(self, channel, chtype, setting1, setting2, setting3, setting4, append = False):
         self.log('makeChannelList ' + str(channel))
@@ -579,11 +578,6 @@ class ChannelList:
         if chtype == 7:
             fileList = self.createDirectoryPlaylist(setting1)
             israndom = True                    
-    
-        # elif chtype == 7: # folder based
-            # # chsetting1 = ADDON_SETTINGS.getSetting("Channel_" + str(channel) + "_1")
-            # # self.makeChannelListFromFolder(channel, chsetting1, location)
-            # fileList = self.makeChannelListFromFolder(channel, setting1)
      
         elif chtype == 8: # LiveTV
             self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
@@ -596,6 +590,9 @@ class ChannelList:
                 self.log("Building LiveTV using tuner1")
                 setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
             
+            ###########################################################################
+            ########################## make into class todo ###########################
+            ##### class: check if xmltv is avaliabe (true/false)...def xmltv_vaild#####
             if setting3 == 'ustvnow':
                 url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml'
                 try:
@@ -619,7 +616,8 @@ class ChannelList:
                 except:
                     self.log("makeChannelList, Could not determine path of " + setting3 +".xml trying xmltv.xml")
                     return
-                
+            ###############################################################################    
+            
             if FileAccess.exists(self.xmlTvFile) or urlopen(url):
                 fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)
             
@@ -633,7 +631,7 @@ class ChannelList:
             
         elif chtype == 11: # RSS/iTunes/feedburner/Podcast
             self.log("Building RSS Feed " + setting1 + " using type " + setting2 + "...")
-            fileList = self.buildRSSFileList(setting1, setting2, setting3, channel)   
+            fileList = self.createRSSFileList(setting1, setting2, setting3, channel)   
             
         else:
             if chtype == 0:
@@ -723,8 +721,7 @@ class ChannelList:
         self.log('makeChannelList return')
         return True
 
-
-
+        
     def makeTypePlaylist(self, chtype, setting1, setting2):
         if chtype == 1:
             if len(self.networkList) == 0:
@@ -773,16 +770,18 @@ class ChannelList:
     def createMusicPlaylist(self, genre, channelname):
         self.log("createMusicPlaylist")
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'songs_' + genre + '.xsp')
-    
-        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
-            limit = 100
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
-            limit = 250    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
-            limit = 500    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
-            limit = 0
         
+        ATLimit = {}
+        ATLimit['0'] = 25 
+        ATLimit['1'] = 50 
+        ATLimit['2'] = 100           
+        ATLimit['3'] = 250           
+        ATLimit['4'] = 500             
+        ATLimit['5'] = 1000
+        ATLimit['6'] = 0 #unlimited
+        
+        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+
         try:
             fle = FileAccess.open(flename, "w")
         except:
@@ -799,8 +798,8 @@ class ChannelList:
                 return ''
 
             if self.musicGenreList[i][1].lower() == genre:
-                theshow = self.cleanString(self.musicGenreList[i][0])
-                fle.write('    <rule field="songs" operator="is">' + theshow + '</rule>\n')
+                thesong = self.cleanString(self.musicGenreList[i][0])
+                fle.write('    <rule field="songs" operator="is">' + thesong + '</rule>\n')
                 added = True
 
         self.writeXSPFooter(fle, limit, "random")
@@ -815,15 +814,16 @@ class ChannelList:
     def createNetworkPlaylist(self, network):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Network_' + network + '.xsp')
         
-        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
-            limit = 100
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
-            limit = 250    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
-            limit = 500    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
-            limit = 0
-
+        ATLimit = {}
+        ATLimit['0'] = 25 
+        ATLimit['1'] = 50 
+        ATLimit['2'] = 100           
+        ATLimit['3'] = 250           
+        ATLimit['4'] = 500             
+        ATLimit['5'] = 1000
+        ATLimit['6'] = 0 #unlimited
+        
+        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -855,17 +855,20 @@ class ChannelList:
 
 
 
+
     def createShowPlaylist(self, show, setting2):
         order = 'random'
         
-        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
-            limit = 100
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
-            limit = 250    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
-            limit = 500    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
-            limit = 0
+        ATLimit = {}
+        ATLimit['0'] = 25 
+        ATLimit['1'] = 50 
+        ATLimit['2'] = 100           
+        ATLimit['3'] = 250           
+        ATLimit['4'] = 500             
+        ATLimit['5'] = 1000
+        ATLimit['6'] = 0 #unlimited
+        
+        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
         
         try:
             setting = int(setting2)
@@ -920,16 +923,17 @@ class ChannelList:
     def createGenreMixedPlaylist(self, genre):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Mixed_' + genre + '.xsp')
         
-        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
-            limit = 100
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
-            limit = 250    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
-            limit = 500    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
-            limit = 0
-
-
+        ATLimit = {}
+        ATLimit['0'] = 25 
+        ATLimit['1'] = 50 
+        ATLimit['2'] = 100           
+        ATLimit['3'] = 250           
+        ATLimit['4'] = 500             
+        ATLimit['5'] = 1000
+        ATLimit['6'] = 0 #unlimited
+        
+        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+        
         try:
             fle = FileAccess.open(flename, "w")
         except:
@@ -949,15 +953,16 @@ class ChannelList:
     def createGenrePlaylist(self, pltype, chtype, genre):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
         
-        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
-            limit = 100
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
-            limit = 250    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
-            limit = 500    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
-            limit = 0
-
+        ATLimit = {}
+        ATLimit['0'] = 25 
+        ATLimit['1'] = 50 
+        ATLimit['2'] = 100           
+        ATLimit['3'] = 250           
+        ATLimit['4'] = 500             
+        ATLimit['5'] = 1000
+        ATLimit['6'] = 0 #unlimited
+        
+        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -976,15 +981,17 @@ class ChannelList:
     def createStudioPlaylist(self, studio):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Studio_' + studio + '.xsp')
         
-        if int(REAL_SETTINGS.getSetting('ATLimit')) == 0:
-            limit = 100
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 1:
-            limit = 250    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 2:
-            limit = 500    
-        elif int(REAL_SETTINGS.getSetting('ATLimit')) == 3:
-            limit = 0
-
+        ATLimit = {}
+        ATLimit['0'] = 25 
+        ATLimit['1'] = 50 
+        ATLimit['2'] = 100           
+        ATLimit['3'] = 250           
+        ATLimit['4'] = 500             
+        ATLimit['5'] = 1000
+        ATLimit['6'] = 0 #unlimited
+        
+        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+        
         try:
             fle = FileAccess.open(flename, "w")
         except:
@@ -1033,7 +1040,7 @@ class ChannelList:
                     if duration == 0 and self.incIceLibrary == True:
                         if match.group(1).replace("\\\\", "\\")[-4:].lower() == 'strm':
                             self.log("Building Strm Directory Channel")
-                            duration = 5400
+                            duration = 5400 #parse duration from nfoparser todo
                             needsreset = True
                             makenewlist = True
                     
@@ -1431,7 +1438,6 @@ class ChannelList:
         self.log("fillMovieInfo return " + str(self.studioList))
 
 
-
     def makeMixedList(self, list1, list2):
         self.log("makeMixedList")
         newlist = []
@@ -1633,7 +1639,8 @@ class ChannelList:
         
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing LiveTV")
-            
+        
+        ## use def xmltv_vaild todo ##   
         if setting3 == 'ustvnow':
             self.log("buildLiveTVFileList, xmltv = ustvnow")
             url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml'
@@ -1653,7 +1660,8 @@ class ChannelList:
         else:
             xmltv = setting3
             self.log("buildLiveTVFileList, xmltv = " + setting3)
-
+        #############################
+        
             try:
                 self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) +'.xml'))
             except:
@@ -1663,12 +1671,10 @@ class ChannelList:
                 
             f = FileAccess.open(self.xmlTvFile, "rb")
         
-
-        context = ET.iterparse(f, events=("start", "end"))
-        
+        context = ET.iterparse(f, events=("start", "end")) 
         event, root = context.next()
-     
         inSet = False
+        
         for event, elem in context:
             if self.threadPause() == False:
                 del showList[:]
@@ -1715,8 +1721,8 @@ class ChannelList:
                                 category = cat.text
                             elif cat.text == 'Drama':
                                 category = cat.text
-                            # else:
-                                # istvshow = True
+                            else:
+                                istvshow = True
                         
                         #Trim prepended comma and space (considered storing all categories, but one is ok for now)
                         categories = categories[2:]
@@ -1780,7 +1786,7 @@ class ChannelList:
                                     except:
                                         pass
                                         
-                            # Lunatixz                                   
+                            # Lunatixz, find series poster                                  
                             if tvdbid > 0 and REAL_SETTINGS.getSetting('tvdb.showart') == 'true':
                                 getTVDBseries = "http://thetvdb.com/api/"+REAL_SETTINGS.getSetting('tvdb.apikey')+"/series/"+str(tvdbid)+"/en.xml"
                                 self.log("getTVDBseries " + str(getTVDBseries))                                    
@@ -1863,26 +1869,25 @@ class ChannelList:
                                 raise
 
                         if tvdbid > 0:
-                            # tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + str(tvposterurl) + '\n' + url
                             tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description  + '\n' + url
+                            # tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + str(tvposterurl) + '\n' + url
+                            
                         elif imdbid > 0:
-                            # tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description + "//" + str(moviePosterUrl) + '\n' + url
                             tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description +  '\n' + url
+                            # tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description + "//" + str(moviePosterUrl) + '\n' + url
+                            
                         else:
-
-
-
                             tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url                       
 
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-
                         showList.append(tmpstr)
+                    
                     else:
                         if inSet == True:
                             self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  DONE")
                             break
-                    showcount += 1
-                    
+                    showcount += 1 
+            
             root.clear()
                 
         if showcount == 0:
@@ -1956,34 +1961,30 @@ class ChannelList:
 
         return showList
 
-
-
-
-
         
     def createYoutubeFilelist(self, setting1, setting2, setting3, channel):
         showList = []
         seasoneplist = []
-        showcount = 0        
+        showcount = 0   
+        limit = 0  
+        reallimit = 0    
         limitcount = 0
-        limit = 0
-        reallimit = 0
-            
-        if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
-            reallimit = 50
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 1:
-            reallimit = 100    
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 2:
-            reallimit = 150    
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 3:
-            reallimit = 200    
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 4:
-            reallimit = 250
+                 
+        Parselimit = {}
+        Parselimit['0'] = 50 
+        Parselimit['1'] = 100 
+        Parselimit['2'] = 150           
+        Parselimit['3'] = 200           
+        Parselimit['4'] = 250             
+        
+        reallimit = int(Parselimit[REAL_SETTINGS.getSetting('Parselimit')])
                  
         if setting3 == "":
-            limit = str(reallimit)
+            limit = reallimit
+            self.log("createYoutubeFilelist, Using Parselimit")
         else:
-            limit = setting3
+            limit = int(setting3)
+            self.log("createYoutubeFilelist, Overiding Parselimit with Setting3")
  
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing Youtube")
@@ -2006,25 +2007,29 @@ class ChannelList:
                 break
                 
             if event == "end" and setting2 == '1': #youtubechannel
-                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Channel" + ", Limited to = " + str(limit))
+                self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", Youtube Channel" + ", Limit = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'channel')
                 
-                if limit == '50':
+                if limit == 50:
+                    self.log("createYoutubeFilelist, Actual limit == 50")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '100':
+                elif limit == 100:
+                    self.log("createYoutubeFilelist, Actual limit == 100")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '150':
+                elif limit == 150:
+                    self.log("createYoutubeFilelist, Actual limit == 150")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '200':
+                elif limit == 200:
+                    self.log("createYoutubeFilelist, Actual limit == 200")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
@@ -2033,7 +2038,8 @@ class ChannelList:
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=151&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '250':
+                elif limit == 250:
+                    self.log("createYoutubeFilelist, Actual limit == 250")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
@@ -2165,29 +2171,33 @@ class ChannelList:
                     showcount += 1
                     limitcount += 1 
             
-                    if limitcount == int(limit):
+                    if limitcount == limit:
                         break                    
                    
             elif event == "end" and setting2 == '2': #youtubeplaylist 
-                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist" + ", Limited to = " + str(limit))
+                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist" + ", Limit = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'playlist')
 
-                if limit == '50' or reallimit == 50:
+                if limit == 50:
+                    self.log("createYoutubeFilelist, Actual limit == 50")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '100':
+                elif limit == 100:
+                    self.log("createYoutubeFilelist, Actual limit == 100")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '150':
+                elif limit == 150:
+                    self.log("createYoutubeFilelist, Actual limit == 150")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '200':
+                elif limit == 200:
+                    self.log("createYoutubeFilelist, Actual limit == 200")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
@@ -2196,7 +2206,8 @@ class ChannelList:
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=151&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '250':
+                elif limit == 250:
+                    self.log("createYoutubeFilelist, Actual limit == 250")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
@@ -2327,29 +2338,33 @@ class ChannelList:
                     showcount += 1
                     limitcount += 1 
             
-                    if limitcount == int(limit):
+                    if limitcount == limit:
                         break   
             
             elif event == "end" and setting2 == '3': #subscriptions 
-                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription" + ", Limited to = " + str(limit))
+                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription" + ", Limit = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'subscriptions')
 
-                if limit == '50' or reallimit == 50:
+                if limit == 50:
+                    self.log("createYoutubeFilelist, Actual limit == 50")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '100':
+                elif limit == 100:
+                    self.log("createYoutubeFilelist, Actual limit == 100")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '150':
+                elif limit == 150:
+                    self.log("createYoutubeFilelist, Actual limit == 150")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '200':
+                elif limit == 200:
+                    self.log("createYoutubeFilelist, Actual limit == 200")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
@@ -2358,7 +2373,8 @@ class ChannelList:
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=151&max-results=50'
                     feed = feedparser.parse(youtubechannel)
-                elif limit == '250':
+                elif limit == 250:
+                    self.log("createYoutubeFilelist, Actual limit == 250")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
@@ -2489,10 +2505,10 @@ class ChannelList:
                     showcount += 1
                     limitcount += 1 
                     
-                    if limitcount == int(limit):
+                    if limitcount == limit:
                         break         
                         
-            if limitcount == int(limit):
+            if limitcount == limit:
                 break    
     
             root.clear()
@@ -2500,30 +2516,30 @@ class ChannelList:
         return showList
 
 
-    def buildRSSFileList(self, setting1, setting2, setting3, channel):
-        self.log("buildRSSFileList ")
+    def createRSSFileList(self, setting1, setting2, setting3, channel):
+        self.log("createRSSFileList ")
         showList = []
         seasoneplist = []
-        showcount = 0        
-        limitcount = 0
+        showcount = 0
         limit = 0
-        reallimit = 0
-            
-        if int(REAL_SETTINGS.getSetting('Youtubelimit')) == 0:
-            reallimit = 50
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 1:
-            reallimit = 100    
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 2:
-            reallimit = 150    
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 3:
-            reallimit = 200    
-        elif int(REAL_SETTINGS.getSetting('Youtubelimit')) == 4:
-            reallimit = 250
+        reallimit = 0   
+        limitcount = 0
+     
+        Parselimit = {}
+        Parselimit['0'] = 50 
+        Parselimit['1'] = 100 
+        Parselimit['2'] = 150           
+        Parselimit['3'] = 200           
+        Parselimit['4'] = 250             
+        
+        reallimit = int(Parselimit[REAL_SETTINGS.getSetting('Parselimit')])
                  
         if setting3 == "":
-            limit = str(reallimit)
+            limit = reallimit
+            self.log("createRSSFileList, Using Parselimit")
         else:
-            limit = setting3
+            limit = int(setting3)
+            self.log("createRSSFileList, Overiding Parselimit with Setting3")
                
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing RSS")
@@ -2541,7 +2557,7 @@ class ChannelList:
                 break
                 
             if event == "end" and setting2 == '1': #RSS
-                self.log("buildRSSFileList, RSS " + ", Limited to = " + str(limit))
+                self.log("createRSSFileList, RSS " + ", Limit = " + str(limit))
             
                 rssfeed = setting1
                 feed = feedparser.parse(rssfeed)
@@ -2557,10 +2573,15 @@ class ChannelList:
                     eptitle = eptitle.replace("\"", "")
                     eptitle = eptitle.replace("?", "")
                     eptitle = uni(eptitle)
-                    eptitle = eptitle[:250]
-                    thumburl = feed.channel.image['url']
-                    studio = feed.entries[i].author_detail['name']
+                    eptitle = eptitle[:250]     
+                    studio = feed.entries[i].author_detail['name']                        
                     
+                    try:
+                        thumburl = feed.entries[i].media_thumbnail[0]['url']
+                    except:
+                        self.log("createRSSFileList, media_thumbnail")
+                        return 
+
                     if not '<p>' in feed.entries[i].summary_detail.value:
                         epdesc = feed.entries[i]['summary_detail']['value']
                         head, sep, tail = epdesc.partition('<div class="feedflare">')
@@ -2618,7 +2639,7 @@ class ChannelList:
                     duration = int(duration)
                     
                     if REAL_SETTINGS.getSetting('Includestrms') == "true":
-                        self.log("buildRSSFileList, Building RSS Strms ")
+                        self.log("createRSSFileList, Building RSS Strms ")
                 
                         if not os.path.exists(os.path.join(path, showtitle)):
                             os.makedirs(os.path.join(path, showtitle))
@@ -2664,26 +2685,26 @@ class ChannelList:
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + epdesc + '\n' + url + '\n'
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        self.log("createRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
                         showList.append(tmpstr)
                     else:
                         if inSet == True:
-                            self.log("buildRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            self.log("createRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
                     showcount += 1
                     limitcount += 1 
                     
-                    if limitcount == int(limit):
+                    if limitcount == limit:
                         break         
                         
-            if limitcount == int(limit):
+            if limitcount == limit:
                 break    
     
             root.clear()
 
         return showList
-        
+
         
     # Run rules for a channel
     def runActions(self, action, channel, parameter):
@@ -2733,7 +2754,6 @@ class ChannelList:
             mydir = mydir.replace("\\", "\\\\")
 
         return mydir
-
 
 
     def getSmartPlaylistType(self, dom):
@@ -2895,6 +2915,7 @@ class ChannelList:
         # metafile.close()
 
         # return bumpersList
+
 
 
     # def getCommercialsList(self, channel):

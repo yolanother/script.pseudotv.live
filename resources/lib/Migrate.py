@@ -264,9 +264,9 @@ class Migrate:
                 # add network presets
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "1")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.cleanString(chanlist.networkList[i])))
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.networkList[i]))
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
-                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding TV Network",str(chanlist.cleanString(chanlist.networkList[i])))
+                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding TV Network",str(chanlist.networkList[i]))
 
         self.updateDialogProgress = 25
         if Globals.REAL_SETTINGS.getSetting("autoFindTVGenres") == "true":
@@ -277,9 +277,9 @@ class Migrate:
                 # add network presets
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "3")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.cleanString(chanlist.showGenreList[i])))
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.showGenreList[i]))
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
-                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding TV Genres",str(chanlist.cleanString(chanlist.showGenreList[i]) + " TV"))
+                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding TV Genres",str(chanlist.showGenreList[i]) + " TV")
         
         self.updateDialogProgress = 30
         self.log("autoFindStudios " + str(Globals.REAL_SETTINGS.getSetting("autoFindStudios")))
@@ -298,9 +298,9 @@ class Migrate:
                 # add network presets
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "2")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.cleanString(chanlist.studioList[i])))
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.studioList[i]))
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
-                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Movie Studios",str(chanlist.cleanString(chanlist.studioList[i])))
+                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Movie Studios",str(chanlist.studioList[i]))
 
         self.updateDialogProgress = 40
         if Globals.REAL_SETTINGS.getSetting("autoFindMovieGenres") == "true":
@@ -312,9 +312,9 @@ class Migrate:
                 # add network presets
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "4")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.cleanString(chanlist.movieGenreList[i])))
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.movieGenreList[i]))
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
-                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Movie Genres","Found " + str(chanlist.cleanString(chanlist.movieGenreList[i]) + " Movies"))
+                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Movie Genres","Found " + str(chanlist.movieGenreList[i]) + " Movies")
 
         self.updateDialogProgress = 45
         self.log("autoFindMixGenres " + str(Globals.REAL_SETTINGS.getSetting("autoFindMixGenres")))
@@ -331,9 +331,9 @@ class Migrate:
                 # add network presets
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "5")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.cleanString(chanlist.mixedGenreList[i])))
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.mixedGenreList[i]))
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
-                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Mixed Genres",str(chanlist.cleanString(chanlist.mixedGenreList[i]) + " Mix"))
+                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Mixed Genres",str(chanlist.mixedGenreList[i]) + " Mix")
 
         self.updateDialogProgress = 55
         self.log("autoFindMusicGenres " + str(Globals.REAL_SETTINGS.getSetting("autoFindMusicGenres")))
@@ -351,10 +351,10 @@ class Migrate:
                 # add network presets
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "12")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.cleanString(chanlist.musicGenreList[i])))
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.musicGenreList[i]))
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_2", "0")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
-                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Genres",str(chanlist.cleanString(chanlist.musicGenreList[i]) + " Music"))
+                self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding Music Genres",str(chanlist.musicGenreList[i]) + " Music")
 
         #Music Videos - Last.fm user
         self.updateDialogProgress = 65
@@ -366,7 +366,7 @@ class Migrate:
             for i in range(1):
                 channelNum = channelNum + 1
                 # add Last.fm user presets
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "9")
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "13")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", "5400")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_2", "rtmp://vevohp2livefs.fplive.net:1935/vevohp2live-live/ playpath=stream2272000 swfUrl=http://cache.vevo.com/livepassdl.conviva.com/ver/2.64.0.68610/LivePassModuleMain_osmf.swf")
@@ -374,7 +374,7 @@ class Migrate:
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_4", "Sit back and enjoy a 24/7 stream of music videos on VEVO TV.")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rulecount", "1")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_id", "1")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_opt_1", "VevoTV")  
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_opt_1", "Last.fm")  
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
         
         #Music Videos - Youtube
@@ -454,7 +454,7 @@ class Migrate:
         Globals.ADDON_SETTINGS.writeSettings()
 
         #set max channels
-        # chanlist.MaxChannels()
+        # chanlist.setMaxChannels()
         
         self.updateDialogProgress = 100
         # reset auto tune settings
@@ -479,10 +479,37 @@ class Migrate:
         
         self.updateDialog.close()
 
+    ##### TV-Guide addons.ini prasing todo #####
     #read addons.ini
-    def getAddons(self):
-        return self.addonsParser.sections()
+    # def getAddons(self):
+        # return self.addonsParser.sections()
 
-    def getAddonStreams(self, id):
-        return self.addonsParser.items(id)
+    # def getAddonStreams(self, id):
+        # return self.addonsParser.items(id)
+    #############################################    
+            
+    # Last.fm Music Videos **TODO**    
+    def LastFM(self):
+        api = "http://api.tv.timbormans.com/user/"+user+"/topartists.xml"
+        user = REAL_SETTINGS.getSetting('autoFindMusicVideosLastfmUser')
+        url = "plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url"
+        
+        # Sample xml output:
+        # <clip>
+            # <artist url="http://www.last.fm/music/Tears+for+Fears">Tears for Fears</artist>
+            # <track url="http://www.last.fm/music/Tears+for+Fears/_/Everybody+Wants+to+Rule+the+World">Everybody Wants to Rule the World</track>
+            # <url>http://www.youtube.com/watch?v=ST86JM1RPl0&amp;feature=youtube_gdata_player</url>
+            # <duration>191</duration>
+            # <thumbnail>http://i.ytimg.com/vi/ST86JM1RPl0/0.jpg</thumbnail>
+            # <rating max="5">4.9660454</rating>
+            # <stats hits="1" misses="4" />
+        # </clip>
+        
+        #for loop
+        #Call api
+        #Parse data (artist,track,url,duration)
+        #Append tmpstr data
+        #repeat
+    
+
         
