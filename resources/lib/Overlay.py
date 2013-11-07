@@ -126,13 +126,13 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             self.log('Autotune onInit') 
             settingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.xml'))
             nsettingsFile = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'settings2.bak.xml'))
-            
             #Backup and Delete old settings2.xml before autotune runs.
             if FileAccess.exists(settingsFile) and FileAccess.exists(nsettingsFile):
                 os.remove(nsettingsFile)
                 self.log('Autotune, Deleted Old Backup') 
             elif FileAccess.exists(settingsFile):
                 FileAccess.rename(settingsFile, nsettingsFile)
+                self.log('Autotune, Backing up settings...') 
   
                 if FileAccess.exists(nsettingsFile):
                     self.log('Autotune, Settings2 Backup Complete')
@@ -687,9 +687,18 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.channelLabel[curlabel].setVisible(True)
 
         ##ADDED BY SRANSHAFT: USED TO SHOW NEW INFO WINDOW WHEN CHANGING CHANNELS
-        if self.inputChannel == -1 and self.infoOnChange == True:
+        if self.inputChannel == -1 and self.infoOnChange == True:        
+            InfoTimer = {}
+            InfoTimer['0'] = 5 
+            InfoTimer['1'] = 10 
+            InfoTimer['2'] = 15          
+            InfoTimer['3'] = 20            
+            InfoTimer['4'] = 25      
+            InfoTimer = int(InfoTimer[REAL_SETTINGS.getSetting('InfoTimer')])
+            self.log("InfoTimer = " + str(InfoTimer))
             self.infoOffset = 0
-            self.showInfo(5.0)
+            self.showInfo(InfoTimer)
+            
 
         if self.showChannelBug == True:
             try:

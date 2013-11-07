@@ -1,5 +1,5 @@
 PseudoTV Live
-=============
+==================
 Channel surfing for your video library, livetv and Internettv...
 
 Find support @ http://forum.xbmc.org/showthread.php?tid=169032
@@ -7,11 +7,12 @@ Find support @ http://forum.xbmc.org/showthread.php?tid=169032
 ------------------
 Special thanks to:
 ------------------
+
     - XBMC - Foundation
 
     - jason102, angrycamel, jtucker1972 and bradvido88 - Core Code and inspiration.
 
-    - thedarkonaut, tman12 - Skinning ideas and core code.
+    - ARYEZ, thedarkonaut, tman12 - Skinning ideas and core code.
 
     - peppy6582 - RSS/Youtube parsing core code.
 
@@ -19,22 +20,25 @@ Special thanks to:
 
     - Steveb1968 - Autostart core code.
 
-    - scilz - Internet stream sourcing... 
+    - whufclee, scilz - Internet stream sourcing.
 
     - blazin912 - HDhomerun Master/Slave mod.
 
     - mwkurt, XvMMvX, spyder - Forum Help and support.
 
     * All work is either original, or a modified code from the properly credited creators
+            
 
---------
+------------------
 FU List:
---------
+------------------
+
     - geebs61, redhalo - Two forum douchebags!
 
------------
+------------------
 What is it?
------------
+------------------
+
     It's channel-surfing for your media center.  Never again will you have to
 actually pick what you want to watch.  Use an electronic program guide (EPG)
 to view what's on or select a show to watch.  This script will let you create
@@ -42,9 +46,10 @@ your own channels and, you know, watch them.  Doesn't actually sound useful
 when I have to write it in a readme.  Eh, try it and decide if it works for
 you.
 
---------
+------------------
 Features
---------
+------------------
+
     - Automatic channel creation based on your library.
     - Optionally customize the channels you want with the channel configuration
         tool.
@@ -59,9 +64,10 @@ Features
     - Discover the other features on your own (so that I don't have to list
         them all...I'm lazy).
 
------
+------------------
 Setup
------
+------------------
+
     First, install it.  This is self-explanatory (hopefully).  Really, that's
 all that is necessary.  Default channels will be created without any
 intervention.  You can choose to setup channels (next step) if you wish.
@@ -77,9 +83,10 @@ should be relatively self-explanitory.  This is a readme and should include
 descriptions of them all...who knows, maybe it will some day.
 
 
---------
+------------------
 Controls
---------
+------------------
+
     There are only a few things you need to know in order to control every-
 thing.  First of all, the Stop button ('X') stops the video and exits the
 script.  You may also press the Previous Menu ('Escape') button to do this
@@ -93,9 +100,9 @@ you can look at the previous and next shows on this channel using arrow left
 and right.
 
 
---------
+------------------
 Settings
---------
+------------------
 
 General Settings -
 
@@ -154,9 +161,10 @@ EPG, coming up next box, or info box.  This is helpful if you use bumpers or
 commercials.
 
 
--------
+------------------
 Credits
--------
+------------------
+
 PseudoTV Live: Lunatixz
 PseudoTV: Jason102
 Code Additions: Sranshaft, TheOddLinguist

@@ -15,29 +15,17 @@
 
     <category label="30020">
         <setting id="InfoOnChange" type="bool" label="30021" default="true"/>
+        <setting id="InfoTimer" subsetting="true" visible="eq(-1,true)" type="enum" label="30012" values="5|10|15|20|25" default="0"/>
     	<setting id="ShowChannelBug" type="bool" label="30022" default="true"/>
     	<setting id="ChannelLogoFolder" type="folder" source="auto" label="30023" default="special://home/addons/script.pseudotv.live/resources/images/"/>
     	<setting id="ClockMode" type="enum" label="30024" default="0" values="12 Hour|24 Hour"/>
     	<setting id="EnableComingUp" type="bool" label="30025" default="true"/>
     	<setting id="HideClips" type="bool" label="30026" default="true"/>
     	<setting id="ClipLength" type="enum" subsetting="true" label="30027" visible="eq(-1,true)" values="15|30|60|90|120|180|240|300|360" default="2"/>
-    	<setting id="Skin" type="enum"  label="30028" values="default|Frosted Glass" default="default"/>
+    	<setting id="Skin" type="enum"  label="30028" values="default|Frosted Glass|AeonNox Orange" default="default"/>
        <!--  <setting id="ShowSeEp" type="bool" label="30028" default="false"/> -->
-        <setting label="30029" type="lsep"/>        
-        <setting id="tvdb.enabled" label="30030" type="bool" default="false" />
-        <setting id="tvdb.apikey" subsetting="true" label="30031" visible="eq(-1,true)" type="text" default="01F0668B2FC765B9" />
-        <setting id="tvdb.showart" subsetting="true" label="30032" visible="eq(-2,true)" type="bool" default="false" />
-		<setting id="tmdb.enabled" label="30033" type="bool" default="false" />
-        <setting id="tmdb.apikey" subsetting="true" label="30034" visible="eq(-1,true)" type="text" default="c974c461a9767defec862674bf6c704e"/>
-        <setting id="tmdb.showart" subsetting="true" label="30035" visible="eq(-2,true)" type="bool" default="false" />
-        <setting id="sickbeard.enabled" label="30036" type="bool" default="false" />
-        <setting id="sickbeard.baseurl" subsetting="true" label="30037" visible="eq(-1,true)" type="text" default="http://localhost:8081"/>
-        <setting id="sickbeard.apikey" subsetting="true" label="30038" visible="eq(-2,true)" type="text" default="cf6a9873e3f6dd25abbb654c7e362d9d"/>
-        <setting id="couchpotato.enabled" label="30039" type="bool" default="false" />
-        <setting id="couchpotato.baseurl" subsetting="true" label="30037" visible="eq(-1,true)" type="text" default="http://localhost:5050"/>
-        <setting id="couchpotato.apikey" subsetting="true" label="30038" visible="eq(-2,true)" type="text" default="71e9ea6a3e16430389450eb88e93a8a1"/>
    </category>
-    
+
     <category label="30040">
         <setting id="ChannelDelay" type="enum" label="30041" default="0" values="None|0.25|0.5|0.75|1.0|1.25|1.5|1.75|2.0"/>
         <setting type="action" label="30042" action="RunScript($CWD/defrag.py)"/>
@@ -58,29 +46,51 @@
         <!-- <setting id="RSSlimit" subsetting="true" type="enum" label="30059" values="100|250|500|1000" default="0"/> -->
         <!-- <setting id="IncludeRSSstrms" subsetting="true" type="bool" label="30056" default="false"/> -->
     </category>
-
+   
+    <category label="30029">
+        <setting label="30329" type="lsep"/>        
+        <setting id="tvdb.enabled" label="30030" type="bool" default="false" />
+        <setting id="tvdb.apikey" subsetting="true" label="30031" visible="eq(-1,true)" type="text" default="01F0668B2FC765B9" />
+        <setting id="tvdb.showart" subsetting="true" label="30032" visible="eq(-2,true)" type="bool" default="false" />
+		<setting id="tmdb.enabled" label="30033" type="bool" default="false" />
+        <setting id="tmdb.apikey" subsetting="true" label="30034" visible="eq(-1,true)" type="text" default="c974c461a9767defec862674bf6c704e"/>
+        <setting id="tmdb.showart" subsetting="true" label="30035" visible="eq(-2,true)" type="bool" default="false" />
+        <setting id="sickbeard.enabled" label="30036" type="bool" default="false" />
+        <setting id="sickbeard.baseurl" subsetting="true" label="30038" visible="eq(-1,true)" type="text" default="http://localhost:8081"/>
+        <setting id="sickbeard.apikey" subsetting="true" label="30039" visible="eq(-2,true)" type="text" default="cf6a9873e3f6dd25abbb654c7e362d9d"/>
+        <setting id="couchpotato.enabled" label="30037" type="bool" default="false" />
+        <setting id="couchpotato.baseurl" subsetting="true" label="30038" visible="eq(-1,true)" type="text" default="http://localhost:5050"/>
+        <setting id="couchpotato.apikey" subsetting="true" label="30039" visible="eq(-2,true)" type="text" default="71e9ea6a3e16430389450eb88e93a8a1"/>
+   </category>
+    
     <category label="30070">
       	<setting id="Autotune" type="bool" label="30071" default="false"/>
       	<setting id="Warning1" type="bool" label="30072" subsetting="true" visible="eq(-1,true)" default="false"/>
-        <setting type="lsep" label="30079" visible="eq(-1,true)"/>
-      	<setting id="autoFindLiveUSTVnow" type="bool" label="30080" subsetting="true" visible="eq(-2,true)" default="false"/>
-      	<setting id="autoFindLiveHDhomerun" type="bool" label="30081" subsetting="true" visible="eq(-3,true)" default="false"/>
-        <setting type="lsep" label="30095" visible="eq(-4,true)"/>
-        <setting id="autoFindNetworks" type="bool" label="30073" subsetting="true" visible="eq(-5,true)" default="false"/>
-      	<setting id="autoFindStudios" type="bool" label="30074" subsetting="true" visible="eq(-6,true)" default="false"/>
-      	<setting id="autoFindTVGenres" type="bool" label="30075" subsetting="true" visible="eq(-7,true)" default="false"/>
-      	<setting id="autoFindMovieGenres" type="bool" label="30076" subsetting="true" visible="eq(-8,true)" default="false"/>
-      	<setting id="autoFindMixGenres" type="bool" label="30077" subsetting="true" visible="eq(-9,true)" default="false"/>
-      	<setting type="lsep" label="30094" visible="eq(-10,true)"/>
-        <setting id="autoFindMusicGenres" type="bool" label="30078" subsetting="true" visible="eq(-11,true)" default="false"/>
-      	<setting type="lsep" label="30082" visible="eq(-12,true)"/>
-      	<setting id="autoFindMusicVideosYoutube" type="bool" label="30083" subsetting="true" visible="eq(-13,true)" default="false"/>
-      	<setting id="autoFindMusicVideosVevoTV" type="bool" label="30084" subsetting="true" visible="eq(-14,true)" default="false"/>
-      	<setting id="autoFindMusicVideosLocal" type="folder" source="auto" label="30085" subsetting="true" visible="eq(-15,true)" default="false"/>
-        <setting type="lsep" label="30096" visible="eq(-16,true)"/>
-        <setting id="ATLimit" label="30059" subsetting="true" type="enum" values="25|50|100|250|500|1000|Unlimited" visible="eq(-17,true)" default="0"/>
-        <setting id="ATRestore" type="bool" label="30097" visible="eq(-19,false) "default="false"/>
-      	<setting id="Warning2" type="bool" subsetting="true" label="30098" visible="eq(-1,true)" default="false" action="RunScript($CWD/restore.py)"/> />
+        <setting type="lsep" label="30073" visible="eq(-1,true)"/>
+      	<setting id="autoFindLiveUSTVnow" type="bool" label="30074" subsetting="true" visible="eq(-2,true)" default="false"/>
+      	<setting id="autoFindLiveHDhomerun" type="bool" label="30075" subsetting="true" visible="eq(-3,true)" default="false"/>
+        <setting type="lsep" label="30076" visible="eq(-4,true)"/>
+      	<setting id="autoFindCustom" type="bool" label="30077" subsetting="true" visible="eq(-5,true)" default="false"/>
+        <setting id="autoFindNetworks" type="bool" label="30078" subsetting="true" visible="eq(-6,true)" default="false"/>
+      	<setting id="autoFindStudios" type="bool" label="30079" subsetting="true" visible="eq(-7,true)" default="false"/>
+      	<setting id="autoFindTVGenres" type="bool" label="30080" subsetting="true" visible="eq(-8,true)" default="false"/>
+      	<setting id="autoFindMovieGenres" type="bool" label="30081" subsetting="true" visible="eq(-9,true)" default="false"/>
+      	<setting id="autoFindMixGenres" type="bool" label="30082" subsetting="true" visible="eq(-10,true)" default="false"/>
+      	<setting type="lsep" label="30083" visible="eq(-11,true)"/>
+        <setting id="autoFindMusicGenres" type="bool" label="30084" subsetting="true" visible="eq(-12,true)" default="false"/>
+      	<setting id="autoFindMusicVideosYoutube" type="bool" label="30085" subsetting="true" visible="eq(-13,true)" default="false"/>
+      	<setting id="autoFindMusicVideosVevoTV" type="bool" label="30086" subsetting="true" visible="eq(-14,true)" default="false"/>
+      	<setting id="autoFindMusicVideosLastFM" type="bool" label="30087" subsetting="true" visible="eq(-15,true)" default="false"/>
+        <setting id="autoFindMusicVideosLastFMuser" subsetting="true" label="30088" visible="eq(-1,true)" type="text" default=""/>
+      	<setting id="autoFindMusicVideosLocal" type="folder" source="auto" label="30089" subsetting="true" visible="eq(-17,true)" default=""/>
+      	<setting type="lsep" label="30090" visible="eq(-18,true)"/>
+        <setting id="autoFindInternetStrms" type="bool" label="30091" subsetting="true" visible="eq(-19,true)" default="false"/>
+        <setting id="autoFindInternetLiveStream" type="bool" label="30092" subsetting="true" visible="eq(-20,true)" default="false"/>
+        <setting id="autoFindInternetLiveStreamDir" type="folder" source="auto" label="30093" subsetting="true" visible="eq(-1,true)" default=""/>
+      	<setting type="lsep" label="30097" visible="eq(-22,true)"/>
+        <setting id="ATLimit" label="30098" subsetting="true" type="enum" values="25|50|100|250|500|1000|Unlimited" visible="eq(-23,true)" default="0"/>
+        <setting id="ATRestore" type="bool" label="30099" visible="eq(-25,false) "default="false"/>
+      	<setting id="Warning2" type="bool" subsetting="true" label="30100" visible="eq(-1,true)" default="false" action="RunScript($CWD/restore.py)"/> />
     </category>
     
     <category label="30998">

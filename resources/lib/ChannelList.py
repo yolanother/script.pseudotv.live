@@ -1040,7 +1040,7 @@ class ChannelList:
                     if duration == 0 and self.incIceLibrary == True:
                         if match.group(1).replace("\\\\", "\\")[-4:].lower() == 'strm':
                             self.log("Building Strm Directory Channel")
-                            duration = 5400 #parse duration from nfoparser todo
+                            duration = 3600 #parse duration from nfoparser todo
                             needsreset = True
                             makenewlist = True
                     
