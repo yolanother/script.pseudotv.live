@@ -500,37 +500,37 @@ class Migrate:
         
         channelNum = channelNum
         
-        if Globals.REAL_SETTINGS.getSetting("autoFindInternetStrms") == "true" and xbmcaddon.Addon(id='plugin.video.tgun'):
-            self.log("Adding InternetTV TGUN")
-            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding InternetTV TGUN","")
-            InternetTgun = str('https://www.dropbox.com/sh/b5qmkg3fbtli8xw/ZcfOwXnyI9')
-            for i in range(1):
-                channelNum = channelNum + 1
-                # add TGUN
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "7")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", "" +InternetTgun+ "")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rulecount", "1")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_id", "1")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_opt_1", "InternetTV TGUN")  
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
+        # if Globals.REAL_SETTINGS.getSetting("autoFindInternetStrms") == "true" and xbmcaddon.Addon(id='plugin.video.tgun'):
+            # self.log("Adding InternetTV TGUN")
+            # self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding InternetTV TGUN","")
+            # InternetTgun = str('https://www.dropbox.com/sh/b5qmkg3fbtli8xw/ZcfOwXnyI9')
+            # for i in range(1):
+                # channelNum = channelNum + 1
+                # # add TGUN
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "7")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", "" +InternetTgun+ "")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rulecount", "1")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_id", "1")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_opt_1", "InternetTV TGUN")  
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
         
         channelNum = channelNum
         
-        if Globals.REAL_SETTINGS.getSetting("autoFindInternetStrms") == "true" and xbmcaddon.Addon(id='plugin.video.jtv'):
-            self.log("Adding InternetTV JTV")
-            self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding InternetTV JTV","")
-            InternetJTV = str('https://www.dropbox.com/sh/b5qmkg3fbtli8xw/ZcfOwXnyI9')
-            for i in range(1):
-                channelNum = channelNum + 1
-                # add TGUN
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "7")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", "" +InternetJTV+ "")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rulecount", "1")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_id", "1")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_opt_1", "InternetTV JTV")  
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
+        # if Globals.REAL_SETTINGS.getSetting("autoFindInternetStrms") == "true" and xbmcaddon.Addon(id='plugin.video.jtv'):
+            # self.log("Adding InternetTV JTV")
+            # self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding InternetTV JTV","")
+            # InternetJTV = str('https://www.dropbox.com/sh/b5qmkg3fbtli8xw/ZcfOwXnyI9')
+            # for i in range(1):
+                # channelNum = channelNum + 1
+                # # add TGUN
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "7")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", "" +InternetJTV+ "")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rulecount", "1")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_id", "1")
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_rule_1_opt_1", "InternetTV JTV")  
+                # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
         
         channelNum = channelNum
         
