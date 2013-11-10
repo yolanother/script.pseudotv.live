@@ -88,7 +88,7 @@
         <setting id="autoFindInternetLiveStream" type="bool" label="30092" subsetting="true" visible="eq(-20,true)" default="false"/>
         <setting id="autoFindInternetLiveStreamDir" type="folder" source="auto" label="30093" subsetting="true" visible="eq(-1,true)" default=""/>
       	<setting type="lsep" label="30097" visible="eq(-22,true)"/>
-        <setting id="ATLimit" label="30098" subsetting="true" type="enum" values="25|50|100|250|500|1000|Unlimited" visible="eq(-23,true)" default="0"/>
+        <setting id="ATLimit" label="30059" subsetting="true" type="enum" values="25|50|100|250|500|1000|Unlimited" visible="eq(-23,true)" default="0"/>
         <setting id="ATRestore" type="bool" label="30099" visible="eq(-25,false) "default="false"/>
       	<setting id="Warning2" type="bool" subsetting="true" label="30100" visible="eq(-1,true)" default="false" action="RunScript($CWD/restore.py)"/> />
     </category>

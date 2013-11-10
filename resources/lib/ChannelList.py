@@ -594,7 +594,7 @@ class ChannelList:
             ########################## make into class todo ###########################
             ##### class: check if xmltv is avaliabe (true/false)...def xmltv_vaild#####
             if setting3 == 'ustvnow':
-                url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml'
+                url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow XMLTV list
                 try:
                     self.xmlTvFile = url      
                 except:
@@ -766,7 +766,49 @@ class ChannelList:
                 self.fillMusicInfo()
             return self.createGenrePlaylist('songs', chtype, setting1)
             
+    
+    def fillUSTVnow(self): 
+        self.log("fillUSTVnow")
+        self.feedList = []
+        url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow Source list
+        
+        try:
+            xml = url      
+        except:
+            self.log("fillUSTVnow: Unable to open the feeds xml file " + fle, xbmc.LOGERROR)
+            return
+        
+        f = urlopen(url)    
 
+        try:
+            dom = parse(xml)
+        except:
+            self.log('fillUSTVnow: Problem parsing feeds xml file ' + fle, xbmc.LOGERROR)
+            xml.close()
+            return ''
+        xml.close()
+        
+        try:
+            feedsNode = dom.getElementsByTagName('feed')
+        except:
+            self.log('fillUSTVnow: No feeds found ' + fle, xbmc.LOGERROR)
+            xml.close()
+            return ''
+        xml.close()
+   
+        self.feedList = []
+        # need to redo this for loop
+        for feed in feedsNode:
+            try:
+                feedName = feed.childNodes[0].nodeValue
+            except:
+                feedName = ""
+            if len(feedName) > 0:
+                self.feedList.append(feedName)
+         
+        self.feedList.sort(key=lambda x: x.lower())
+
+        
     def createMusicPlaylist(self, genre, channelname):
         self.log("createMusicPlaylist")
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'songs_' + genre + '.xsp')
@@ -1040,7 +1082,7 @@ class ChannelList:
                     if duration == 0 and self.incIceLibrary == True:
                         if match.group(1).replace("\\\\", "\\")[-4:].lower() == 'strm':
                             self.log("Building Strm Directory Channel")
-                            duration = 3600 #parse duration from nfoparser todo
+                            duration = 1800 #parse duration from nfoparser todo
                             needsreset = True
                             makenewlist = True
                     
@@ -1644,7 +1686,6 @@ class ChannelList:
         if setting3 == 'ustvnow':
             self.log("buildLiveTVFileList, xmltv = ustvnow")
             url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml'
-            self.log("buildLiveTVFileList, url =" + url)
             try:
                 self.xmlTvFile = url      
             except:
@@ -1734,13 +1775,14 @@ class ChannelList:
                         #Rob Newton - 20130127 - Read the "new" boolean for this program and store as 1 or 0 for the db
                         try:
                             if elem.find("new") != None:
-                                new = 1
-                                self.log('new')
+                                new = 'Unaired'
+                                self.log('new unaired')
+                                self.getControl(501).setLabel("New")
                             else:
-                                new = 0
-                                self.log('old')
+                                new = 'Aired'
+                                self.log('old aired')
+                                self.getControl(501).setLabel("Old")
                         except:
-                            new = 0
                             pass
                         
                         #Rob Newton - 20130127 - Decipher the TVDB ID by using the Zap2it ID in dd_progid
@@ -1842,41 +1884,39 @@ class ChannelList:
 
                         #skip old shows that have already ended
                         if now > stopDate:
-                            self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
-                            self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))       
+                            self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
+                            self.log("Status = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))       
                             continue
                         
                         #adjust the duration of the current show
                         if now > startDate and now < stopDate:
                             try:
                                 dur = ((stopDate - startDate).seconds)
-                                self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
-                                self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
+                                self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
+                                self.log("Status = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
                             except:
                                 dur = 3600  #60 minute default
-                                self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
+                                self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
                                 raise
                         
                         #use the full duration for an upcoming show
                         if now < startDate:
                             try:
                                 dur = (stopDate - startDate).seconds
-                                self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  UPCOMING: " + title + "  DUR: " + str(dur))
-                                self.log("Unaired = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))   
+                                self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  UPCOMING: " + title + "  DUR: " + str(dur))
+                                self.log("Status = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))   
                             except:
                                 dur = 3600  #60 minute default
-                                self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
+                                self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (default to 60 min)")
                                 raise
 
-                        if tvdbid > 0:
-                            tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description  + '\n' + url
-                            # tmpstr = str(dur) + ',' + title + "//" + "LiveTV" + "//" + description + "//" + str(tvposterurl) + '\n' + url
+                        if tvdbid > 0:  #TVDB Playlist
+                            tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url
                             
-                        elif imdbid > 0:
-                            tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description +  '\n' + url
-                            # tmpstr = str(dur) + ',' + title + "//" + "LiveMovie" + "//" + description + "//" + str(moviePosterUrl) + '\n' + url
+                        elif imdbid > 0:#TMDB Playlist
+                            tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url
                             
-                        else:
+                        else:           #Default Playlist
                             tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url                       
 
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
@@ -1884,14 +1924,14 @@ class ChannelList:
                     
                     else:
                         if inSet == True:
-                            self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + "  DONE")
+                            self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  DONE")
                             break
                     showcount += 1 
             
             root.clear()
                 
         if showcount == 0:
-            self.log("buildLiveTVFileList  CHANNEL: " + str(self.settingChannel) + " 0 SHOWS FOUND")
+            self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " 0 SHOWS FOUND")
 
         return showList
 
@@ -1907,7 +1947,7 @@ class ChannelList:
         try:
             self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
         except:
-            self.log("buildInternetTVFileList, Could not find settings.xml")
+            self.log("buildInternetTVFileList, Could not find settings.xml. Run configuration first...")
             return   
             
         f = open(self.ninstance, "rb")
@@ -1941,10 +1981,10 @@ class ChannelList:
                     if setting1 >= 1:
                         try:
                             dur = setting1
-                            self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + ", " + title + "  DUR: " + str(dur))
+                            self.log("buildInternetTVFileList, CHANNEL: " + str(self.settingChannel) + ", " + title + "  DUR: " + str(dur))
                         except:
                             dur = 5400  #90 minute default
-                            self.log("buildInternetTVFileList  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
+                            self.log("buildInternetTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                             raise
 
                     tmpstr = str(dur) + ',' + title + "//" + "InternetTV" + "//" + description + '\n' + url
@@ -1953,7 +1993,7 @@ class ChannelList:
                     showList.append(tmpstr)
                 else:
                     if inSet == True:
-                        self.log("buildInternetTVFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                        self.log("buildInternetTVFileList, CHANNEL: " + str(self.settingChannel) + ", DONE")
                         break
                 showcount += 1
                     
@@ -1981,10 +2021,10 @@ class ChannelList:
                  
         if setting3 == "":
             limit = reallimit
-            self.log("createYoutubeFilelist, Using Parselimit")
+            self.log("createYoutubeFilelist, Using Global Parselimit " + str(limit))
         else:
             limit = int(setting3)
-            self.log("createYoutubeFilelist, Overiding Parselimit with Setting3")
+            self.log("createYoutubeFilelist, Overiding Global Parselimit to " + str(limit))
  
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing Youtube")
@@ -1992,7 +2032,7 @@ class ChannelList:
         try:
             self.ninstance = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings.xml'))
         except:
-            self.log("createYoutubeFilelist, Could not find settings.xml")
+            self.log("createYoutubeFilelist, Could not find settings.xml. Run configuration first...")
             return 
         
         f = open(self.ninstance, "rb")
@@ -2011,17 +2051,17 @@ class ChannelList:
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'channel')
                 
                 if limit == 50:
-                    self.log("createYoutubeFilelist, Actual limit == 50")
+                    self.log("createYoutubeFilelist, youtubechannel limit == 50")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 100:
-                    self.log("createYoutubeFilelist, Actual limit == 100")
+                    self.log("createYoutubeFilelist, youtubechannel limit == 100")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 150:
-                    self.log("createYoutubeFilelist, Actual limit == 150")
+                    self.log("createYoutubeFilelist, youtubechannel limit == 150")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
@@ -2029,7 +2069,7 @@ class ChannelList:
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 200:
-                    self.log("createYoutubeFilelist, Actual limit == 200")
+                    self.log("createYoutubeFilelist, youtubechannel limit == 200")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
@@ -2039,7 +2079,7 @@ class ChannelList:
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=151&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 250:
-                    self.log("createYoutubeFilelist, Actual limit == 250")
+                    self.log("createYoutubeFilelist, youtubechannel limit == 250")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/uploads?start-index=51&max-results=50'
@@ -2059,7 +2099,7 @@ class ChannelList:
                     try:
                         thumburl = feed.entries[i].media_thumbnail[0]['url']
                     except:
-                        self.log("createYoutubeFilelist, media_thumbnail")
+                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
                         return 
             
                     #Time when the episode was published
@@ -2105,7 +2145,7 @@ class ChannelList:
                         duration = runtime
                     else:
                         duration = 90
-                        self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
+                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                     
                     duration = round(duration*60.0)
                     duration = int(duration)
@@ -2160,12 +2200,12 @@ class ChannelList:
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
                         showList.append(tmpstr)
                     else:
                         if inSet == True:
-                            self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
                     
                     showcount += 1
@@ -2175,21 +2215,21 @@ class ChannelList:
                         break                    
                    
             elif event == "end" and setting2 == '2': #youtubeplaylist 
-                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist" + ", Limit = " + str(limit))
+                self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist" + ", Limit = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'playlist')
 
                 if limit == 50:
-                    self.log("createYoutubeFilelist, Actual limit == 50")
+                    self.log("createYoutubeFilelist, youtubeplaylist limit == 50")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 100:
-                    self.log("createYoutubeFilelist, Actual limit == 100")
+                    self.log("createYoutubeFilelist, youtubeplaylist limit == 100")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 150:
-                    self.log("createYoutubeFilelist, Actual limit == 150")
+                    self.log("createYoutubeFilelist, youtubeplaylist limit == 150")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
@@ -2197,7 +2237,7 @@ class ChannelList:
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 200:
-                    self.log("createYoutubeFilelist, Actual limit == 200")
+                    self.log("createYoutubeFilelist, youtubeplaylist limit == 200")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
@@ -2207,7 +2247,7 @@ class ChannelList:
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=151&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 250:
-                    self.log("createYoutubeFilelist, Actual limit == 250")
+                    self.log("createYoutubeFilelist, youtubeplaylist limit == 250")
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'https://gdata.youtube.com/feeds/api/playlists/' +setting1+ '?start-index=51&max-results=50'
@@ -2227,8 +2267,8 @@ class ChannelList:
                     try:
                         thumburl = feed.entries[i].media_thumbnail[0]['url']
                     except:
-                        self.log("createYoutubeFilelist, media_thumbnail")
-                        return 
+                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
+                        return
                     #Time when the episode was published
                     time = (feed.entries[i].published_parsed)
                     time = str(time)
@@ -2272,7 +2312,7 @@ class ChannelList:
                         duration = runtime
                     else:
                         duration = 90
-                        self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
+                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                     
                     duration = round(duration*60.0)
                     duration = int(duration)
@@ -2327,12 +2367,12 @@ class ChannelList:
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
                         showList.append(tmpstr)
                     else:
                         if inSet == True:
-                            self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
                     
                     showcount += 1
@@ -2342,21 +2382,21 @@ class ChannelList:
                         break   
             
             elif event == "end" and setting2 == '3': #subscriptions 
-                self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription" + ", Limit = " + str(limit))
+                self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription" + ", Limit = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'subscriptions')
 
                 if limit == 50:
-                    self.log("createYoutubeFilelist, Actual limit == 50")
+                    self.log("createYoutubeFilelist, subscriptions limit == 50")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 100:
-                    self.log("createYoutubeFilelist, Actual limit == 100")
+                    self.log("createYoutubeFilelist, subscriptions limit == 100")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 150:
-                    self.log("createYoutubeFilelist, Actual limit == 150")
+                    self.log("createYoutubeFilelist, subscriptions limit == 150")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
@@ -2364,7 +2404,7 @@ class ChannelList:
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=101&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 200:
-                    self.log("createYoutubeFilelist, Actual limit == 200")
+                    self.log("createYoutubeFilelist, subscriptions limit == 200")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
@@ -2374,7 +2414,7 @@ class ChannelList:
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=151&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                 elif limit == 250:
-                    self.log("createYoutubeFilelist, Actual limit == 250")
+                    self.log("createYoutubeFilelist, subscriptions limit == 250")
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=1&max-results=50'
                     feed = feedparser.parse(youtubechannel)
                     youtubechannel = 'http://gdata.youtube.com/feeds/api/users/' +setting1+ '/newsubscriptionvideos?start-index=51&max-results=50'
@@ -2394,7 +2434,7 @@ class ChannelList:
                     try:
                         thumburl = feed.entries[i].media_thumbnail[0]['url']
                     except:
-                        self.log("createYoutubeFilelist, media_thumbnail")
+                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
                         return 
                     #Time when the episode was published
                     time = (feed.entries[i].published_parsed)
@@ -2439,7 +2479,7 @@ class ChannelList:
                         duration = runtime
                     else:
                         duration = 90
-                        self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
+                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                     
                     duration = round(duration*60.0)
                     duration = int(duration)
@@ -2494,12 +2534,12 @@ class ChannelList:
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
                         showList.append(tmpstr)
                     else:
                         if inSet == True:
-                            self.log("createYoutubeFilelist,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
                     
                     showcount += 1
@@ -2536,10 +2576,10 @@ class ChannelList:
                  
         if setting3 == "":
             limit = reallimit
-            self.log("createRSSFileList, Using Parselimit")
+            self.log("createRSSFileList, Using Global Parselimit " + str(limit))
         else:
             limit = int(setting3)
-            self.log("createRSSFileList, Overiding Parselimit with Setting3")
+            self.log("createRSSFileList, Overiding Global Parselimit to " + str(limit))
                
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing RSS")
@@ -2579,7 +2619,7 @@ class ChannelList:
                     try:
                         thumburl = feed.entries[i].media_thumbnail[0]['url']
                     except:
-                        self.log("createRSSFileList, media_thumbnail")
+                        self.log("createRSSFileList, Invaild media_thumbnail")
                         return 
 
                     if not '<p>' in feed.entries[i].summary_detail.value:
@@ -2685,12 +2725,12 @@ class ChannelList:
                         istvshow = True
                         tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + epdesc + '\n' + url + '\n'
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("createRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        self.log("createRSSFileList, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
                         
                         showList.append(tmpstr)
                     else:
                         if inSet == True:
-                            self.log("createRSSFileList,  CHANNEL: " + str(self.settingChannel) + ", DONE")
+                            self.log("createRSSFileList, CHANNEL: " + str(self.settingChannel) + ", DONE")
                             break
                     showcount += 1
                     limitcount += 1 

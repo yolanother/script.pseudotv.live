@@ -559,7 +559,6 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.showChannelLabel(self.currentChannel)
         self.lastActionTime = time.time()
         self.runActions(RULES_ACTION_OVERLAY_SET_CHANNEL_END, channel, self.channels[channel - 1])
-        #self.api(self.currentChannel)
         self.log('setChannel return')
 
         
@@ -575,6 +574,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
 
         if self.invalidatedChannelCount > 3:
             self.Error("Exceeded 3 invalidated channels. Exiting.")
+            # REAL_SETTINGS.setSetting("CurrentChannel","1") # Force Set to channel 1
             return
 
         remaining = 0
@@ -587,7 +587,8 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             self.Error("No channels available. Exiting.")
             return
 
-        self.setChannel(self.fixChannel(channel))
+        # self.setChannel(self.fixChannel(channel))
+        self.setChannel(self.fixChannel(1))
 
 
     def waitForVideoPaused(self):
