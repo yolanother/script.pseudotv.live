@@ -20,7 +20,6 @@ import os
 import xbmcaddon, xbmc, xbmcgui
 import Settings
 import Globals
-import Overlay
 import ChannelList
 import ConfigParser
 
