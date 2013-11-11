@@ -136,7 +136,7 @@ commercials.
 -------
 Credits
 -------
-Developer: Jason102
+Developer: Lunatixz, Jason102
 Code Additions: Sranshaft, TheOddLinguist
 Skins: Sranshaft, Zepfan, Steveb
 Preset Images: Jtucker1972

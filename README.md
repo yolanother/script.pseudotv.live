@@ -17,6 +17,8 @@ Special thanks to:
     - peppy6582 - RSS/Youtube parsing core code.
 
     - earlieb - EPG Sync Fix.
+    
+    - twinther - Various core coding and support.
 
     - Steveb1968 - Autostart core code.
 
