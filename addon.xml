@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon
     id="script.pseudotv.live"
-    version="0.1.7"
+    version="0.1.8"
     name="PseudoTV Live"
     provider-name="Lunatixz">
     <requires>
@@ -31,8 +31,6 @@
                 - peppy6582 - RSS/Youtube parsing core code.
 
                 - earlieb - EPG Sync Fix.
-                
-                - twinther - Various core coding and support.
 
                 - Steveb1968 - Autostart core code.
 

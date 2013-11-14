@@ -19,7 +19,12 @@
 import xbmc
 import os, platform
 import subprocess
+try:
+    import xbmcvfs
+except:
+    pass
 
+    
 import parsers.MP4Parser as MP4Parser
 import parsers.AVIParser as AVIParser
 import parsers.MKVParser as MKVParser
@@ -44,16 +49,27 @@ class VideoParser:
         log('VideoParser: ' + msg, level)
 
 
+    def finish(self):
+        if self.mountedFS == True:
+            pipe = os.popen("umount \"" + xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt') + "\"")
+            self.mountedFS = False
+
+
     def getVideoLength(self, filename):
         self.log("getVideoLength " + filename)
 
         if len(filename) == 0:
             self.log("No file name specified")
             return 0
+ 
+        self.log("os name is " + os.name)
 
-        if FileAccess.exists(filename) == False:
-            self.log("Unable to find the file")
-            return 0
+        if os.path.exists(filename) == False:
+            if filename[0:6].lower() == 'smb://':
+                filename = self.handleSMB(filename)
+            else:
+                self.log("Unable to open the file")
+                return 0
 
         base, ext = os.path.splitext(filename)
         ext = ext.lower()
@@ -73,3 +89,67 @@ class VideoParser:
             return 0
 
         return self.parser.determineLength(filename)
+
+
+    def handleSMB(self, filename):
+        self.log("handleSMB")
+        # On Windows, replace smb:// with \\ so that python can access it
+        if os.name.lower() == 'nt':
+            filename = '\\\\' + filename[6:]
+        elif os.name.lower() == 'posix':
+            newfilename = '//' + filename[6:]
+            return self.mountPosixSMB(newfilename)
+
+        return filename
+
+
+    def mountPosixSMB(self, filename):
+        if not os.path.exists(xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt/')):
+            os.makedirs(xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt/'))
+
+        if self.mountedFS == True:
+            newfilename = xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt/') + os.path.split(filename)[1]
+
+            if os.path.exists(newfilename):
+                return newfilename
+
+            pipe = os.popen("umount \"" + xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt') + "\"")
+            self.mountedFS = False
+
+        newfilename = self.mountFs(filename, 'cifs')
+
+        if os.path.exists(newfilename):
+            self.mountedFS = True
+            return newfilename
+
+        newfilename = self.mountFs(filename, 'smbfs')
+
+        if os.path.exists(newfilename):
+            self.mountedFS = True
+            return newfilename
+
+        return filename
+
+
+    def mountFs(self, filename, fstype):
+        dirpart, filename = os.path.split(filename)
+        pipe = os.popen("mount -t " + fstype + " \"" + dirpart + "\" \"" + xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt') + "\"")
+        newfilename = xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt/') + filename
+
+        if os.path.exists(newfilename):
+            return newfilename
+
+        # Only try adding "Guest" if there is no username already there
+        if dirpart.find('@') == -1:
+            dirpart = "//Guest:@" + dirpart[2:]
+            pipe = os.popen("mount -t " + fstype + " \"" + dirpart + "\" \"" + xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt') + "\"")
+
+            if os.path.exists(newfilename):
+                return newfilename
+
+        # Seperate the username and password and try that
+        username = dirpart[2:dirpart.find(':')]
+        password = dirpart[dirpart.find(':') + 1:dirpart.find('@')]
+        dirpart = '//' + dirpart[dirpart.find('@') + 1:]
+        pipe = os.popen("mount -t cifs \"" + dirpart + "\" \"" + xbmc.translatePath('special://profile/addon_data/script.pseudotv/mountpnt') + "\" -o username=" + username + ",password=" + password)
+        return newfilename

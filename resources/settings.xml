@@ -126,4 +126,11 @@
         <setting label="30308" type="text" visible="eq(-5,true) + !eq(-3,) + eq(-1,0)" enable="true"/>
         <setting id="maxtrailers" type="enum" label="30309" visible="eq(-6,true) + !eq(-4,) + eq(-2,0)" values="1|2|3|4|5" default="0"/>
     </category>
+    
+    <category label="30400">
+        <setting id="Donor_Enabled" label="30401" type="bool" default="false"/>
+        <setting id="Donor_UP" label="30402" visible="eq(-1,true)" type="text" default="User:Password" />    
+        <setting label="30403" visible="eq(-2,true)" type="lsep" default="" />    
+        <setting label="30404" visible="eq(-3,true)" type="lsep" default="" />    
+    </category>
 </settings>

@@ -324,14 +324,15 @@ class ChannelList:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
             #disable force rebuild for livetv channels w/ TVDB and TMDB, else force rebuild:
-            if chtype == 8 and REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):
-                self.log("Force LiveTV rebuild - Disabled")
-                needsreset = False
-                makenewlist = False
-            else:                
-                self.log("Force LiveTV rebuild")
-                needsreset = True
-                makenewlist = True
+            if chtype == 8:
+                if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):
+                    self.log("Force LiveTV rebuild - Disabled")
+                    needsreset = False
+                    makenewlist = False
+                else:                
+                    self.log("Force LiveTV rebuild")
+                    needsreset = True
+                    makenewlist = True
             
             if needsreset:
                 self.channels[channel - 1].isSetup = False
@@ -1097,6 +1098,7 @@ class ChannelList:
 
                         afile = uni(os.path.split(match.group(1).replace("\\\\", "\\"))[1])
                         afile, ext = os.path.splitext(afile)
+                        afile = unquote(afile)
                         tmpstr = uni(str(duration) + ',')
                         tmpstr += uni(afile) + uni("//") + uni(thedir) + uni("//")
                         tmpstr = uni(tmpstr[:500])
@@ -1496,7 +1498,7 @@ class ChannelList:
         return newlist
 
 
-    def buildFileList(self, dir_name, channel):
+    def buildFileList(self, dir_name, channel): ##fix music channel todo
         self.log("buildFileList")
         fileList = []
         seasoneplist = []

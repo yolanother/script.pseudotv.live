@@ -75,7 +75,7 @@
     <string id="30088">Last.FM Username</string>
     <string id="30089">Find Music Videos using Local Directory</string>
     <string id="30090">InternetTV</string>  
-    <string id="30091">Find InternetTV using Strm Collections</string>
+    <string id="30091">Find InternetTV using Strm Collections *</string>
     <string id="30092">Find InternetTV using theStreamdb (Coming Soon)</string>
     <string id="30093">theStreamdb location</string>
     <string id="30097">Options</string>  
@@ -116,4 +116,9 @@
     <string id="30307"># of Trailers to Show Between Shows</string>
     <string id="30308">If Auto, set the maximum number to show between shows</string>
     <string id="30309">Maximum Number of Trailers</string>   
+<string id="30400">Donor Appreciation</string>
+    <string id="30401">Enable Donor Features</string>
+    <string id="30402">Username:Password</string>
+    <string id="30403">Autotune marked with "*" feature enchanced content</string>
+    <string id="30404">Thank you for your support!</string>
 </strings>
