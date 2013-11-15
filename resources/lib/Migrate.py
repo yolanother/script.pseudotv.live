@@ -515,18 +515,26 @@ class Migrate:
             if installed == True:
                 self.log("autoTune, Adding InternetTV TGUN")
                 self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding InternetTV from TGUN","")
-                InternetTgun = str('http://'+UserPass+'@ptvl.comeze.com/strms/TGUN.-.TVMovies/')
+                InternetTgunTVMovies = str('http://'+UserPass+'@ptvl.comeze.com/strms/TGUN.-.TVMovies/')
+                InternetTgunClassicTV = str('http://'+UserPass+'@ptvl.comeze.com/strms/TGUN.-.ClassicTV/')
                 for i in range(1):
                     # add TGUN
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_type", "7")
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_time", "0")
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_1", "" +InternetTgun+ "")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_1", "" +InternetTgunTVMovies+ "")
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rulecount", "1")
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_id", "1")
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_opt_1", "InternetTV TGUN*")  
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_opt_1", "TGUN - TV/Movies")  
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_changed", "true")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_type", "7")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_time", "0")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_1", "" +InternetTgunClassicTV+ "")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rulecount", "1")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rule_1_id", "1")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rule_1_opt_1", "TGUN - ClassicTV")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_changed", "true")
 
-            channelNum = channelNum + 1           
+            channelNum = channelNum + 2           
                     
         if Globals.REAL_SETTINGS.getSetting("autoFindInternetStrms") == "true" and Globals.REAL_SETTINGS.getSetting("Donor_Enabled") == "true":
             id = 'plugin.video.jtv.archives'            
@@ -539,18 +547,34 @@ class Migrate:
             if installed == True:
                 self.log("autoTune, Adding InternetTV JTV")
                 self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding InternetTV from JTV","")
-                InternetJTV = str('http://'+UserPass+'@ptvl.comeze.com/strms/JTV.-.Series/')
+                InternetJTVDocumentary = str('http://'+UserPass+'@ptvl.comeze.com/strms/JTV.-.Documentary/')
+                InternetJTVMovies = str('http://'+UserPass+'@ptvl.comeze.com/strms/JTV.-.Movies/')
+                InternetJTVSeries = str('http://'+UserPass+'@ptvl.comeze.com/strms/JTV.-.Series/')
                 for i in range(1):
-                    # add TGUN
+                    # add JTV
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_type", "7")
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_time", "0")
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_1", "" +InternetJTV+ "")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_1", "" +InternetJTVDocumentary+ "")
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rulecount", "1")
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_id", "1")
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_opt_1", "InternetTV JTV*")  
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_rule_1_opt_1", "JTV - Documentary")
                     Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 1) + "_changed", "true")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_type", "7")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_time", "0")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_1", "" +InternetJTVMovies+ "")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rulecount", "1")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rule_1_id", "1")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_rule_1_opt_1", "JTV - Movies")  
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 2) + "_changed", "true")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_type", "7")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_time", "0")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_1", "" +InternetJTVSeries+ "")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rulecount", "1")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rule_1_id", "1")
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_rule_1_opt_1", "JTV - Series")  
+                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum + 3) + "_changed", "true")
 
-            channelNum = channelNum + 1
+            channelNum = channelNum + 3
         
         Globals.ADDON_SETTINGS.writeSettings()
 
