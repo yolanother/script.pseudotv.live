@@ -100,7 +100,8 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.channelDelay = 0
 
         for i in range(3):
-            self.channelLabel.append(xbmcgui.ControlImage(50 + (50 * i), 50, 50, 50, IMAGES_LOC + 'solid.png', colorDiffuse='0xFF00b4db'))
+            self.channelLabel.append(xbmcgui.ControlImage(50 + (50 * i), 50, 50, 50, IMAGES_LOC + 'solid.png', colorDiffuse=''))
+            # self.channelLabel.append(xbmcgui.ControlImage(50 + (50 * i), 50, 50, 50, IMAGES_LOC + 'solid.png', colorDiffuse='0xFF00b4db'))
             self.addControl(self.channelLabel[i])
             self.channelLabel[i].setVisible(False)
 
@@ -185,7 +186,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.playerTimer = threading.Timer(2.0, self.playerTimerAction)
         self.playerTimer.name = "PlayerTimer"
         self.infoTimer = threading.Timer(5.0, self.hideInfo)
-        self.myEPG = EPGWindow("script.pseudotv.live.EPG.xml", ADDON_INFO, "default")
+        self.myEPG = EPGWindow("script.pseudotv.live.EPG.xml", ADDON_INFO, Skin)
         self.myEPG.MyOverlayWindow = self
         # Don't allow any actions during initialization
         self.actionSemaphore.acquire()
@@ -588,6 +589,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             return
 
 
+
     def waitForVideoPaused(self):
         self.log('waitForVideoPaused')
         sleeptime = 0
@@ -653,7 +655,10 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.getControl(503).setLabel(self.channels[self.currentChannel - 1].getItemTitle(position))
         self.getControl(504).setLabel(self.channels[self.currentChannel - 1].getItemEpisodeTitle(position))
         self.getControl(505).setLabel(self.channels[self.currentChannel - 1].getItemDescription(position))
-        self.getControl(506).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '.png')
+        if REAL_SETTINGS.getSetting("ColorOverlay") == "true":
+            self.getControl(506).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '_c.png')
+        else:
+            self.getControl(506).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '.png')
         self.log('setShowInfo return')
 
 

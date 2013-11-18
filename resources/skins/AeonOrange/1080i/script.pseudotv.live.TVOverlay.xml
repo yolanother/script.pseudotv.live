@@ -1,0 +1,354 @@
+<window>
+    <allowoverlay>no</allowoverlay>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <controls>
+        <control type="image" id="101">
+            <description>Background</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>1080</height>
+            <texture>pstvSolid.png</texture>
+            <colordiffuse>FF000000</colordiffuse>
+        </control>
+        <control type="image" id="103">
+            <description>Channel Bug</description>
+            <posx>245r</posx>
+            <posy>195r</posy>
+            <width>225</width>
+            <height>225</height>
+            <aspectratio>keep</aspectratio>
+            <texture></texture>
+            <animation effect="fade" start="40" end="40" condition="True">Conditional</animation>
+        </control>
+<!--Background Image -->
+        <control type="group" id="102">
+            <control type="image">
+               	<posx>0</posx>		
+				<posy>0</posy>
+                <texture flipy="FALSE">PTVLINFOBAR.png</texture>
+            </control>
+			
+				<control type="image">
+						<posx>205</posx>
+						<posy>950</posy>
+						<width>225</width>
+						<height>41</height>
+						<texture>posterBG.png</texture>
+						<colordiffuse></colordiffuse>
+			    </control>				
+				
+				<control type="image">
+						<posx>205</posx>
+						<posy>857</posy>
+						<width>225</width>
+						<height>87</height>
+						<texture>posterBG.png</texture>
+						<colordiffuse></colordiffuse>
+			    </control>				
+								
+				<control type="image">
+						<posx>205</posx>
+						<posy>800</posy>
+						<width>225</width>
+						<height>51</height>
+						<texture>posterBG.png</texture>
+						<colordiffuse></colordiffuse>
+			    </control>	
+				
+				<control type="image">
+						<posx>27</posx>
+						<posy>800</posy>
+						<width>170</width>
+						<height>191</height>
+						<texture>posterBG.png</texture>
+						<colordiffuse></colordiffuse>
+			    </control>	
+														
+				<control type="image">
+						<posx>467</posx>
+						<posy>800</posy>
+						<width>995</width>
+						<height>71</height>
+						<texture>posterBG.png</texture>
+						<colordiffuse></colordiffuse>
+			    </control>				
+				
+<!--line 1 -->
+            <control type="grouplist">
+                <posx>480</posx>
+                <posy>800</posy>
+                <width min="15" max="965">autoscroll</width>
+                <height>150</height>
+                <orientation>horizontal</orientation>
+                <itemgap>10</itemgap>
+				<wrapmultiline></wrapmultiline>
+                <autoscroll delay="10" time="AutoScrollTime" repeat="10">Skin.HasSetting(AutoScroll)</autoscroll>
+				<scroll>True</scroll>
+<!--Show Title-->           
+                <control type="label" id="503">
+                    <description>Show title Label</description>
+                    <posy>55</posy>
+					<width min="5" max="965">autoscroll</width>
+                    <height>50</height>
+                    <label>Show title</label>
+                    <font>font_40z</font>
+                    <align>left</align>
+					<textcolor>FFFFFFFF</textcolor>
+                </control>   
+   
+    <!--Show Title Details-->
+                <control type="label" id="504">
+                    <description>Show Title detail</description>
+                    <posx></posx>
+					<posy>-935</posy>
+					<width min="15" max="780">autoscroll</width>
+                    <height>86</height>
+                    <label>Show Title detail</label>
+                    <font>font_22z</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+					<textcolor>FFFFFFFF</textcolor>
+					<autoscroll delay="10" time="AutoScrollTime" repeat="10">Skin.HasSetting(AutoScroll)</autoscroll>
+					<scroll>True</scroll>
+                </control>
+                </control>
+			
+            <control type="label" id="505">
+                <description>Show Description</description>
+                <posx>485</posx>
+                <posy>880</posy>
+                <width min="635" max="970">autoscroll</width>
+                <height min="5" max="65">autoscroll</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <label>Show Description</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <font>font_20X</font>
+                <wrapmultiline>true</wrapmultiline>
+                <autoscroll time="10" delay="100" repeat="2000">Skin.HasSetting(AutoScroll)</autoscroll>
+				<scroll>True</scroll>
+            </control>    
+         
+			<control type="image" id="506">
+                <description>Channel Logo</description>
+                <posx>211</posx>
+                <posy>764</posy>
+                <width>215</width>
+                <height>215</height>
+    			<aspectratio>keep</aspectratio>
+            </control>
+								
+<!-- Poster Window --> 
+<!--              <control type="image" id="507">
+                <texture>poster.png</texture>
+                <posx>1040</posx>
+                <posy>420</posy>
+                <width  max="200">auto</width>
+                <height  max="300">auto</height>
+                <aspectratio>scale</aspectratio>
+                <visible>substring(Player.FilenameAndPath,hdhomerun) | substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp) | substring(Player.FilenameAndPath,hulu) | substring(Player.FilenameAndPath,rtmp) | substring(Player.FilenameAndPath,http) | substring(Player.FilenameAndPath,upnp) | substring(Player.FilenameAndPath,plugin)</visible>
+            </control>  -->          
+		<control type="image">
+            <texture>poster_b.jpg</texture>
+            <posx>1493</posx>
+            <posy>615</posy>
+            <width>293</width>
+            <height>429</height>
+            <colordiffuse></colordiffuse>
+			<aspectratio>scale</aspectratio>
+		</control>   
+            <control type="image">
+                <texture>$INFO[Player.Art(poster)]</texture>
+                <posx>1493</posx>
+                <posy>615</posy>
+                <width  max="293">auto</width>
+                <height  max="429">auto</height>
+                <aspectratio>scale</aspectratio>
+            </control>  
+			    
+            <control type="image">
+                <texture>$INFO[Player.Art(tvshow.poster)]</texture>
+                <posx>1493</posx>
+                <posy>615</posy>
+                <width>293</width>
+                <height>429</height>
+                <aspectratio>scale</aspectratio>
+            </control> 
+			
+		<control type="image">
+            <texture>poster_c.jpg</texture>
+            <posx>1493</posx>
+            <posy>615</posy>
+            <width>293</width>
+            <height>429</height>
+            <colordiffuse></colordiffuse>
+			<aspectratio>scale</aspectratio>
+			<visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
+		</control>    
+		<control type="image">
+            <texture>poster_a.jpg</texture>
+            <posx>1493</posx>
+            <posy>615</posy>
+            <width>293</width>
+            <height>429</height>
+            <colordiffuse></colordiffuse>
+			<aspectratio>scale</aspectratio>
+			<visible>[substring(Player.FilenameAndPath,http)]</visible>
+		</control>    	
+		<control type="image">
+            <texture>poster_a.jpg</texture>
+            <posx>1493</posx>
+            <posy>615</posy>
+            <width>293</width>
+            <height>429</height>
+            <colordiffuse></colordiffuse>
+			<aspectratio>scale</aspectratio>
+			<visible>[substring(Player.FilenameAndPath,rtmp)]</visible>
+		</control>    	
+		<control type="image">
+            <texture>poster_a.jpg</texture>
+            <posx>1493</posx>
+            <posy>615</posy>
+            <width>293</width>
+            <height>429</height>
+            <colordiffuse></colordiffuse>
+			<aspectratio>scale</aspectratio>
+			<visible>[substring(Player.FilenameAndPath,rtsp)]</visible>
+		</control>    	
+		<control type="image">
+            <texture>poster_a.jpg</texture>
+            <posx>1493</posx>
+            <posy>615</posy>
+            <width>293</width>
+            <height>429</height>
+            <colordiffuse></colordiffuse>
+			<aspectratio>scale</aspectratio>
+			<visible>[substring(Player.FilenameAndPath,mms)]</visible>
+		</control>    		
+		<control type="image">
+            <texture>poster_d.jpg</texture>
+            <posx>1493</posx>
+            <posy>615</posy>
+            <width>293</width>
+            <height>429</height>
+            <colordiffuse></colordiffuse>
+			<aspectratio>scale</aspectratio>
+			<visible>[substring(Player.FilenameAndPath,hulu)]</visible>
+		</control>    			
+			 
+					
+			<control type="label" id="513">
+    	    <description>Date</description>
+            <posx>422</posx>
+            <posy>74</posy>
+    	    <width min="40" max="1000">auto</width>
+    	    <height>30</height>
+            <label>$INFO[System.Date]</label>
+            <font></font>
+    	    <align>left</align>
+    	    <textcolor>FFFFFFFF</textcolor>
+
+			</control>
+								
+			<control type="label" id="513">
+    	    <description>Time</description>
+            <posx>1477</posx>
+            <posy>74</posy>
+    	    <width min="40" max="1000">auto</width>
+    	    <height>130</height>
+            <label>$INFO[System.Time]</label>
+            <font></font>
+    	    <align>right</align>
+    	    <textcolor>FFFFFFFF</textcolor>
+
+			</control>
+			
+			
+			
+			
+			
+                <control type="label" id="502">
+                    <posx>4000</posx>
+					<width min="40" max="600">auto</width>
+                    <height>130</height>
+                    <label>$INFO[Weather.Location]</label>
+                    <font>font_24y</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                </control>
+                
+                
+                
+           	
+			
+			 
+		
+		
+		<control type="Image">
+                <description>fanart</description>
+                <posx>212</posx>
+                <posy>773</posy>
+                <width>212</width>
+				<height>72</height>
+				<texture>Now Watching.png</texture>
+				<aspectratio></aspectratio>
+		</control>
+		
+		<control type="Image">
+                <description>fanart</description>
+                <posx>212</posx>
+                <posy>938</posy>
+                <width>135</width>
+				<height>45</height>
+				<texture>Time Remaining.png</texture>
+				<aspectratio></aspectratio>
+		</control>
+		
+		
+			
+			<control type="label" id="513">
+    	    <description>Time</description>
+            <posx>337</posx>
+            <posy>955</posy>
+    	    <width min="40" max="100">auto</width>
+    	    <height>30</height>
+            <label>$INFO[VideoPlayer.TimeRemaining]</label>
+            <font>font_18z</font>
+    	    <align>center</align>
+    	    <textcolor>ffffffff</textcolor>
+			<shadowcolor>ff000000</shadowcolor>
+
+			</control> 
+			
+		<!-- Rating Stars -->		
+				<control type="image">
+						<posx>35</posx>
+						<posy>812</posy>
+						<width>152</width>
+						<height>98</height>
+						<texture>IMDB.png</texture>
+						<colordiffuse></colordiffuse>
+					</control>
+					
+					<control type="label">
+                    <posx>-340</posx>
+                    <posy>901</posy>
+                    <width>900</width>
+                    <height>100</height>
+					<align>center</align>
+                    <label fallback="NR">$INFO[VideoPlayer.Rating]</label>	
+                    <font>font_50z</font>
+                    <shadowcolor>0000000</shadowcolor>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <animation effect="slide" end="0,-20" time="240" condition="Control.IsVisible(4050) | Control.HasFocus(61)">Conditional</animation>
+                    <include>Animation_VisibleChange200</include>
+                    <scroll>true</scroll>
+                    <scrollspeed>30</scrollspeed>	
+			    </control>				      
+			</control>
+    </controls>
+</window>

@@ -130,7 +130,6 @@ class Migrate:
 
         ## If channelNum == maxchannel todo ##
         channelNum = 0
-        # currentchan = 0
         updateDialogProgress = 0
         
         self.updateDialog = xbmcgui.DialogProgress()
@@ -276,9 +275,7 @@ class Migrate:
         if Globals.REAL_SETTINGS.getSetting("autoFindNetworks") == "true":
             self.log("autoTune, Adding TV Networks")
             self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding TV Networks","")
-            # currentchan = self.initialAddChannels(chanlist.networkList, 1, currentchan)
             for i in range(len(chanlist.networkList)):
-                # channelNum = currentchan
                 channelNum = channelNum + 1
                 # add network presets
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "1")
@@ -657,45 +654,45 @@ class Migrate:
         #repeat
     
     
-    def initialAddChannels(self, thelist, chantype, currentchan):
-        if len(thelist) > 0:
-            counted = 0
-            lastitem = 0
-            curchancount = 1
-            lowerlimit = 1
-            lowlimitcnt = 0
+    # def initialAddChannels(self, thelist, chantype, currentchan):
+        # if len(thelist) > 0:
+            # counted = 0
+            # lastitem = 0
+            # curchancount = 1
+            # lowerlimit = 1
+            # lowlimitcnt = 0
 
-            for item in thelist:
-                if item[1] > lowerlimit:
-                    if item[1] != lastitem:
-                        if curchancount + counted <= 10 or counted == 0:
-                            counted += curchancount
-                            curchancount = 1
-                            lastitem = item[1]
-                        else:
-                            break
-                    else:
-                        curchancount += 1
+            # for item in thelist:
+                # if item[1] > lowerlimit:
+                    # if item[1] != lastitem:
+                        # if curchancount + counted <= 10 or counted == 0:
+                            # counted += curchancount
+                            # curchancount = 1
+                            # lastitem = item[1]
+                        # else:
+                            # break
+                    # else:
+                        # curchancount += 1
 
-                    lowlimitcnt += 1
+                    # lowlimitcnt += 1
 
-                    if lowlimitcnt == 3:
-                        lowlimitcnt = 0
-                        lowerlimit += 1
-                else:
-                    break
+                    # if lowlimitcnt == 3:
+                        # lowlimitcnt = 0
+                        # lowerlimit += 1
+                # else:
+                    # break
 
-            if counted > 0:
-                for item in thelist:
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", str(chantype))
-                    Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
-                    counted -= 1
-                    currentchan += 1
+            # if counted > 0:
+                # for item in thelist:
+                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_type", str(chantype))
+                    # Globals.ADDON_SETTINGS.setSetting("Channel_" + str(currentchan) + "_1", item[0])
+                    # counted -= 1
+                    # currentchan += 1
 
-                    if counted == 0:
-                        break
+                    # if counted == 0:
+                        # break
 
-        return currentchan
+        # return currentchan
 
 
 

@@ -76,7 +76,24 @@ if REAL_SETTINGS.getSetting('ChannelSharing') == "true":
     CHANNEL_SHARING = True
     LOCK_LOC = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('SettingsFolder'), 'cache')) + '/'
 
-IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'images')) + '/'
+if int(REAL_SETTINGS.getSetting('SkinSelector')) == 0:
+    Skin = 'default'
+    if REAL_SETTINGS.getSetting("SkinLogos") == "true":
+        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/logos/')
+elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 1:
+    Skin = 'FrostedGlass'  
+    if REAL_SETTINGS.getSetting("SkinLogos") == "true":  
+        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/FrostedGlass/logos/')
+elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 2:
+    Skin = 'AeonOrange'
+    if REAL_SETTINGS.getSetting("SkinLogos") == "true":
+        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/AeonnoxOrange/logos/')
+
+if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin , 'media'))):   
+    IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins') + '/' + Skin + '/' + 'images') + '/'
+else:
+    IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins') + '/default/' + 'images') + '/'
+    
 PRESETS_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'presets')) + '/'
 CHANNELS_LOC = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'cache')) + '/'
 GEN_CHAN_LOC = os.path.join(CHANNELS_LOC, 'generated') + '/'
