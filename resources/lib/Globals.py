@@ -79,7 +79,7 @@ if REAL_SETTINGS.getSetting('ChannelSharing') == "true":
 if int(REAL_SETTINGS.getSetting('SkinSelector')) == 0:
     Skin = 'default'
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
-        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv/resources/skins/default/images/')
+        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
 elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 1:
     Skin = 'FrostedGlass'  
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":  
