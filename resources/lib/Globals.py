@@ -89,11 +89,13 @@ elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 2:
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
         REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/AeonnoxOrange/logos/')
 
-if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin , 'media'))):   
-    IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins') + '/' + Skin + '/' + 'images') + '/'
+if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'images'))):   
+    IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'images')) + '/'
 else:
-    IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins') + '/default/' + 'images') + '/'
-    
+    IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', 'default', 'images')) + '/'
+  
+log("IMAGES_LOC = " + IMAGES_LOC)
+   
 PRESETS_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'presets')) + '/'
 CHANNELS_LOC = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'cache')) + '/'
 GEN_CHAN_LOC = os.path.join(CHANNELS_LOC, 'generated') + '/'
