@@ -17,7 +17,7 @@
         <setting id="InfoOnChange" type="bool" label="30021" default="true"/>
         <setting id="InfoTimer" subsetting="true" visible="eq(-1,true)" type="enum" label="30012" values="5|10|15|20|25" default="0"/>
     	<setting id="ShowChannelBug" type="bool" label="30022" default="true"/>
-    	<setting id="ChannelLogoFolder" type="folder" source="auto" label="30023" default="special://home/addons/script.pseudotv.live/resources/skins/default/logos/"/>
+    	<setting id="ChannelLogoFolder" type="folder" source="auto" label="30023" default="special://home/addons/script.pseudotv/resources/skins/default/images/"/>
     	<setting id="ClockMode" type="enum" label="30024" default="0" values="12 Hour|24 Hour"/>
     	<setting id="EnableComingUp" type="bool" label="30025" default="true"/>
     	<setting id="HideClips" type="bool" label="30026" default="true"/>

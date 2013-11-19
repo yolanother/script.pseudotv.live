@@ -79,22 +79,22 @@ if REAL_SETTINGS.getSetting('ChannelSharing') == "true":
 if int(REAL_SETTINGS.getSetting('SkinSelector')) == 0:
     Skin = 'default'
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
-        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/logos/')
+        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv/resources/skins/default/images/')
 elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 1:
     Skin = 'FrostedGlass'  
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":  
-        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/FrostedGlass/logos/')
+        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/FrostedGlass/images/')
 elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 2:
     Skin = 'AeonOrange'
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
-        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/AeonnoxOrange/logos/')
-elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 3:
-    if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', xbmc.getSkinDir(), 'media'))):
-        Skin = str(xbmc.getSkinDir())
-    else:
-        Skin = 'default'
-        if REAL_SETTINGS.getSetting("SkinLogos") == "true":
-            REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/logos/')
+        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/AeonnoxOrange/images/')
+# elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 3:
+    # if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', xbmc.getSkinDir(), 'media'))):
+        # Skin = str(xbmc.getSkinDir())
+    # else:
+        # Skin = 'default'
+        # if REAL_SETTINGS.getSetting("SkinLogos") == "true":
+            # REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
     
     
         
