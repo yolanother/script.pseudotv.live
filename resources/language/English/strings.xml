@@ -21,8 +21,8 @@
     <string id="30026">Hide very short videos</string>
     <string id="30027">Duration of "short" videos</string>     
     <string id="30028">Skin Selector</string>
-    <string id="30013">Use Selected Skins Channel Logos?</string>
-    <string id="30014">Use Color TVOverlay Logos?</string>
+    <string id="30013">Use Selected Skins Channel Logos</string>
+    <string id="30014">Use Color Overlay Logo</string>
     <!-- <string id="30028">Show Season / Episode</string> -->
 <string id="30029">TVDB/TMDB</string>
     <string id="30329">TVDB/TMDB for LiveTV (Coming Soon)</string>

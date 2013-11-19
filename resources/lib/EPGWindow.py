@@ -53,7 +53,9 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         else:
             self.mediaPath =  xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', 'default', 'media')) + '/'
         
-        self.log('Media Path is ' + self.mediaPath)
+        
+        self.AltmediaPath =  xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', 'default', 'media')) + '/'
+        self.log('Mediapath is ' + self.mediaPath)
 
         # Use the given focus and non-focus textures if they exist.  Otherwise use the defaults.
         if os.path.exists(self.mediaPath + BUTTON_FOCUS):
@@ -109,7 +111,10 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         timex, timey = self.getControl(120).getPosition()
         timew = self.getControl(120).getWidth()
         timeh = self.getControl(120).getHeight()
-        self.currentTimeBar = xbmcgui.ControlImage(timex, timey, timew, timeh, self.mediaPath + TIME_BAR)      
+        if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'media', TIME_BAR))):
+            self.currentTimeBar = xbmcgui.ControlImage(timex, timey, timew, timeh, self.mediaPath + TIME_BAR)  
+        else:
+            self.currentTimeBar = xbmcgui.ControlImage(timex, timey, timew, timeh, self.AltmediaPath + TIME_BAR)      
         self.log('Mediapath Time_Bar = ' + self.mediaPath + TIME_BAR)
         self.addControl(self.currentTimeBar)
 

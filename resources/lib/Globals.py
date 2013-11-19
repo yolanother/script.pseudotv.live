@@ -88,7 +88,16 @@ elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 2:
     Skin = 'AeonOrange'
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
         REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/AeonnoxOrange/logos/')
-
+elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 3:
+    if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', xbmc.getSkinDir(), 'media'))):
+        Skin = str(xbmc.getSkinDir())
+    else:
+        Skin = 'default'
+        if REAL_SETTINGS.getSetting("SkinLogos") == "true":
+            REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/logos/')
+    
+    
+        
 if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'images'))):   
     IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'images')) + '/'
 else:

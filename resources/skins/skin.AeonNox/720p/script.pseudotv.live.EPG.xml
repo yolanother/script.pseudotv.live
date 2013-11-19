@@ -1,0 +1,602 @@
+<window>
+    <allowoverlay>no</allowoverlay>
+
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <animation effect="fade" time="700">WindowOpen</animation>
+
+    <animation effect="fade" time="700">WindowClose</animation>
+
+    <controls>
+        <control type="image">
+            <description>Info Background</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1280</width>
+            <height>720</height>
+            <texture>pstvBackground.png</texture>
+	</control>
+
+	<control type="image">
+            <description>Fanart</description>
+            <posx>960</posx>
+            <posy>543</posy>
+            <width>250</width>
+            <height>155</height>
+	    <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture background="true">$INFO[Player.Art(fanart)]</texture>
+		 <bordertexture border="7">thumbs/bordershadow4.png</bordertexture>
+		 <bordersize>7</bordersize>	
+	    <aspectratio aligny="bottom">keep</aspectratio>
+
+	</control>
+
+		<control type="label">
+                <posx>930</posx>
+                <posy>530</posy>
+                <width>300</width>
+                <height>68</height>
+                <align>center</align>
+                <aligny>bottom</aligny>
+                <font>Font_ShowcaseMainLabel1_Caps</font>
+                <label>$INFO[VideoPlayer.Title]</label>
+                <scroll>true</scroll>
+                <animation effect="slide" start="0,15" end="0,15" time="0" condition="[IsEmpty(Player.ChapterName) | SubString(Player.ChapterName,0,left)] + [[IsEmpty(VideoPlayer.Tagline) + VideoPlayer.Content(movies)] | [IsEmpty(VideoPlayer.Artist) + VideoPlayer.Content(musicvideos)]] | VideoPlayer.Content(files)">Conditional</animation>
+            </control>
+
+
+
+		<control type="image">
+            <description>Fanart</description>
+            <posx>940</posx>
+            <posy>540</posy>
+            <width>240</width>
+            <height>135</height>
+	    <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>$INFO[Player.Art(tvshow.fanart)</texture>
+		 <bordertexture border="8">thumbs/thumbshadow.png</bordertexture>
+	    <aspectratio aligny="bottom">keep</aspectratio>
+
+	</control>
+
+
+	<control type="image">
+            <description>Fanart</description>
+            <posx>970</posx>
+            <posy>40</posy>
+            <width>200</width>
+            <height>200</height>
+	    <colordiffuse>$VAR[TitleColorVar]</colordiffuse>
+            <texture>guide.png</texture>
+
+	</control>
+
+
+
+	<control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>185</posy>
+            <width>284</width>
+            <height>51</height>
+	       <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+
+	</control>
+
+	<control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>240</posy>
+            <width>284</width>
+            <height>51</height>
+	    <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+
+	</control>
+
+	
+	<control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>295</posy>
+            <width>284</width>
+            <height>51</height>
+	    <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+
+
+	</control>
+
+	
+	<control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>350</posy>
+            <width>284</width>
+            <height>51</height>
+	    <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+
+
+	</control>
+
+	<control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>405</posy>
+            <width>284</width>
+            <height>51</height>
+	    <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+
+	</control>
+
+		<control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>460</posy>
+            <width>284</width>
+            <height>51</height>
+	    <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+
+	</control>
+
+	<control type="image">
+            <description>Poster</description>
+            <posx>70</posx>
+            <posy>425</posy>
+            <width>180</width>
+            <height>35</height>
+	       <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>$INFO[ListItem.Art(poster)]</texture>
+
+	</control>
+
+	<control type="image">
+            <description>Channel Overlay</description>
+            <posx>77</posx>
+            <posy>460</posy>
+            <width>284</width>
+            <height>51</height>
+	    <colordiffuse>FFFFFFFF</colordiffuse>
+            <texture>pstvButtonNoFocus1.png</texture>
+
+	</control>
+
+
+	
+	<control type="label">
+    	    <description>Timel</description>
+            <posx>50</posx>
+            <posy>60</posy>
+    	    <width min="40" max="100">auto</width>
+    	    <height>30</height>
+            <label>$INFO[System.Time]</label>
+            <font>font25</font>
+    	    <align>left</align>
+    	    <textcolor>$VAR[TitleColorVar]</textcolor>
+
+	</control>
+
+		
+
+
+
+		<control type="grouplist">
+			<posx>68</posx>
+			<posy>520</posy>
+			<width>1000</width>
+			<height>40</height>
+			<orientation>horizontal</orientation>
+			<itemgap>10</itemgap>
+
+		
+        
+			<control type="label" id="500">
+				<description>Show Name Label</description>
+				<width min="100" max="800">auto</width>
+				<height>40</height>
+				<label>Show Name</label>
+				<font>font_bold20</font>
+				<align>left</align>
+				<textcolor>C0C0C0C0</textcolor>
+			</control>
+			
+			<control type="label">
+				<description>Show Name Label</description>
+				<width>10</width>
+				<height>40</height>
+				<label>•</label>
+				<font>font12</font>
+				<align>left</align>
+				<textcolor></textcolor>
+			</control>
+
+			<control type="label" id="501">
+				<description>Show Title Label</description>
+				<width min="100" max="800">auto</width>
+				<height>40</height>
+				<label>Show Title</label>
+				<font>font_bold20</font>
+				<align>left</align>
+				<textcolor>C0C0C0C0</textcolor>
+			</control>
+
+		</control>
+			
+
+			
+		
+        <control type="label" id="502">
+            <description>Show Description Label</description>
+		 <align>left</align>
+            <posx>68</posx>
+            <posy>570</posy>
+            <width>835</width>
+            <height>100</height>
+            <label fallback="31006">Show Description</label>
+		 <autoscroll delay="5000" time="AutoScrollTime" repeat="10000">Skin.HasSetting(AutoScroll)</autoscroll>
+            <font>font20</font>
+            <textcolor>FFFFFFFF</textcolor>
+	      <wrapmultiline>true</wrapmultiline>
+        </control>
+		
+		<control type="image" id="503">
+            <description>Show Channel Icon</description>
+            <posx>1310</posx>
+            <posy>605</posy>
+            <width>1</width>
+            <height>1</height>
+			<aspectratio>scale</aspectratio>
+			<aligny>top</aligny>
+        </control>
+		
+        <control type="label" id="101">
+            <description>Time Left Label</description>
+            <posx>375</posx>
+            <posy>152</posy>
+            <width>270</width>
+            <height>26</height>
+            <label>Time 1</label>
+            <font>font12</font>
+            <align>left</align>
+	    <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+
+        <control type="label" id="102">
+            <description>Time Middle Label</description>
+            <posx>645</posx>
+            <posy>152</posy>
+            <width>270</width>
+            <height>26</height>
+            <label>Time 2</label>
+            <font>font12</font>
+            <align>left</align>
+	    <aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+
+        <control type="label" id="103">
+            <description>Time Right Label</description>
+            <posx>915</posx>
+	    <posy>152</posy>
+            <width>270</width>
+            <height>26</height>
+            <label>Time 2</label>
+            <font>font12</font>
+            <align>left</align>
+			<aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+
+		
+		<control type="label" id="104">
+            <description>Date Label</description>
+            <posx>135</posx>
+            <posy>152</posy>
+            <width>270</width>
+            <height>26</height>
+            <label>Current Date</label>
+            <font>font12</font>
+            <align>left</align>
+			<aligny>center</aligny>
+            <textcolor>FFFFFFFF</textcolor>
+        </control>
+
+		<!--SHOW LISTINGS-->
+	<control type="group" id="111">
+            <posx>365</posx>
+            <posy>185</posy>
+            <width>810</width>
+            <height>51</height>
+        </control>
+
+        <control type="group" id="112">
+            <posx>365</posx>
+            <posy>240</posy>
+            <width>810</width>
+            <height>51</height>
+		 <visible>true</visible>
+		 <itemgap>6</itemgap>
+        </control>
+
+        <control type="group" id="113">
+            <posx>365</posx>
+            <posy>295</posy>
+            <width>810</width>
+            <height>51</height>
+        </control>
+
+        <control type="group" id="114">
+            <posx>365</posx>
+            <posy>350</posy>
+            <width>810</width>
+            <height>51</height>
+        </control>
+
+        <control type="group" id="115">
+            <posx>365</posx>
+            <posy>405</posy>
+            <width>810</width>
+            <height>51</height>
+        </control>
+        
+        <control type="group" id="116">
+            <posx>365</posx>
+            <posy>460</posy>
+            <width>810</width>
+            <height>51</height>
+        </control>
+		
+		<control type="image" id="120">
+            <posx>360</posx>
+            <posy>180</posy>
+            <width>20</width>
+            <height>330</height>
+        </control>
+
+	  
+
+		<!--CHANNEL BUTTONS AND LABELS-->
+		
+        <control type="label" id="301">
+            <description>Channel 1 Name</description>
+            <posx>150</posx>
+            <posy>190</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor></textcolor>
+        </control>
+
+        <control type="label" id="311">
+            <description>Channel 1 Number</description>
+            <posx>98</posx>
+            <posy>190</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>1</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>$VAR[TitleColorVar]</textcolor>
+        </control>
+
+        <control type="image" id="321">
+            <description>Channel 1 Icon</description>
+            <posx>150</posx>
+            <posy>175</posy>
+            <width>131</width>
+            <height>69</height>
+            <texture>Icon</texture>
+		 <aligny>center</aligny>
+		 <alignx>center</alignx>
+		 <aspectratio>keep</aspectratio>
+            <colordiffuse></colordiffuse>
+        </control>
+
+        <control type="label" id="302">
+            <description>Channel 2 Name</description>
+            <posx>150</posx>
+            <posy>151</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor></textcolor>
+        </control>
+
+        <control type="label" id="312">
+            <description>Channel 2 Number</description>
+            <posx>98</posx>
+            <posy>243</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>2</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>$VAR[TitleColorVar]</textcolor>
+        </control>
+
+        <control type="image" id="322">
+            <description>Channel 2 Icon</description>
+            <posx>150</posx>
+            <posy>230</posy>
+            <width>131</width>
+            <height>69</height>
+            <texture>Icon</texture>
+		 <aspectratio>keep</aspectratio>
+            <colordiffuse></colordiffuse>
+        </control>
+
+        <control type="label" id="303">
+            <description>Channel 3 Name</description>
+            <posx>150</posx>
+            <posy>457</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor></textcolor>
+        </control>
+
+        <control type="label" id="313">
+            <description>Channel 3 Number</description>
+            <posx>98</posx>
+            <posy>298</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>3</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>$VAR[TitleColorVar]</textcolor>
+        </control>
+
+        <control type="image" id="323">
+            <description>Channel 3 Icon</description>
+            <posx>150</posx>
+            <posy>285</posy>
+            <width>131</width>
+            <height>69</height>
+            <texture>Icon</texture>
+            <colordiffuse></colordiffuse>
+        </control>
+
+        <control type="label" id="304">
+            <description>Channel 4 Name</description>
+            <posx>150</posx>
+            <posy>510</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor></textcolor>
+        </control>
+
+        <control type="label" id="314">
+            <description>Channel 4 Number</description>
+            <posx>98</posx>
+            <posy>352</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>4</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>$VAR[TitleColorVar]</textcolor>
+        </control>
+
+        <control type="image" id="324">
+            <description>Channel 4 Icon</description>
+            <posx>150</posx>
+            <posy>340</posy>
+            <width>131</width>
+            <height>69</height>
+            <texture></texture>
+            <colordiffuse></colordiffuse>
+        </control>
+
+        <control type="label" id="305">
+            <description>Channel 5 Name</description>
+			<posx>160</posx>
+            <posy>563</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor></textcolor>
+        </control>
+
+        <control type="label" id="315">
+            <description>Channel 5 Number</description>
+            <posx>98</posx>
+            <posy>407</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>5</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>$VAR[TitleColorVar]</textcolor>
+        </control>
+
+        <control type="image" id="325">
+            <description>Channel 5 Icon</description>
+            <posx>150</posx>
+            <posy>395</posy>
+            <width>131</width>
+            <height>69</height>
+            <texture></texture>
+            <colordiffuse></colordiffuse>
+        </control>
+		
+		<control type="label" id="306">
+            <description>Channel 6 Name</description>
+            <posx>110</posx>
+            <posy>616</posy>
+            <width>200</width>
+            <height>42</height>
+            <label>Channel</label>
+            <font>font13</font>
+            <align>left</align>
+            <aligny>center</aligny>
+            <textcolor></textcolor>
+        </control>
+
+        <control type="label" id="316">
+            <description>Channel 6 Number</description>
+            <posx>98</posx>
+            <posy>461</posy>
+            <width>40</width>
+            <height>42</height>
+            <label>6</label>
+            <font>font13</font>
+            <align>right</align>
+            <aligny>center</aligny>
+            <textcolor>$VAR[TitleColorVar]</textcolor>
+        </control>
+
+        <control type="image" id="326">
+            <description>Channel 6 Icon</description>
+            <posx>150</posx>
+            <posy>450</posy>
+            <width>131</width>
+            <height>69</height>
+            <texture></texture>
+            <colordiffuse></colordiffuse>
+        </control>
+
+		 <control type="image">
+            <description>border</description>
+            <posx>50</posx>
+            <posy>140</posy>
+            <width>1159</width>
+            <height>390</height>
+            <texture background="false">border_4.png</texture>
+		 <bordertexture border="7">thumbs/bordershadow4.png</bordertexture>
+		 <bordersize>7</bordersize>
+
+	</control>
+
+
+    </controls>
+</window>
