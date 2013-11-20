@@ -38,7 +38,7 @@ __cwd__        = __settings__.getAddonInfo('path')
 
 import resources.lib.Overlay as Overlay
 
-MyOverlayWindow = Overlay.TVOverlay("script.pseudotv.live.TVOverlay.xml", __cwd__, Skin)
+MyOverlayWindow = Overlay.TVOverlay("script.pseudotv.live.TVOverlay.xml", __cwd__, Skin_Select)
 
 for curthread in threading.enumerate():
     try:

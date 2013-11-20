@@ -186,7 +186,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.playerTimer = threading.Timer(2.0, self.playerTimerAction)
         self.playerTimer.name = "PlayerTimer"
         self.infoTimer = threading.Timer(5.0, self.hideInfo)
-        self.myEPG = EPGWindow("script.pseudotv.live.EPG.xml", ADDON_INFO, Skin)
+        self.myEPG = EPGWindow("script.pseudotv.live.EPG.xml", ADDON_INFO, Skin_Select)
         self.myEPG.MyOverlayWindow = self
         # Don't allow any actions during initialization
         self.actionSemaphore.acquire()

@@ -19,6 +19,7 @@
 import os
 import xbmcaddon, xbmc, xbmcgui
 import Settings
+import sys, re
 
 
 from FileAccess import FileLock
@@ -76,30 +77,34 @@ if REAL_SETTINGS.getSetting('ChannelSharing') == "true":
     CHANNEL_SHARING = True
     LOCK_LOC = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('SettingsFolder'), 'cache')) + '/'
 
+
 if int(REAL_SETTINGS.getSetting('SkinSelector')) == 0:
-    Skin = 'default'
+    Skin_Select = 'default'
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
         REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
 elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 1:
-    Skin = 'FrostedGlass'  
+    Skin_Select = 'FrostedGlass'  
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":  
         REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/FrostedGlass/images/')
 elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 2:
-    Skin = 'AeonOrange'
+    Skin_Select = 'AeonOrange'
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
         REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/AeonnoxOrange/images/')
-# elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 3:
-    # if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', xbmc.getSkinDir(), 'media'))):
-        # Skin = str(xbmc.getSkinDir())
-    # else:
-        # Skin = 'default'
-        # if REAL_SETTINGS.getSetting("SkinLogos") == "true":
-            # REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
+elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 3:
+    Match_Skin = xbmc.getSkinDir()
+    Match_Skin = re.sub(r'skin.',"",Match_Skin)
+    log("Match_Skin = " + Match_Skin)
+    if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Match_Skin, 'media'))):
+        Skin_Select = str(Match_Skin)
+    else:
+        Skin_Select = 'default'
+        if REAL_SETTINGS.getSetting("SkinLogos") == "true":
+            REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
     
     
         
-if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'images'))):   
-    IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'images')) + '/'
+if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'images'))):   
+    IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'images')) + '/'
 else:
     IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', 'default', 'images')) + '/'
   

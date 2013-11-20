@@ -48,8 +48,8 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.textfont  = "font14"
         self.startup = time.time()
 
-        if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'media'))): 
-            self.mediaPath = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'media')) + '/'
+        if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'media'))): 
+            self.mediaPath = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'media')) + '/'
         else:
             self.mediaPath =  xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', 'default', 'media')) + '/'
         
@@ -111,7 +111,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         timex, timey = self.getControl(120).getPosition()
         timew = self.getControl(120).getWidth()
         timeh = self.getControl(120).getHeight()
-        if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin, 'media', TIME_BAR))):
+        if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'media', TIME_BAR))):
             self.currentTimeBar = xbmcgui.ControlImage(timex, timey, timew, timeh, self.mediaPath + TIME_BAR)  
         else:
             self.currentTimeBar = xbmcgui.ControlImage(timex, timey, timew, timeh, self.AltmediaPath + TIME_BAR)      
