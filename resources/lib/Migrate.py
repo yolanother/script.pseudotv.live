@@ -21,7 +21,10 @@ import xbmcaddon, xbmc, xbmcgui
 import Settings
 import Globals
 import ChannelList
-import ConfigParser
+import Overlay
+import time
+
+# import ConfigParser
 
 # from xml.parsers.expat import ExpatError
 from FileAccess import FileLock, FileAccess
@@ -38,6 +41,7 @@ class Migrate:
         chanlist = ChannelList.ChannelList()
         chanlist.background = True
         chanlist.forceReset = True
+        chanlist.createlist = True
         
         # If Autotune is enabled direct to autotuning
         if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning1") == "true":
@@ -110,11 +114,11 @@ class Migrate:
               
     def autoTune(self):
         self.log('autoTune, Init')
+        curtime = time.time()
         chanlist = ChannelList.ChannelList()
         chanlist.background = True
-        chanlist.needsreset = True
+        # chanlist.needsreset = True
         chanlist.makenewlists = True
-        # chanlist.createlist = True
         
         UserPass = Globals.REAL_SETTINGS.getSetting('Donor_UP')
         # self.log("autoTune, Donor VIP User:Password = " + str(UserPass))
@@ -280,7 +284,7 @@ class Migrate:
                 # add network presets
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_type", "1")
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_time", "0")
-                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1", str(chanlist.networkList[i]))
+                Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_1",str(chanlist.networkList[i]))
                 Globals.ADDON_SETTINGS.setSetting("Channel_" + str(channelNum) + "_changed", "true")
                 self.updateDialog.update(self.updateDialogProgress,"Auto Tune","Adding TV Network",str(chanlist.networkList[i]))
         
@@ -597,11 +601,11 @@ class Migrate:
         Globals.REAL_SETTINGS.setSetting("autoFindMusicVideosLastFM","false")
         Globals.REAL_SETTINGS.setSetting("autoFindMusicVideosLocal","")
         Globals.REAL_SETTINGS.setSetting("autoFindInternetStrms","false")
-        
-        # force a reset
         Globals.REAL_SETTINGS.setSetting("ForceChannelReset","true")
-        
+
+        Globals.ADDON_SETTINGS.setSetting('LastExitTime', str(int(curtime)))
         self.updateDialog.close()
+        
 
 
     ##### TV-Guide addons.ini prasing * Thanks Tommy Winther ##### todo #####
