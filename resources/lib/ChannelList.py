@@ -32,6 +32,7 @@ from urllib import unquote
 from urllib import urlopen
 from xml.etree import ElementTree as ET
 from xml.dom.minidom import parse, parseString
+from subprocess import Popen, PIPE, STDOUT
 
 from Playlist import Playlist
 from Globals import *
@@ -324,7 +325,7 @@ class ChannelList:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
             #disable force rebuild for livetv channels w/ TVDB and TMDB, else force rebuild:
-            if chtype == 8:
+            if chtype == 8 or chtype == 9:
                 if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):
                     self.log("Force LiveTV rebuild - Disabled")
                     needsreset = False
@@ -572,7 +573,7 @@ class ChannelList:
     
     # Based on a smart playlist, create a normal playlist that can actually be used by us
     def makeChannelList(self, channel, chtype, setting1, setting2, setting3, setting4, append = False):
-        self.log('makeChannelList ' + str(channel))
+        self.log('makeChannelList, CHANNEL: ' + str(channel))
         israndom = False
         fileList = []
 
@@ -623,9 +624,56 @@ class ChannelList:
                 fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)
             
         elif chtype == 9: # InternetTV
-            self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
-            fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel) 
+        
+            OSplat = REAL_SETTINGS.getSetting('os')
+            if OSplat == '0':
+                OSpath = 'androidarm/rtmpdump'
+            elif OSplat == '1':
+                OSpath = 'android86/rtmpdump'
+            elif OSplat == '2':
+                OSpath = 'atv1linux/rtmpdump'
+            elif OSplat == '3':
+                OSpath = 'atv1stock/rtmpdump'
+            elif OSplat == '4':
+                OSpath = 'atv2/rtmpdump'
+            elif OSplat == '5':
+                OSpath = 'ios/rtmpdump'
+            elif OSplat == '6':
+                OSpath = 'linux32/rtmpdump'
+            elif OSplat == '7':
+                OSpath = 'linux64/rtmpdump'
+            elif OSplat == '8':
+                OSpath = 'mac32/rtmpdump'
+            elif OSplat == '9':
+                OSpath = 'mac64/rtmpdump'
+            elif OSplat == '10':
+                OSpath = 'pi/rtmpdump'
+            elif OSplat == '11':
+                OSpath = 'win/rtmpdump.exe'
+            elif OSplat == '12':
+                OSpath = '/usr/bin/rtmpdump'
             
+            if setting2[0:4] == 'rtmp': #rtmp check
+                RTMPDUMP = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'lib', 'rtmpdump', OSpath))
+                self.log("RTMPDUMP = " + RTMPDUMP)
+                assert os.path.isfile(RTMPDUMP)
+                command = [RTMPDUMP,'-r', setting2,'-o','test.flv']
+                self.log("RTMPDUMP command = " + str(command))
+                CheckRTMP = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+                output = CheckRTMP.communicate()[0]
+                self.log("output = " + output)
+                if "INFO: Connected..." in output:
+                    self.log("INFO: Connected...")
+                    fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+                    self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
+                else:
+                    self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VAILD")
+                    
+            if setting2[0:4] == 'http':#http check
+                fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+                self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
+                        
+
         elif chtype == 10: # Youtube
             self.log("Building Youtube Channel " + setting1 + " using type " + setting2 + "...")
             fileList = self.createYoutubeFilelist(setting1, setting2, setting3, channel)
@@ -2807,7 +2855,15 @@ class ChannelList:
         except:
             self.log("Unable to get the playlist type.", xbmc.LOGERROR)
             return ''
-
+    
+    
+    def getUrl(url):
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        return link
     
     # def makeChannelListFromFolder(self, channel, folder, location):
         # self.log("makeChannelListFromFolder")

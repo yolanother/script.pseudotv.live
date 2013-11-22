@@ -39,6 +39,7 @@
     </category>
 
    <category label="30050">
+        <setting id="os" type="enum" values="Android Arm|Android x86|ATV1 Linux|ATV1 Stock|ATV2|IOS|Linux 32bit|Linux 64bit|Mac 32bit|Mac 64bit|Rasberry Pi|Windows|TLBB" label="30063" default="11" />
        	<setting id="IncludeIceLib" type="bool" label="30051" visible="eq(-1,!true)" default="true"/>
         <setting label="30062" type="lsep"/>
         <setting id="xmltv" type="folder" source="auto" label="30053" default="" />
@@ -46,8 +47,7 @@
         <setting id="Parselimit" type="enum" label="30059" values="50|100|150|200|250" default="0"/>
         <setting id="Includestrms" type="bool" label="30056" default="false"/>
         <setting label="30060" type="lsep"/>
-        <!-- <setting id="RSSlimit" subsetting="true" type="enum" label="30059" values="100|250|500|1000" default="0"/> -->
-        <!-- <setting id="IncludeRSSstrms" subsetting="true" type="bool" label="30056" default="false"/> -->
+
     </category>
    
     <category label="30029">
@@ -136,4 +136,4 @@
         <setting label="30403" visible="eq(-2,true)" type="lsep" default="" />    
         <setting label="30404" visible="eq(-3,true)" type="lsep" default="" />    
     </category>
-</settings>
+   </settings>
