@@ -591,38 +591,45 @@ class ChannelList:
             else:
                 self.log("Building LiveTV using tuner1")
                 setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
-            
-            ###########################################################################
-            ########################## make into class todo ###########################
-            ##### class: check if xmltv is avaliabe (true/false)...def xmltv_vaild#####
+            ########################################################
+            # Vaildate XMLTV Data #
             if setting3 == 'ustvnow':
-                url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow XMLTV list
-                try:
-                    self.xmlTvFile = url      
-                except:
-                    self.log("makeChannelList, Could not determine path of " + setting3 +".xml")
-                    return
-                
-                f = urlopen(url)    
-
-            elif setting3 == "":
-                self.log("makeChannelList, xmltv = default")
-                setting3 = 'xmltv'
-                
-            else:
-                xmltv = setting3
-                self.log("makeChannelList, xmltv = " + setting3)
-
-                try:
-                    self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) +'.xml'))
-                except:
-                    self.log("makeChannelList, Could not determine path of " + setting3 +".xml trying xmltv.xml")
-                    return
-            ###############################################################################    
+                self.xmltv_ok(setting3)
             
-            if FileAccess.exists(self.xmlTvFile) or urlopen(url):
-                fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)
+            elif setting3 != 'ustvnow':  
+                self.xmltv_ok(setting3)              
+            ##################TEST FEED##########
+            # Vaildate LiveTV Feed #
+            if self.xmltvVaild == True:
+               
+                if setting2[0:4] == 'rtmp': #rtmp check
+                    self.rtmpDump(setting2)  
+                    if self.rtmpVaild == True:   
+                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
+                    else:
+                        self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
+                        return    
+                
+                elif setting2[0:4] == 'http':#http check     
+                    self.url_ok(setting2) 
+                    if self.urlVaild == True: 
+                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
+                    else:
+                        self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
+                        return    
             
+                elif setting2[0:6] == 'plugin':#plugin check    
+                    self.plugin_ok(setting2)
+                    if self.PluginFound == True:
+                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
+                    else:
+                        self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
+                        return
+                
+                #Override Checks# 
+                else:
+                    fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+                  
         elif chtype == 9: # InternetTV
             if setting2[0:4] == 'rtmp': #rtmp check
                 self.rtmpDump(setting2)
@@ -648,7 +655,9 @@ class ChannelList:
                     self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
                     return
                         
-        #Override Checks # fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+            #Override Checks# 
+            else:
+                fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     
         elif chtype == 10: # Youtube
             self.log("Building Youtube Channel " + setting1 + " using type " + setting2 + "...")
@@ -1708,34 +1717,10 @@ class ChannelList:
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "Parsing LiveTV")
         
-        ## use def xmltv_vaild todo ##   
         if setting3 == 'ustvnow':
-            self.log("buildLiveTVFileList, xmltv = ustvnow")
-            url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml'
-            try:
-                self.xmlTvFile = url      
-            except:
-                self.log("buildLiveTVFileList, Could not determine path of" + setting3 +".xml")
-                return
-            
-            f = urlopen(url)       
-
-        elif setting3 == "":
-            self.log("buildLiveTVFileList, xmltv = default")
-            setting3 = 'xmltv'
-            
-        else:
-            xmltv = setting3
-            self.log("buildLiveTVFileList, xmltv = " + setting3)
-        #############################
+            f = urlopen(self.xmlTvFile)    
         
-            try:
-                self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) +'.xml'))
-            except:
-                self.log("buildLiveTVFileList, Could not determine path of" + setting3 +".xml trying xmltv.xml")
-                self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), 'xmltv.xml'))
-                return
-                
+        elif setting3 != 'ustvnow':
             f = FileAccess.open(self.xmlTvFile, "rb")
         
         context = ET.iterparse(f, events=("start", "end")) 
@@ -3142,6 +3127,43 @@ class ChannelList:
 
         # return fileList
         
+    def xmltv_ok(self, setting3):
+        self.xmltvVaild = False
+        self.xmlTvFile = '' 
+        self.log("setting3 = " + str(setting3))
+        
+        if setting3 == 'ustvnow':
+            self.log("xmltv_ok, testing " + str(setting3))
+            url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow XMLTV list
+            url_bak = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow XMLTV list
+            try: 
+                urllib2.urlopen(url)
+                self.log("INFO: URL Connected...")
+                self.xmltvVaild = True
+                self.xmlTvFile = url 
+            except URLError as e:
+                urllib2.urlopen(url_bak)
+                self.log("INFO: URL_BAK Connected...")
+                self.xmltvVaild = True
+                self.xmlTvFile = url_bak
+            except URLError as e:
+                self.log("ERROR: Problem accessing the DNS. USTVnow XMLTV URL NOT VAILD, ERROR: " + str(e))
+                self.xmltvVaild = False
+
+        elif setting3 != 'ustvnow':
+            self.log("xmltv_ok, testing " + str(setting3) +".xml")
+            path = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) +'.xml'))
+            try:
+                FileAccess.exists(path, "rb")
+                self.log("INFO: XMLTV Data Found...")
+                self.xmltvVaild = True
+                self.xmlTvFile = path
+            except IOError as e:
+                self.xmltvVaild = False
+                self.log("ERROR: Problem accessing the DNS. " + str(setting3) +".xml XMLTV file NOT FOUND, ERROR: " + str(e))
+
+        self.log("xmltvVaild = " + str(self.xmltvVaild))
+                    
         
     def rtmpDump(self, stream):
         self.rtmpVaild = False
@@ -3192,18 +3214,10 @@ class ChannelList:
             self.rtmpVaild = False
         
         self.log("rtmpVaild = " + str(self.rtmpVaild))
-        
-            
-    # def getUrl(url):
-        # req = urllib2.Request(url)
-        # response = urllib2.urlopen(req)
-        # # response = urllib2.urlopen(request, timeout=4)
-        # link=response.read()
-        # response.close()
-        # return link
+
         
     def url_ok(self, url):
-        self.rtmpVaild = False
+        self.urlVaild = False
         url = unquote(url)
         try: 
             urllib2.urlopen(url)
