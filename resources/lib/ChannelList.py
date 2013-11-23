@@ -582,8 +582,9 @@ class ChannelList:
             israndom = True                    
      
         elif chtype == 8: # LiveTV
-            self.log("Building LiveTV Channel " + setting1 + " " + setting2 + "...")
+            self.log("Building LiveTV Channel, " + setting1 + " , " + setting2 + " , " + setting3)
             
+            # HDhomerun #
             #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
             if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
                 self.log("Building LiveTV using tuner0")
@@ -591,74 +592,82 @@ class ChannelList:
             else:
                 self.log("Building LiveTV using tuner1")
                 setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
-            ########################################################
+            
             # Vaildate XMLTV Data #
             if setting3 == 'ustvnow':
                 self.xmltv_ok(setting3)
             
             elif setting3 != 'ustvnow':  
-                self.xmltv_ok(setting3)              
-            ##################TEST FEED##########
+                self.xmltv_ok(setting3)
+            
             # Vaildate LiveTV Feed #
             if self.xmltvVaild == True:
-               
-                if setting2[0:4] == 'rtmp': #rtmp check
-                    self.rtmpDump(setting2)  
-                    if self.rtmpVaild == True:   
-                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
-                    else:
-                        self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
-                        return    
+            
+                #Override Checks# 
+                if REAL_SETTINGS.getSetting('Override_ok') == "true":
+                    self.log("Overriding Stream Vaildation")
+                    fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel) 
+                else:
                 
-                elif setting2[0:4] == 'http':#http check     
-                    self.url_ok(setting2) 
-                    if self.urlVaild == True: 
+                    if setting2[0:4] == 'rtmp': #rtmp check
+                        self.rtmpDump(setting2)  
+                        if self.rtmpVaild == True:   
+                            fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
+                        else:
+                            self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
+                            return    
+                    
+                    elif setting2[0:4] == 'http':#http check     
+                        self.url_ok(setting2) 
+                        if self.urlVaild == True: 
+                            fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
+                        else:
+                            self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
+                            return    
+                
+                    elif setting2[0:6] == 'plugin':#plugin check    
+                        self.plugin_ok(setting2)
+                        if self.PluginFound == True:
+                            fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
+                        else:
+                            self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
+                            return
+                    else:
                         fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
+                    
+        elif chtype == 9: # InternetTV
+            self.log("Building InternetTV Channel, " + setting1 + " , " + setting2 + " , " + setting3)
+            
+            #Override Checks# 
+            if REAL_SETTINGS.getSetting('Override_ok') == "true":
+                self.log("Overriding Stream Vaildation")
+                fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+            else:
+            
+                if setting2[0:4] == 'rtmp': #rtmp check
+                    self.rtmpDump(setting2)
+                    if self.rtmpVaild == True:
+                        fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+                    else:
+                        self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'RTMP invalid: ' + str(setting2))
+                        return
+       
+                elif setting2[0:4] == 'http':#http check                
+                    self.url_ok(setting2)
+                    if self.urlVaild == True:
+                        fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     else:
                         self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
-                        return    
-            
-                elif setting2[0:6] == 'plugin':#plugin check    
+                        return   
+                
+                elif setting2[0:6] == 'plugin':#plugin check                
                     self.plugin_ok(setting2)
                     if self.PluginFound == True:
-                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
+                        fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     else:
                         self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
                         return
-                
-            #Override Checks# 
-            if REAL_SETTINGS.getSetting('Override_ok') == "true":
-                fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel) 
-                  
-        elif chtype == 9: # InternetTV
-            if setting2[0:4] == 'rtmp': #rtmp check
-                self.rtmpDump(setting2)
-                if self.rtmpVaild == True:
-                    fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
-                else:
-                    self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'RTMP invalid: ' + str(setting2))
-                    return
-   
-            elif setting2[0:4] == 'http':#http check                
-                self.url_ok(setting2)
-                if self.urlVaild == True:
-                    fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
-                else:
-                    self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
-                    return   
-            
-            elif setting2[0:6] == 'plugin':#plugin check                
-                self.plugin_ok(setting2)
-                if self.PluginFound == True:
-                    fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
-                else:
-                    self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
-                    return
                         
-            #Override Checks# 
-            if REAL_SETTINGS.getSetting('Override_ok') == "true":
-                fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
-                    
         elif chtype == 10: # Youtube
             self.log("Building Youtube Channel " + setting1 + " using type " + setting2 + "...")
             fileList = self.createYoutubeFilelist(setting1, setting2, setting3, channel)
