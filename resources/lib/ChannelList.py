@@ -326,12 +326,12 @@ class ChannelList:
             
             #disable force rebuild for livetv channels w/ TVDB and TMDB, else force rebuild:
             if chtype == 8 or chtype == 9:
-                if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true'):
+                if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true') and chtype == 8:
                     self.log("Force LiveTV rebuild - Disabled")
                     needsreset = False
                     makenewlist = False
                 else:                
-                    self.log("Force LiveTV rebuild")
+                    self.log("Force LiveTV/InternetTV rebuild")
                     needsreset = True
                     makenewlist = True
             
@@ -624,56 +624,32 @@ class ChannelList:
                 fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)
             
         elif chtype == 9: # InternetTV
-        
-            OSplat = REAL_SETTINGS.getSetting('os')
-            if OSplat == '0':
-                OSpath = 'androidarm/rtmpdump'
-            elif OSplat == '1':
-                OSpath = 'android86/rtmpdump'
-            elif OSplat == '2':
-                OSpath = 'atv1linux/rtmpdump'
-            elif OSplat == '3':
-                OSpath = 'atv1stock/rtmpdump'
-            elif OSplat == '4':
-                OSpath = 'atv2/rtmpdump'
-            elif OSplat == '5':
-                OSpath = 'ios/rtmpdump'
-            elif OSplat == '6':
-                OSpath = 'linux32/rtmpdump'
-            elif OSplat == '7':
-                OSpath = 'linux64/rtmpdump'
-            elif OSplat == '8':
-                OSpath = 'mac32/rtmpdump'
-            elif OSplat == '9':
-                OSpath = 'mac64/rtmpdump'
-            elif OSplat == '10':
-                OSpath = 'pi/rtmpdump'
-            elif OSplat == '11':
-                OSpath = 'win/rtmpdump.exe'
-            elif OSplat == '12':
-                OSpath = '/usr/bin/rtmpdump'
-            
             if setting2[0:4] == 'rtmp': #rtmp check
-                RTMPDUMP = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'lib', 'rtmpdump', OSpath))
-                self.log("RTMPDUMP = " + RTMPDUMP)
-                assert os.path.isfile(RTMPDUMP)
-                command = [RTMPDUMP,'-r', setting2,'-o','test.flv']
-                self.log("RTMPDUMP command = " + str(command))
-                CheckRTMP = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-                output = CheckRTMP.communicate()[0]
-                self.log("output = " + output)
-                if "INFO: Connected..." in output:
-                    self.log("INFO: Connected...")
+                self.rtmpDump(setting2)
+                if self.rtmpVaild == True:
                     fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
-                    self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
                 else:
-                    self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VAILD")
-                    
-            if setting2[0:4] == 'http':#http check
-                fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
-                self.log("Building InternetTV Channel " + setting1 + " " + setting2 + "...")
+                    self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'RTMP invalid: ' + str(setting2))
+                    return
+   
+            elif setting2[0:4] == 'http':#http check                
+                self.url_ok(setting2)
+                if self.urlVaild == True:
+                    fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+                else:
+                    self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
+                    return   
+            
+            elif setting2[0:6] == 'plugin':#plugin check                
+                self.plugin_ok(setting2)
+                if self.PluginFound == True:
+                    fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+                else:
+                    self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
+                    return
                         
-
+        #Override Checks # fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+                    
         elif chtype == 10: # Youtube
             self.log("Building Youtube Channel " + setting1 + " using type " + setting2 + "...")
             fileList = self.createYoutubeFilelist(setting1, setting2, setting3, channel)
@@ -2856,14 +2832,7 @@ class ChannelList:
             self.log("Unable to get the playlist type.", xbmc.LOGERROR)
             return ''
     
-    
-    def getUrl(url):
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
-        response = urllib2.urlopen(req)
-        link=response.read()
-        response.close()
-        return link
+
     
     # def makeChannelListFromFolder(self, channel, folder, location):
         # self.log("makeChannelListFromFolder")
@@ -3173,3 +3142,120 @@ class ChannelList:
 
         # return fileList
         
+        
+    def rtmpDump(self, stream):
+        self.rtmpVaild = False
+        url = unquote(stream)
+        
+        OSplat = REAL_SETTINGS.getSetting('os')
+        if OSplat == '0':
+            OSpath = 'androidarm/rtmpdump'
+        elif OSplat == '1':
+            OSpath = 'android86/rtmpdump'
+        elif OSplat == '2':
+            OSpath = 'atv1linux/rtmpdump'
+        elif OSplat == '3':
+            OSpath = 'atv1stock/rtmpdump'
+        elif OSplat == '4':
+            OSpath = 'atv2/rtmpdump'
+        elif OSplat == '5':
+            OSpath = 'ios/rtmpdump'
+        elif OSplat == '6':
+            OSpath = 'linux32/rtmpdump'
+        elif OSplat == '7':
+            OSpath = 'linux64/rtmpdump'
+        elif OSplat == '8':
+            OSpath = 'mac32/rtmpdump'
+        elif OSplat == '9':
+            OSpath = 'mac64/rtmpdump'
+        elif OSplat == '10':
+            OSpath = 'pi/rtmpdump'
+        elif OSplat == '11':
+            OSpath = 'win/rtmpdump.exe'
+        elif OSplat == '12':
+            OSpath = '/usr/bin/rtmpdump'
+            
+        RTMPDUMP = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'lib', 'rtmpdump', OSpath))
+        self.log("RTMPDUMP = " + RTMPDUMP)
+        assert os.path.isfile(RTMPDUMP)
+        command = [RTMPDUMP,'-r', url,'-o','test.flv']
+        self.log("RTMPDUMP command = " + str(command))
+        CheckRTMP = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+        output = CheckRTMP.communicate()[0]
+        self.log("output = " + output)
+        
+        if "INFO: Connected..." in output:
+            self.log("INFO: Connected...")
+            self.rtmpVaild = True
+        else:
+            self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VAILD")
+            self.rtmpVaild = False
+        
+        self.log("rtmpVaild = " + str(self.rtmpVaild))
+        
+            
+    # def getUrl(url):
+        # req = urllib2.Request(url)
+        # response = urllib2.urlopen(req)
+        # # response = urllib2.urlopen(request, timeout=4)
+        # link=response.read()
+        # response.close()
+        # return link
+        
+    def url_ok(self, url):
+        self.rtmpVaild = False
+        url = unquote(url)
+        try: 
+            urllib2.urlopen(url)
+            self.log("INFO: Connected...")
+            self.urlVaild = True
+        except URLError as e:
+            self.log("ERROR: Problem accessing the DNS. HTTP URL NOT VAILD")
+            self.urlVaild = False
+        
+        self.log("urlVaild = " + str(self.urlVaild))
+        
+        
+    def plugin_ok(self, plugin):
+        self.PluginFound = False
+        self.PluginVaild = False
+        stream = plugin
+        self.log("plugin stream = " + stream)
+        id = plugin.split("/?")[0]
+        id = id.split('//', 1)[-1]
+        self.log("plugin id = " + id)
+        try:
+            xbmcaddon.Addon(id)
+            self.PluginFound = True
+        except Exception:
+            self.PluginFound = False 
+        
+        self.log("PluginFound = " + str(self.PluginFound))
+        
+        # if self.PluginFound == True:
+            # try:
+                # json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "files"}, "id": "1"}' % ( self.escapeDirJSON(stream),)
+                # json_folder_detail = self.sendJSON(json_query)
+                # # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
+                # # thedir = ''
+                # self.log("thedir =" + str(thedir))
+                # self.PluginVaild = True        
+            # except Exception:
+                # self.PluginVaild = False 
+        
+        # self.log("PluginVaild = " + str(self.PluginVaild))
+        # if setting1[-1:1] == '/' or setting1[-1:1] == '\\':
+            # thedir = os.path.split(setting1[:-1])[1]
+        # else:
+            # thedir = os.path.split(setting1)[1]
+
+        # for f in file_detail:
+            # if self.threadPause() == False:
+                # del fileList[:]
+                # break
+
+            # match = re.search('"file" *: *"(.*?)",', f)
+
+                
+
+
