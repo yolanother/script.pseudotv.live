@@ -627,7 +627,7 @@ class ChannelList:
                         return
                 
             #Override Checks# 
-            if REAL_SETTINGS.getSetting('Override_ok') == "true"
+            if REAL_SETTINGS.getSetting('Override_ok') == "true":
                 fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel) 
                   
         elif chtype == 9: # InternetTV
@@ -656,7 +656,7 @@ class ChannelList:
                     return
                         
             #Override Checks# 
-            if REAL_SETTINGS.getSetting('Override_ok') == "true"
+            if REAL_SETTINGS.getSetting('Override_ok') == "true":
                 fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     
         elif chtype == 10: # Youtube
