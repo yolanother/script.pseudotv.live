@@ -626,9 +626,9 @@ class ChannelList:
                         self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
                         return
                 
-                #Override Checks# 
-                else:
-                    fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+            #Override Checks# 
+            if REAL_SETTINGS.getSetting('Override_ok') == "true"
+                fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel) 
                   
         elif chtype == 9: # InternetTV
             if setting2[0:4] == 'rtmp': #rtmp check
@@ -656,7 +656,7 @@ class ChannelList:
                     return
                         
             #Override Checks# 
-            else:
+            if REAL_SETTINGS.getSetting('Override_ok') == "true"
                 fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     
         elif chtype == 10: # Youtube
