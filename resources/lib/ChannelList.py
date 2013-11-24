@@ -326,7 +326,7 @@ class ChannelList:
             
             #disable force rebuild for livetv channels w/ TVDB and TMDB, else force rebuild:
             if chtype == 8 or chtype == 9:
-                if REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true') and chtype == 8:
+                if (REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true') and chtype == 8):
                     self.log("Force LiveTV rebuild - Disabled")
                     needsreset = False
                     makenewlist = False
@@ -334,6 +334,7 @@ class ChannelList:
                     self.log("Force LiveTV/InternetTV rebuild")
                     needsreset = True
                     makenewlist = True
+                    self.background = True
             
             if needsreset:
                 self.channels[channel - 1].isSetup = False
@@ -3161,12 +3162,11 @@ class ChannelList:
 
         elif setting3 != 'ustvnow':
             self.log("xmltv_ok, testing " + str(setting3) +".xml")
-            path = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(xmltv) +'.xml'))
+            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(setting3) +'.xml'))
             try:
-                FileAccess.exists(path, "rb")
+                FileAccess.exists(self.xmlTvFile)
                 self.log("INFO: XMLTV Data Found...")
                 self.xmltvVaild = True
-                self.xmlTvFile = path
             except IOError as e:
                 self.xmltvVaild = False
                 self.log("ERROR: Problem accessing the DNS. " + str(setting3) +".xml XMLTV file NOT FOUND, ERROR: " + str(e))
@@ -3209,7 +3209,7 @@ class ChannelList:
         RTMPDUMP = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'lib', 'rtmpdump', OSpath))
         self.log("RTMPDUMP = " + RTMPDUMP)
         assert os.path.isfile(RTMPDUMP)
-        command = [RTMPDUMP,'-r', url,'-o','test.flv']
+        command = [RTMPDUMP, '-B 1', '-m 1', '-r', url,'-o','test.flv']
         self.log("RTMPDUMP command = " + str(command))
         CheckRTMP = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         output = CheckRTMP.communicate()[0]
