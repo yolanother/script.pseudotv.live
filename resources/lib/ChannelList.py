@@ -3208,17 +3208,31 @@ class ChannelList:
         RTMPDUMP = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'lib', 'rtmpdump', OSpath))
         self.log("RTMPDUMP = " + RTMPDUMP)
         assert os.path.isfile(RTMPDUMP)
-        command = [RTMPDUMP, '-B 1', '-m 1', '-r', url,'-o','test.flv']
-        self.log("RTMPDUMP command = " + str(command))
+        
+        if "playpath" in url:
+            url = re.sub(r'playpath',"-y playpath",url)
+            self.log("playpath url = " + str(url))
+            command = [RTMPDUMP, '-B 1', '-m 2', '-r', url,'-o','test.flv']
+            self.log("RTMPDUMP command = " + str(command))
+        else:
+            command = [RTMPDUMP, '-B 1', '-m 2', '-r', url,'-o','test.flv']
+            self.log("RTMPDUMP command = " + str(command))
+       
         CheckRTMP = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         output = CheckRTMP.communicate()[0]
         self.log("output = " + output)
         
-        if "INFO: Connected..." in output:
+        if "ERROR:" in output:
+            self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VAILD")
+            self.rtmpVaild = False 
+        elif "WARNING:" in output:
+            self.log("WARNING: Problem accessing the DNS. RTMP URL NOT VAILD")
+            self.rtmpVaild = False
+        elif "INFO: Connected..." in output:
             self.log("INFO: Connected...")
             self.rtmpVaild = True
         else:
-            self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VAILD")
+            self.log("ERROR?: Unknown responce...")
             self.rtmpVaild = False
         
         self.log("rtmpVaild = " + str(self.rtmpVaild))
@@ -3228,7 +3242,7 @@ class ChannelList:
         self.urlVaild = False
         url = unquote(url)
         try: 
-            urllib2.urlopen(url)
+            urllib2.urlopen(urllib2.Request(url))
             self.log("INFO: Connected...")
             self.urlVaild = True
         except urllib2.URLError as e:
@@ -3258,26 +3272,10 @@ class ChannelList:
             # try:
                 # json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "files"}, "id": "1"}' % ( self.escapeDirJSON(stream),)
                 # json_folder_detail = self.sendJSON(json_query)
-                # # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
-                # # thedir = ''
-                # self.log("thedir =" + str(thedir))
+                # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
+                # self.log('json_folder_detail = ' + str(json_folder_detail))
+                # self.log('file_detail = ' + str(file_detail))
                 # self.PluginVaild = True        
             # except Exception:
-                # self.PluginVaild = False 
-        
-        # self.log("PluginVaild = " + str(self.PluginVaild))
-        # if setting1[-1:1] == '/' or setting1[-1:1] == '\\':
-            # thedir = os.path.split(setting1[:-1])[1]
-        # else:
-            # thedir = os.path.split(setting1)[1]
-
-        # for f in file_detail:
-            # if self.threadPause() == False:
-                # del fileList[:]
-                # break
-
-            # match = re.search('"file" *: *"(.*?)",', f)
-
-                
-
+                # self.PluginVaild = False
 
