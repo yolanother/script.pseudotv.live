@@ -334,7 +334,6 @@ class ChannelList:
                     self.log("Force LiveTV/InternetTV rebuild")
                     needsreset = True
                     makenewlist = True
-                    self.background = True
             
             if needsreset:
                 self.channels[channel - 1].isSetup = False
@@ -3151,12 +3150,12 @@ class ChannelList:
                 self.log("INFO: URL Connected...")
                 self.xmltvVaild = True
                 self.xmlTvFile = url 
-            except URLError as e:
+            except urllib2.URLError as e:
                 urllib2.urlopen(url_bak)
                 self.log("INFO: URL_BAK Connected...")
                 self.xmltvVaild = True
                 self.xmlTvFile = url_bak
-            except URLError as e:
+            except urllib2.URLError as e:
                 self.log("ERROR: Problem accessing the DNS. USTVnow XMLTV URL NOT VAILD, ERROR: " + str(e))
                 self.xmltvVaild = False
 
@@ -3232,8 +3231,8 @@ class ChannelList:
             urllib2.urlopen(url)
             self.log("INFO: Connected...")
             self.urlVaild = True
-        except URLError as e:
-            self.log("ERROR: Problem accessing the DNS. HTTP URL NOT VAILD")
+        except urllib2.URLError as e:
+            self.log("ERROR: Problem accessing the DNS. HTTP URL NOT VAILD, ERROR: " + str(e))
             self.urlVaild = False
         
         self.log("urlVaild = " + str(self.urlVaild))
