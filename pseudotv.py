@@ -24,8 +24,6 @@ import xbmcaddon
 from resources.lib.Globals import *
 from resources.lib.ga import *
 
-
-
 # Script constants
 __scriptname__ = "PseudoTV Live"
 __author__     = "Lunatixz, Orginally Jason102 & Angrycamel"

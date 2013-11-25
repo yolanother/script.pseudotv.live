@@ -20,8 +20,6 @@
 import xbmc, xbmcgui
 import xbmcaddon
 
-
-
 # Script constants
 __scriptname__ = "PseudoTV Live"
 __author__     = "Lunatixz, Jason102 & Angrycamel"

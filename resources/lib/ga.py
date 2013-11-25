@@ -5,6 +5,9 @@ Related blog posts:
  * http://www.canb.net/2012/01/push-data-to-google-analytics-with.html
  * https://medium.com/python-programming-language/80eb9691d61f
 """
+
+import Globals
+
 from random import randint
 from urllib import urlencode
 from urllib2 import urlopen
@@ -19,11 +22,17 @@ PROPERTY_ID = environ.get("GA_PROPERTY_ID", "UA-45979766-1")
 # Generate the visitor identifier somehow. I get it from the
 # environment, calculate the SHA1 sum of it, convert this from base 16
 # to base 10 and get first 10 digits of this number.
-VISITOR = environ.get("GA_VISITOR", "xxxxx")
-VISITOR = str(int("0x%s" % sha1(VISITOR).hexdigest(), 0))[:10]
- 
+
+if Globals.REAL_SETTINGS.getSetting('Visitor_GA') == '':
+    from random import randint
+    Globals.REAL_SETTINGS.setSetting('Visitor_GA', str(randint(0, 0x7fffffff)))
+
+
+# VISITOR = environ.get("GA_VISITOR", "xxxxx")
+# VISITOR = str(int("0x%s" % sha1(VISITOR).hexdigest(), 0))[:10]
+VISITOR = str(Globals.REAL_SETTINGS.getSetting("Visitor_GA"))
 # The path to visit
-PATH = "/sample/path/"
+PATH = "PTVL"
  
 # Collect everything in a dictionary
 DATA = {"utmwv": "5.2.2d",
