@@ -32,7 +32,7 @@ from EPGWindow import EPGWindow
 from ChannelList import ChannelList
 from ChannelListThread import ChannelListThread
 from FileAccess import FileLock, FileAccess
-from Migrate import Migrate
+# from Migrate import Migrate
 
 
 class MyPlayer(xbmc.Player):
