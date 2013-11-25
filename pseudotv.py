@@ -22,6 +22,7 @@ import xbmc, xbmcgui
 import xbmcaddon
 
 from resources.lib.Globals import *
+from resources.lib.ga import *
 
 
 

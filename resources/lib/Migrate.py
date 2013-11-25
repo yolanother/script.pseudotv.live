@@ -21,10 +21,10 @@ import xbmcaddon, xbmc, xbmcgui
 import Settings
 import Globals
 import ChannelList
-import Overlay
+# import ConfigParser
+# import Overlay
 import time
 
-# import ConfigParser
 
 # from xml.parsers.expat import ExpatError
 from FileAccess import FileLock, FileAccess

@@ -32,7 +32,7 @@ from EPGWindow import EPGWindow
 from ChannelList import ChannelList
 from ChannelListThread import ChannelListThread
 from FileAccess import FileLock, FileAccess
-# from Migrate import Migrate
+from Migrate import Migrate
 
 
 class MyPlayer(xbmc.Player):
@@ -199,49 +199,58 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.myEPG.channelLogos = self.channelLogos
         self.maxChannels = len(self.channels)
 
-        # if self.maxChannels == 0:
-            # #self.Error('Unable to find any channels. \nPlease go to the Addon Settings to configure PseudoTV Live.')
-            # #return
-            # dlg = xbmcgui.Dialog()
+        if self.maxChannels == 0:
+            #self.Error('Unable to find any channels. \nPlease go to the Addon Settings to configure PseudoTV Live.')
+            #return
+            dlg = xbmcgui.Dialog()
+            REAL_SETTINGS.setSetting("Autotune","true")
+            REAL_SETTINGS.setSetting("Warning1","true")
+            autoTune = False
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune LiveTV USTVnow\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindLiveUSTVnow","true")
+                autoTune = True
             
-            # autoTune = False
-            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune TV Network\nchannels the next time it loads?"):
-                # REAL_SETTINGS.setSetting("autoFindNetworks","true")
-                # autoTune = True
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Custom Playlists\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindCustom","true")
+                autoTune = True
+                
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune TV Network\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindNetworks","true")
+                autoTune = True
 
-            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune TV Genre\nchannels the next time it loads?"):
-                # REAL_SETTINGS.setSetting("autoFindTVGenre","true")
-                # autoTune = True
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune TV Genre\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindTVGenre","true")
+                autoTune = True
 
-            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Movie Studio\nchannels the next time it loads?"):
-                # REAL_SETTINGS.setSetting("autoFindStudios","true")
-                # autoTune = True
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Movie Studio\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindStudios","true")
+                autoTune = True
 
-            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Movie Genre\nchannels the next time it loads?"):
-                # REAL_SETTINGS.setSetting("autoFindMovieGenres","true")
-                # autoTune = True
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Movie Genre\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindMovieGenres","true")
+                autoTune = True
 
-            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Mix Genre\nchannels the next time it loads?"):
-                # REAL_SETTINGS.setSetting("autoFindMixGenres","true")
-                # autoTune = True
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Mix Genre\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindMixGenres","true")
+                autoTune = True
 
-            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Music Genre\nchannels the next time it loads?"):
-                # REAL_SETTINGS.setSetting("autoFindMusicGenres","true")
-                # autoTune = True
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Music Genre\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindMusicGenres","true")
+                autoTune = True
 
-            # if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune Live\nchannels the next time it loads?"):
-                # REAL_SETTINGS.setSetting("autoFindLive","true")
-                # autoTune = True
+            if dlg.yesno("No Channels Configured", "Would you like PseudoTV Live to Auto Tune InternetTV\nchannels the next time it loads?"):
+                REAL_SETTINGS.setSetting("autoFindInternetStrms","true")
+                autoTune = True
 
-            # if autoTune:
-                # self.end()
-                # return
+            if autoTune:
+                self.end()
+                return
 
-            # del dlg
+            del dlg
 
-        # if self.maxChannels == 0:
-            # self.Error('Unable to find any channels. Please configure the addon.')
-            # return
+        if self.maxChannels == 0:
+            self.Error('Unable to find any channels. Please configure the addon.')
+            return
 
         # found = False
 
