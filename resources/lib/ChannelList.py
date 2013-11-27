@@ -490,7 +490,7 @@ class ChannelList:
 
                 if tottime > (self.channels[channel - 1].totalTimePlayed - (60 * 60 * 12)):
                     tmpstr = str(self.channels[channel - 1].getItemDuration(i)) + ','
-                    tmpstr += self.channels[channel - 1].getItemTitle(i) + "//" + self.channels[channel - 1].getItemEpisodeTitle(i) + "//" + self.channels[channel - 1].getItemDescription(i)
+                    tmpstr += self.channels[channel - 1].getItemTitle(i) + "//" + self.channels[channel - 1].getItemEpisodeTitle(i) + "//" + self.channels[channel - 1].getItemDescription(i) + "//" + self.channels[channel - 1].getItemtimestamp(i) + "//" + self.channels[channel - 1].getItemLiveID(i)
                     tmpstr = uni(tmpstr[:500])
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                     tmpstr = uni(tmpstr) + uni('\n') + uni(self.channels[channel - 1].getItemFilename(i))
@@ -810,48 +810,6 @@ class ChannelList:
             return self.createGenrePlaylist('songs', chtype, setting1)
             
     
-    def fillUSTVnow(self): 
-        self.log("fillUSTVnow")
-        self.feedList = []
-        url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow Source list
-        
-        try:
-            xml = url      
-        except:
-            self.log("fillUSTVnow: Unable to open the feeds xml file " + fle, xbmc.LOGERROR)
-            return
-        
-        f = urlopen(url)    
-
-        try:
-            dom = parse(xml)
-        except:
-            self.log('fillUSTVnow: Problem parsing feeds xml file ' + fle, xbmc.LOGERROR)
-            xml.close()
-            return ''
-        xml.close()
-        
-        try:
-            feedsNode = dom.getElementsByTagName('feed')
-        except:
-            self.log('fillUSTVnow: No feeds found ' + fle, xbmc.LOGERROR)
-            xml.close()
-            return ''
-        xml.close()
-   
-        self.feedList = []
-        # need to redo this for loop
-        for feed in feedsNode:
-            try:
-                feedName = feed.childNodes[0].nodeValue
-            except:
-                feedName = ""
-            if len(feedName) > 0:
-                self.feedList.append(feedName)
-         
-        self.feedList.sort(key=lambda x: x.lower())
-
-        
     def createMusicPlaylist(self, genre, channelname):
         self.log("createMusicPlaylist")
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'songs_' + genre + '.xsp')
@@ -1620,13 +1578,18 @@ class ChannelList:
                                 season = re.search('"season" *: *(.*?),', f)
                                 episode = re.search('"episode" *: *(.*?),', f)
                                 swtitle = title.group(1)
+                                swtitle = swtitle.split('.', 1)[-1]
 
                                 try:
                                     seasonval = int(season.group(1))
                                     epval = int(episode.group(1))
 
                                     if self.showSeasonEpisode:
-                                        swtitle = swtitle + '(S' + ('0' if seasonval < 10 else '') + str(seasonval) + ' E' + ('0' if epval < 10 else '') + str(epval) + ')'
+                                        swtitle = ('S' + ('0' if seasonval < 10 else '') + str(seasonval) + 'E' + ('0' if epval < 10 else '') + str(epval) + ' - '+ swtitle)
+                                
+                                    else:
+                                        swtitle = (('0' if seasonval < 10 else '') + str(seasonval) + 'x' + ('0' if epval < 10 else '') + str(epval) + ' - '+ swtitle)
+                                    
                                 except:
                                     seasonval = -1
                                     epval = -1
@@ -1718,6 +1681,9 @@ class ChannelList:
         showcount = 0  
         elements_parsed = 0
         xmltv = setting3
+        title = ''
+        description = ''
+        subtitle = ''
         tmdbAPI = TMDB(REAL_SETTINGS.getSetting('tmdb.apikey'))
         tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
         sbAPI = SickBeard(REAL_SETTINGS.getSetting('sickbeard.baseurl'),REAL_SETTINGS.getSetting('sickbeard.apikey'))
@@ -1744,10 +1710,10 @@ class ChannelList:
             if event == "end":
                 if elem.tag == "programme":
                     channel = elem.get("channel")
-                    title = elem.findtext('title')
                     url = unquote(setting2)
                     if setting1 == channel:
                         inSet = True
+                        title = elem.findtext('title')
                         description = elem.findtext("desc")
                         subtitle = elem.findtext("sub-title")
                         iconElement = elem.find("icon")
@@ -1758,10 +1724,14 @@ class ChannelList:
                             if not subtitle:
                                 description = title
                             else:
-                                description = subtitle 
+                                description = subtitle                      
+                        if subtitle == None:                                
+                            subtitle = 'LiveTV'
 
                         #Rob Newton - 20130127 - Parse the category of the program
                         movie = False
+                        istvshow = True
+                        Unaired = False
                         category = 'Normal'
                         categories = ''
                         categoryList = elem.findall("category")
@@ -1769,6 +1739,7 @@ class ChannelList:
                             categories += ', ' + cat.text
                             if cat.text == 'Movie':
                                 movie = True
+                                istvshow = False
                                 category = cat.text
                             elif cat.text == 'Sports':
                                 category = cat.text
@@ -1782,9 +1753,7 @@ class ChannelList:
                                 category = cat.text
                             elif cat.text == 'Drama':
                                 category = cat.text
-                            else:
-                                istvshow = True
-                        
+
                         #Trim prepended comma and space (considered storing all categories, but one is ok for now)
                         categories = categories[2:]
                         
@@ -1792,24 +1761,30 @@ class ChannelList:
                         if movie:
                             category = 'Movie'
                         
-                        #Rob Newton - 20130127 - Read the "new" boolean for this program and store as 1 or 0 for the db
+                        #Read the "new" boolean for this program and store as 1 or 0 for the db
                         try:
                             if elem.find("new") != None:
-                                new = 'Unaired'
+                                Unaired = True
                                 self.log('new unaired')
-                                self.getControl(501).setLabel("New")
+                                self.getControl(900).setLabel("Unaired")
+                                self.getControl(900).setImage("New")
                             else:
-                                new = 'Aired'
+                                Unaired = False
                                 self.log('old aired')
-                                self.getControl(501).setLabel("Old")
+                                self.getControl(900).setLabel("Aired")
+                                self.getControl(900).setImage("Old")
                         except:
                             pass
                         
-                        #Rob Newton - 20130127 - Decipher the TVDB ID by using the Zap2it ID in dd_progid
+                        #Decipher the TVDB ID by using the Zap2it ID in dd_progid
                         tvdbid = 0
                         episodeId = 0
+                        imdbid = 0
                         seasonNumber = 0
                         episodeNumber = 0
+                        episodeDesc = ''
+                        episodeName = ''
+                        episodeArt = ''
                         
                         if not movie and REAL_SETTINGS.getSetting('tvdb.enabled') == 'true':
                             dd_progid = ''
@@ -1819,12 +1794,13 @@ class ChannelList:
                                     dd_progid = epNum.text
                         
                     
-                            self.log('dd_progid %s' % dd_progid)
+                            self.log('dd_progid %s' % dd_progid) ##Debug
 
                             #The Zap2it ID is the first part of the string delimited by the dot
                             #  Ex: <episode-num system="dd_progid">MV00044257.0000</episode-num>
                             dd_progid = dd_progid.split('.',1)[0]
                             tvdbid = tvdbAPI.getIdByZap2it(dd_progid)
+                            
                             #Sometimes GetSeriesByRemoteID does not find by Zap2it so we use the series name as backup
                             if tvdbid == 0:
                                 tvdbid = tvdbAPI.getIdByShowName(elem.findtext('title'))
@@ -1832,7 +1808,7 @@ class ChannelList:
                             if tvdbid > 0:
                                 #Date element holds the original air date of the program
                                 airdateStr = elem.findtext('date')
-                                if airdateStr != None:
+                                if airdateStr != None and Unaired == True: # If Show is new and has airdate, check tvdb by airdate.
                                     try:
                                         #Change date format into the byAirDate lookup format (YYYY-MM-DD)
                                         t = time.strptime(airdateStr, '%Y%m%d')
@@ -1843,36 +1819,56 @@ class ChannelList:
                                         episode = ElementTree.fromstring(tvdbAPI.getEpisodeByAirdate(tvdbid, airdate))
                                         episode = episode.find("Episode")
                                         episodeId = episode.findtext("id")
+                                        imdbid = episode.findtext("IMDB_ID")
                                         seasonNumber = episode.findtext("SeasonNumber")
                                         episodeNumber = episode.findtext("EpisodeNumber")
+                                        episodeDesc = episode.findtext("Overview")
+                                        episodeName = episode.findtext("EpisodeName")
+                                        episodeArt = episode.findtext("filename")
                                     except:
                                         pass
-                                        
-                            # Lunatixz, find series poster                                  
-                            if tvdbid > 0 and REAL_SETTINGS.getSetting('tvdb.showart') == 'true':
-                                getTVDBseries = "http://thetvdb.com/api/"+REAL_SETTINGS.getSetting('tvdb.apikey')+"/series/"+str(tvdbid)+"/en.xml"
-                                self.log("getTVDBseries " + str(getTVDBseries))                                    
-                                getTVDBseriesURL = urllib2.urlopen(getTVDBseries) 
-                                getTVDBseriesURL=getTVDBseriesURL.read()
-                                try:
-                                    tvfanarturl = getTVDBseriesURL.findtext("fanart")
-                                    self.log("tvfanarturl " + str(tvfanarturl))
-                                    tvposterurl = getTVDBseriesURL.findtext("poster")
-                                    self.log("tvposterurl " + str(tvposterurl))
-                                except:
-                                    pass
-                                    
-                                    # # if tvdbid > 0 and seasonNumber = 0:        
-                                    # try:
-                                        # getTVDBall = "http://thetvdb.com/api/"+tvdbAPI+"/series/"+tvdbid+"/all/en.xml"
-                                        # getTVDBallURL = urllib2.urlopen(getTVDBall) 
-                                        
-                                        # EpisodeNam = subtitle
-                                        # seasonNumber = EpisodeNam.findtext("SeasonNumber")
-                                        # episodeNumber = EpisodeNam.findtext("EpisodeNumber")
+                                
+                                # if subtitle != 'LiveTV' and episodeId == 0:
+                                    # getTVDBseries = "http://thetvdb.com/api/"+REAL_SETTINGS.getSetting('tvdb.apikey')+"/series/"+str(tvdbid)+"/all/en.xml"
+                                    # # episode = ElementTree.fromstring(tvdbAPI.getEpisodeByID(tvdbid))
+                                    # try: 
+                                        # getTVDBseriesURL = urllib2.urlopen(getTVDBseries) 
+                                        # self.log('getTVDBseriesURL = ' + str(getTVDBseries))
+                                        # getTVDBseriesURL=getTVDBseriesURL.read()
+                                        # self.log('getTVDBseriesURL.read = ' + str(getTVDBseriesURL))
+                                        # episode = episode.find("Episode")
+                                        # episodeName = episode.findtext("EpisodeName")
+                                        # if episodeName == subtitle:                                        
+                                            # episodeId = episode.findtext("id")
+                                            # imdbid = episode.findtext("IMDB_ID")
+                                            # seasonNumber = episode.findtext("SeasonNumber")
+                                            # episodeNumber = episode.findtext("EpisodeNumber")
+                                            # episodeDesc = episode.findtext("Overview")
+                                            # episodeName = episode.findtext("EpisodeName")
+                                            # episodeArt = episode.findtext("filename")
                                     # except:
                                         # pass
-                                    
+                            
+                            
+                            # self.log('tvdbid = ' + str(tvdbid)) ##Debug
+                            
+                            if seasonNumber == 0:
+                                seasonNumber = 1             
+                            if episodeNumber == 0:
+                                episodeNumber = 1   
+                            if episodeDesc != '':
+                                description = episodeDesc  
+                            if episodeName == '':
+                                episodeName = subtitle
+     
+                            # self.log('episodeId = ' + str(episodeId))
+                            # self.log('imdbid = ' + str(imdbid))
+                            # self.log('seasonNumber = ' + str(seasonNumber))
+                            # self.log('episodeNumber = ' + str(episodeNumber))
+                            # self.log('episodeDesc = ' + str(episodeDesc))
+                            # self.log('episodeName = ' + str(episodeName))
+                            # self.log('episodeArt = ' + str(episodeArt))
+                                            
                         #Rob Newton - 20130131 - Lookup the movie info from TMDB
                         imdbid = 0
                         if movie and REAL_SETTINGS.getSetting('tmdb.enabled') == 'true':
@@ -1883,20 +1879,20 @@ class ChannelList:
                             moviePosterUrl = tmdbAPI.getPosterUrl(movieInfo['poster_path'])
                         
                         #Rob Newton - 20130130 - Check for show being managed by SickBeard
-                        sbManaged = 0
+                        sbManaged = False
                         if REAL_SETTINGS.getSetting('sickbeard.enabled') == 'true':
                             if sbAPI.isShowManaged(tvdbid):
-                                sbManaged = 1
-                                self.log('sbManaged = yes')
-                        
+                                sbManaged = True
+                                self.getControl(901).setImage('sb-logo-tiny')
+                                self.log('sbManaged = ' + str(sbManaged))
+                                
                         #Rob Newton - 20130130 - Check for movie being managed by CouchPotato
-                        cpManaged = 0
+                        cpManaged = False
                         #if REAL_SETTINGS.getSetting('couchpotato.enabled') == 'true':
                         #    if cpAPI.isMovieManaged(imdbid):
                         #        cpManaged = 1
+                                # self.getControl(901).setImage('cp-logo-tiny')
                         #        self.log('cpManaged = yes')
-                        
-                        #result = 'Program'(channel, uni(elem.findtext('title')), parseXMLTVDate(elem.get('start')), parseXMLTVDate(elem.get('stop')), description, None, icon, tvdbid, imdbid, episodeId, seasonNumber, episodeNumber, category, new, sbManaged, cpManaged)             
                         
                         now = datetime.datetime.now()
                         stopDate = self.parseXMLTVDate(elem.get('stop'))
@@ -1905,7 +1901,7 @@ class ChannelList:
                         #skip old shows that have already ended
                         if now > stopDate:
                             self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
-                            self.log("Status = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))       
+                            self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))         
                             continue
                         
                         #adjust the duration of the current show
@@ -1913,7 +1909,7 @@ class ChannelList:
                             try:
                                 dur = ((stopDate - startDate).seconds)
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
-                                self.log("Status = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))      
+                                self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))      
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
@@ -1924,35 +1920,44 @@ class ChannelList:
                             try:
                                 dur = (stopDate - startDate).seconds
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  UPCOMING: " + title + "  DUR: " + str(dur))
-                                self.log("Status = " + str(new) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged =" + str(sbManaged) + " cpManaged =" + str(cpManaged))   
+                                self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))     
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (default to 60 min)")
                                 raise
 
                         if tvdbid > 0:  #TVDB Playlist
-                            tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url
+                            LiveID = ('tvdb_' + str(tvdbid))
+                            if self.showSeasonEpisode:
+                                episodetitle = ('S' + ('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'E' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ str(episodeName))
+                            else:
+                                episodetitle = (('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'x' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ str(episodeName))
+                            
+                            tmpstr = str(dur) + ',' + title + "//" + episodetitle + "//" + description + "//" + str(startDate) + "//" + LiveID + '\n' + url
                             
                         elif imdbid > 0:#TMDB Playlist
-                            tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url
+                            LiveID = ('imdbid' + str(imdbid))
+                            tmpstr = str(dur) + ',' + title + "//" + subtitle + "//" + description + "//" + str(startDate) + "//" + LiveID + '\n' + url
                             
                         else:           #Default Playlist
-                            tmpstr = str(dur) + ',' + title + "//" + str(startDate) + "//" + description + '\n' + url                       
+                            tmpstr = str(dur) + ',' + title + "//" + subtitle + "//" + description + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url               
 
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         showList.append(tmpstr)
-                    
+                        
+
                     else:
                         if inSet == True:
                             self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  DONE")
                             break
-                    showcount += 1 
-            
+                    showcount += 1
+                    # self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + str(showcount) +" SHOWS FOUND")#Debug
+                    
             root.clear()
                 
         if showcount == 0:
             self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " 0 SHOWS FOUND")
-
+        
         return showList
 
     
@@ -3156,8 +3161,11 @@ class ChannelList:
                 self.xmltvVaild = True
                 self.xmlTvFile = url_bak
             except urllib2.URLError as e:
-                self.log("ERROR: Problem accessing the DNS. USTVnow XMLTV URL NOT VAILD, ERROR: " + str(e))
-                self.xmltvVaild = False
+                if "Errno 10054" in e:
+                    raise
+                else:                
+                    self.log("ERROR: Problem accessing the DNS. USTVnow XMLTV URL NOT VAILD, ERROR: " + str(e))
+                    self.xmltvVaild = False
 
         elif setting3 != 'ustvnow':
             self.log("xmltv_ok, testing " + str(setting3) +".xml")

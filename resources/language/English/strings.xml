@@ -14,7 +14,7 @@
 <string id="30200">Visuals</string>
     <string id="30201">Show info when changing channels</string>
     <string id="30202">Info window duration (seconds)</string>   
-    <string id="30203">Show Season/Episode Info</string>
+    <string id="30203">Show Season/Episode Info (S00E00)</string>
     <string id="30204">Always show channel bug</string>
     <string id="30205">Use color channel logo</string>
     <string id="30206">Channel Logo Folder</string>
@@ -123,4 +123,5 @@
     <string id="30990">DEBUGGING: (Use with Caution!)</string>
     <string id="30991">Override Stream Vaildation</string>
     <string id="30992">Optimize Configurations</string>
+    <string id="30993">Disable Google Analytics</string>
 </strings>

@@ -56,6 +56,13 @@ class TVDB(object):
             return response
         except:
             return ''
+      
+    def getEpisodeByID(self, tvdbid):
+        try:
+            response = urllib2.urlopen(self._buildUrl(self.apikey + '/series/' + tvdbid + '/all/en.xml')).read()
+            return response
+        except:
+            return ''
 
     def getIdByShowName(self, showName):
         try:

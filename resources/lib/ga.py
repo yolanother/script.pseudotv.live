@@ -7,6 +7,9 @@ Related blog posts:
 """
 
 import Globals
+import EPGWindow
+import ChannelList
+import sys, re
 
 from random import randint
 from urllib import urlencode
@@ -14,7 +17,9 @@ from urllib2 import urlopen
 from urlparse import urlunparse
 from hashlib import sha1
 from os import environ
- 
+from Overlay import *
+
+
 # Set your proprty id via the environment or simply type it
 # below
 PROPERTY_ID = environ.get("GA_PROPERTY_ID", "UA-45979766-1")
@@ -32,7 +37,11 @@ if Globals.REAL_SETTINGS.getSetting('Visitor_GA') == '':
 # VISITOR = str(int("0x%s" % sha1(VISITOR).hexdigest(), 0))[:10]
 VISITOR = str(Globals.REAL_SETTINGS.getSetting("Visitor_GA"))
 # The path to visit
-PATH = "PTVL"
+PATH = ("PTVL/" + str(VISITOR) + "/Selected_Skin=" + str(Skin_Select))
+## PATH = "PTVL/"+Vistor"/"+CHTYPE+"/"+SOURCE+"/"+SKIN"
+##Chtype = Current Chtype being used
+##Source = rtmp/http/pvr/hdhomerun/etc
+##Skin = Skin being used
  
 # Collect everything in a dictionary
 DATA = {"utmwv": "5.2.2d",

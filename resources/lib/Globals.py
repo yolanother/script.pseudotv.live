@@ -71,7 +71,7 @@ MODE_STARTMODES = MODE_RANDOM | MODE_REALTIME | MODE_RESUME
 
 SETTINGS_LOC = 'special://profile/addon_data/' + ADDON_ID
 CHANNEL_SHARING = False
-LOCK_LOC = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'cache')) + '/'
+LOCK_LOC = xbmc.translatePath(os.path.join(SETTINGS_LOC, 'cache')) + '/'        
 
 if REAL_SETTINGS.getSetting('ChannelSharing') == "true":
     CHANNEL_SHARING = True
@@ -100,9 +100,8 @@ elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 3:
         Skin_Select = 'default'
         if REAL_SETTINGS.getSetting("SkinLogos") == "true":
             REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
-    
-    
-        
+
+            
 if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'images'))):   
     IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'images')) + '/'
 else:
@@ -192,3 +191,4 @@ ACTION_PLAYER_PLAYPAUSE = 76
 #ACTION_MENU = 117
 ACTION_MENU = 7
 ACTION_INVALID = 999
+

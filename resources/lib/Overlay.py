@@ -481,7 +481,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             #for Live TV get the first item in playlist convert to epoch time  add duration until we get to the current item
             if chtype == 8:
                  self.channels[self.currentChannel - 1].setShowPosition(0)
-                 tmpDate = self.channels[self.currentChannel - 1].getItemEpisodeTitle(0)
+                 tmpDate = self.channels[self.currentChannel - 1].getItemtimestamp(0)
                  self.log("overlay tmpdate " + str(tmpDate))
                  t = time.strptime(tmpDate, '%Y-%m-%d %H:%M:%S')
                  epochBeginDate = time.mktime(t)
@@ -618,10 +618,9 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.log('waitForVideoPaused return')
         return True
 
-
+    
     def setShowInfo(self):
         self.log('setShowInfo')
-
         chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(self.currentChannel) + '_type'))
         if self.infoOffset > 0:
             self.getControl(502).setLabel('COMING UP:')
@@ -647,7 +646,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             #same logic as in setchannel; loop till we get the current show
             if chtype == 8:
                  self.channels[self.currentChannel - 1].setShowPosition(0)
-                 tmpDate = self.channels[self.currentChannel - 1].getItemEpisodeTitle(0)
+                 tmpDate = self.channels[self.currentChannel - 1].getItemtimestamp(0)
                  t = time.strptime(tmpDate, '%Y-%m-%d %H:%M:%S')
                  epochBeginDate = time.mktime(t)
                  position = self.channels[self.currentChannel - 1].playlistPosition
@@ -717,7 +716,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 self.getControl(103).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '.png')
                 # add label for color channel bug
                 # self.getControl(10?).setImage(self.channelLogos + ascii(self.channels[self.currentChannel - 1].name) + '_c.png')
-                self.getControl(300).setLabel(self.channels[self.currentChannel - 1].name)
+                self.getControl(300).setLabel(self.channels[self.currentChannel - 1].name)##Channel name label
             except:
                 pass
         else:

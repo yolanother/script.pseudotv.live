@@ -101,6 +101,20 @@ class Channel:
         return self.Playlist.totalDuration
 
 
+    def getCurrentLiveID(self):
+        return self.getItemLiveID(self.playlistPosition)
+
+
+    def getItemLiveID(self, index):
+        return self.Playlist.getLiveID(self.fixPlaylistIndex(index))
+
+    def getCurrenttimestamp(self):
+        return self.getItemtimestamp(self.playlistPosition)
+
+
+    def getItemtimestamp(self, index):
+        return self.Playlist.gettimestamp(self.fixPlaylistIndex(index))
+
     def getCurrentDescription(self):
         return self.getItemDescription(self.playlistPosition)
 

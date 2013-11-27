@@ -33,6 +33,9 @@ class PlaylistItem:
         self.description = ''
         self.title = ''
         self.episodetitle = ''
+        self.timestamp = ''
+        self.LiveID = '' ## tvdb/tmdb id
+        
 
 
 
@@ -74,6 +77,30 @@ class Playlist:
         return ''
 
 
+    def getLiveID(self, index):
+        self.processingSemaphore.acquire()
+
+        if index >= 0 and index < len(self.itemlist):
+            desc = self.itemlist[index].LiveID
+            self.processingSemaphore.release()
+            return desc
+
+        self.processingSemaphore.release()
+        return ''
+    
+    
+    def gettimestamp(self, index):
+        self.processingSemaphore.acquire()
+
+        if index >= 0 and index < len(self.itemlist):
+            desc = self.itemlist[index].timestamp
+            self.processingSemaphore.release()
+            return desc
+
+        self.processingSemaphore.release()
+        return ''
+    
+    
     def getdescription(self, index):
         self.processingSemaphore.acquire()
 
@@ -184,6 +211,16 @@ class Playlist:
                         if index >= 0:
                             tmpitem.description = tmpitem.episodetitle[index + 2:]
                             tmpitem.episodetitle = tmpitem.episodetitle[:index]
+                            index = tmpitem.description.find('//')
+                            
+                            if index >= 0:
+                                tmpitem.timestamp = tmpitem.description[index + 2:]
+                                tmpitem.description = tmpitem.description[:index]
+                                index = tmpitem.timestamp.find('//')
+                                
+                                if index >= 0:
+                                    tmpitem.LiveID = tmpitem.timestamp[index + 2:]
+                                    tmpitem.timestamp = tmpitem.timestamp[:index]
 
                 realindex += 1
                 tmpitem.filename = uni(lines[realindex].rstrip())
@@ -212,7 +249,7 @@ class Playlist:
 
         for i in range(self.size()):
             tmpstr = str(self.getduration(i)) + ','
-            tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i)
+            tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i) + "//" + self.gettimestamp(i) + "//" + self.getLiveID(i)
             tmpstr = tmpstr[:600]
             tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
             tmpstr = tmpstr + '\n' + self.getfilename(i)

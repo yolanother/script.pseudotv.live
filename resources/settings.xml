@@ -16,7 +16,7 @@
     <category label="30200">
         <setting id="InfoOnChange" type="bool" label="30201" default="true"/>
         <setting id="InfoTimer" subsetting="true" visible="eq(-1,true)" type="enum" label="30202" values="5|10|15|20|25" default="0"/>
-        <setting id="ShowSeEp" type="bool" label="30203" default="false"/>
+        <setting id="ShowSeEp" type="bool" label="30203" default="true"/>
         <setting id="ShowChannelBug" type="bool" label="30204" default="true"/>
     	<setting id="ColorOverlay" type="bool" label="30205" default="false"/>
     	<setting id="ChannelLogoFolder" type="folder" source="auto" label="30206" default="special://home/addons/script.pseudotv.live/resources/skins/default/images/"/>
@@ -134,5 +134,6 @@
         <setting label="30990" type="lsep"/>
         <setting id="Override_ok" type="bool" label="30991" default="false"/>
         <setting type="action" label="30992" action="RunScript($CWD/defrag.py)"/>
+        <setting id="ga_disable" type="bool" label="30993" default="false"/>
     </category>
    </settings>
