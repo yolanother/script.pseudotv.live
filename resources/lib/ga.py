@@ -37,7 +37,7 @@ if Globals.REAL_SETTINGS.getSetting('Visitor_GA') == '':
 # VISITOR = str(int("0x%s" % sha1(VISITOR).hexdigest(), 0))[:10]
 VISITOR = str(Globals.REAL_SETTINGS.getSetting("Visitor_GA"))
 # The path to visit
-PATH = ("PTVL/" + str(VISITOR) + "/Selected_Skin=" + str(Skin_Select))
+PATH = ("PTVL/" + str(VISITOR) + "/Version:" + str(VERSION) + "/Skin:" + str(Skin_Select))
 ## PATH = "PTVL/"+Vistor"/"+CHTYPE+"/"+SOURCE+"/"+SKIN"
 ##Chtype = Current Chtype being used
 ##Source = rtmp/http/pvr/hdhomerun/etc

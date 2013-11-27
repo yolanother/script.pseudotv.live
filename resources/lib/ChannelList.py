@@ -1765,12 +1765,10 @@ class ChannelList:
                         try:
                             if elem.find("new") != None:
                                 Unaired = True
-                                self.log('new unaired')
                                 self.getControl(900).setLabel("Unaired")
                                 self.getControl(900).setImage("New")
                             else:
                                 Unaired = False
-                                self.log('old aired')
                                 self.getControl(900).setLabel("Aired")
                                 self.getControl(900).setImage("Old")
                         except:
@@ -1794,7 +1792,7 @@ class ChannelList:
                                     dd_progid = epNum.text
                         
                     
-                            self.log('dd_progid %s' % dd_progid) ##Debug
+                            # self.log('dd_progid %s' % dd_progid) ##Debug
 
                             #The Zap2it ID is the first part of the string delimited by the dot
                             #  Ex: <episode-num system="dd_progid">MV00044257.0000</episode-num>
@@ -1883,16 +1881,14 @@ class ChannelList:
                         if REAL_SETTINGS.getSetting('sickbeard.enabled') == 'true':
                             if sbAPI.isShowManaged(tvdbid):
                                 sbManaged = True
-                                self.getControl(901).setImage('sb-logo-tiny')
-                                self.log('sbManaged = ' + str(sbManaged))
+                                # self.getControl(901).setImage("sb-logo-tiny.png")
                                 
                         #Rob Newton - 20130130 - Check for movie being managed by CouchPotato
                         cpManaged = False
                         #if REAL_SETTINGS.getSetting('couchpotato.enabled') == 'true':
                         #    if cpAPI.isMovieManaged(imdbid):
                         #        cpManaged = 1
-                                # self.getControl(901).setImage('cp-logo-tiny')
-                        #        self.log('cpManaged = yes')
+                                # self.getControl(901).setImage("cp-logo-tiny.png")
                         
                         now = datetime.datetime.now()
                         stopDate = self.parseXMLTVDate(elem.get('stop'))
@@ -1901,7 +1897,7 @@ class ChannelList:
                         #skip old shows that have already ended
                         if now > stopDate:
                             self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
-                            self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))         
+                            self.log("Unaired = " + str(Unaired) + ", dd_progid" + str(dd_progid) + ", tvdbid = " + str(tvdbid) + ", imdbid = " + str(imdbid) + ", episodeId = " + str(episodeId) + ", seasonNumber = " + str(seasonNumber) + ", episodeNumber = " + str(episodeNumber) + ", category = " + str(category) + ", sbManaged = " + str(sbManaged) + ", cpManaged = " + str(cpManaged))         
                             continue
                         
                         #adjust the duration of the current show
@@ -1909,7 +1905,7 @@ class ChannelList:
                             try:
                                 dur = ((stopDate - startDate).seconds)
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
-                                self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))      
+                                self.log("Unaired = " + str(Unaired) + ", dd_progid" + str(dd_progid) + ", tvdbid = " + str(tvdbid) + ", imdbid = " + str(imdbid) + ", episodeId = " + str(episodeId) + ", seasonNumber = " + str(seasonNumber) + ", episodeNumber = " + str(episodeNumber) + ", category = " + str(category) + ", sbManaged = " + str(sbManaged) + ", cpManaged = " + str(cpManaged))   
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
@@ -1920,7 +1916,7 @@ class ChannelList:
                             try:
                                 dur = (stopDate - startDate).seconds
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  UPCOMING: " + title + "  DUR: " + str(dur))
-                                self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))     
+                                self.log("Unaired = " + str(Unaired) + ", dd_progid" + str(dd_progid) + ", tvdbid = " + str(tvdbid) + ", imdbid = " + str(imdbid) + ", episodeId = " + str(episodeId) + ", seasonNumber = " + str(seasonNumber) + ", episodeNumber = " + str(episodeNumber) + ", category = " + str(category) + ", sbManaged = " + str(sbManaged) + ", cpManaged = " + str(cpManaged))  
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (default to 60 min)")
