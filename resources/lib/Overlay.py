@@ -22,9 +22,9 @@ import time, threading
 import datetime
 import sys, re
 import random, traceback
+import urllib2
 
-from xml.dom.minidom import parse, parseString
-
+# from xml.dom.minidom import parse, parseString
 from Playlist import Playlist
 from Globals import *
 from Channel import Channel
@@ -243,6 +243,11 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 autoTune = True
 
             if autoTune:
+                self.end()
+                return
+            else:
+                REAL_SETTINGS.setSetting("Autotune","false")
+                REAL_SETTINGS.setSetting("Warning1","false")
                 self.end()
                 return
 
@@ -474,7 +479,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
 
         
        
-			   
+
         if self.channels[self.currentChannel - 1].isPaused == False:
          
             # adjust the show and time offsets to properly position inside the playlist
@@ -499,31 +504,32 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                     self.channels[self.currentChannel - 1].setShowTime(0)
                     self.log('while loop')
 
-        # # First, check to see if the video is a...
-        # if self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[-4:].lower() == 'strm':
-            # self.log("Ignoring a stop because of a strm")
-            # self.Player.ignoreNextStop = True
-        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
-            # self.log("Ignoring a stop because of a hdhomerun")
-            # self.Player.ignoreNextStop = True
-        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'plugin':
-            # self.log("Ignoring a stop because of a plugin")
-            # self.Player.ignoreNextStop = True
-        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtmp':
-            # self.log("Ignoring a stop because of a rtmp")
-            # self.Player.ignoreNextStop = True
-        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'mms':
-            # self.log("Ignoring a stop because of a mms")
-            # self.Player.ignoreNextStop = True
-        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtsp':
-            # self.log("Ignoring a stop because of a rtsp")
-            # self.Player.ignoreNextStop = True
-        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'http':
-            # self.log("Ignoring a stop because of a http")
-            # self.Player.ignoreNextStop = True
-        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'upnp':
-            # self.log("Ignoring a stop because of a upnp")
-            # self.Player.ignoreNextStop = True
+        # First, check to see if the video is a...
+        if self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[-4:].lower() == 'strm':
+            self.log("Ignoring a stop because of a strm")
+            self.Player.ignoreNextStop = True
+        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
+            self.log("Ignoring a stop because of a hdhomerun")
+            self.Player.ignoreNextStop = True
+        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'plugin':
+            self.log("Ignoring a stop because of a plugin")
+            self.Player.ignoreNextStop = True
+        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtmp':
+            self.log("Ignoring a stop because of a rtmp")
+            self.Player.ignoreNextStop = True
+        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'mms':
+            self.log("Ignoring a stop because of a mms")
+            self.Player.ignoreNextStop = True
+        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtsp':
+            self.log("Ignoring a stop because of a rtsp")
+            self.Player.ignoreNextStop = True
+        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'http':
+            self.log("Ignoring a stop because of a http")
+            self.Player.ignoreNextStop = True
+        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'upnp':
+            self.log("Ignoring a stop because of a upnp")
+            self.Player.ignoreNextStop = True
+        
         self.log("about to mute");
         # Mute the channel before changing
         xbmc.executebuiltin("Mute()");
@@ -658,6 +664,32 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                     position = self.channels[self.currentChannel - 1].playlistPosition
             else: #original code
                 position = xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition() + self.infoOffset
+            
+            # Set image labels for LiveTV
+            # if chtype == 8:
+                 # LiveID = self.channels[self.currentChannel - 1].getItemLiveID(0)
+                 # if LiveID[0:5] == 'tvdb_':
+                    # TVDBID = LiveID.split('_', 1)[-1]
+                    # TVDBposter = TVDBID.append('-1.jpg')
+                    # self.log("TVDBposter = " + str(TVDBposter))
+                    # path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + LiveID + '/')
+                    # localfile = (str(path) + str(TVDBposter))
+                    # try:
+                        # FileAccess.exists(localfile)
+                    # except:
+                        # os.makedirs(os.path.join(path, LiveID))
+                        # url = ('http://thetvdb.com/banners/posters/' + str(TVDBposter))
+                        # self.log("TVDBposter url = " + str(url))
+                        # try:
+                            # u = urllib2.urlopen(url)
+                            # localFile = open(localfile, 'wb')
+                            # localFile.write(u.read())
+                            # localFile.close()
+                            # self.getControl(910).setImage(localfile)
+                    
+                 # elif LiveID[0:5] == 'imdb_':
+                 
+                 # else:#set default images
 
         #self.log('setshowposition ' + str(position))
         self.getControl(503).setLabel(self.channels[self.currentChannel - 1].getItemTitle(position))

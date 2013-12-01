@@ -75,4 +75,17 @@ class TVDB(object):
             else:
                 return 0
         except:
+            return 0    
+            
+    def getIMDBbyShowName(self, showName):
+        try:
+            #NOTE: This assumes an exact match. It is possible to get multiple results though. This could be smarter
+            response = urllib2.urlopen(self._buildUrl('GetSeries.php', {'seriesname' : showName})).read()
+            tvdbidRE = re.compile('<IMDB_ID>(.+?)</IMDB_ID>', re.DOTALL)
+            match = tvdbidRE.search(response)
+            if match:
+                return match.group(1)
+            else:
+                return 0
+        except:
             return 0

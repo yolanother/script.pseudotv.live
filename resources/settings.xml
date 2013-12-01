@@ -133,7 +133,7 @@
         <setting label="30903" visible="eq(-2,true)" type="lsep" default="" /> 
         <setting label="30990" type="lsep"/>
         <setting id="Override_ok" type="bool" label="30991" default="false"/>
-        <setting type="action" label="30992" action="RunScript($CWD/defrag.py)"/>
-        <setting id="ga_disable" type="bool" label="30993" default="false"/>
+        <setting id="ga_disable" type="bool" label="30992" default="false"/>
+        <setting type="action" label="30999" action="RunScript($CWD/defrag.py)"/>
     </category>
    </settings>
