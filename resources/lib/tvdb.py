@@ -50,6 +50,18 @@ class TVDB(object):
         except:
             return 0
 
+    def getIdByIMDB(self, imdb_id):
+        try:
+            response = urllib2.urlopen(self._buildUrl('GetSeriesByRemoteID.php', {'imdb' : imdb_id})).read()
+            imdbidRE = re.compile('<id>(.+?)</id>', re.DOTALL)
+            match = imdbidRE.search(response)
+            if match:
+                return match.group(1)
+            else:
+                return 0
+        except:
+            return 0
+
     def getEpisodeByAirdate(self, tvdbid, airdate):
         try:
             response = urllib2.urlopen(self._buildUrl('GetEpisodeByAirDate.php', {'apikey' : self.apikey, 'seriesid' : tvdbid, 'airdate' : airdate})).read()

@@ -23,6 +23,7 @@ import datetime
 import sys, re
 import random, traceback
 import urllib2
+import tvdb_api
 
 # from xml.dom.minidom import parse, parseString
 from Playlist import Playlist
@@ -666,9 +667,29 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 position = xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition() + self.infoOffset
             
             # Set image labels for LiveTV
-            # if chtype == 8:
-                 # LiveID = self.channels[self.currentChannel - 1].getItemLiveID(0)
-                 # if LiveID[0:5] == 'tvdb_':
+            if chtype == 8:
+                 LiveID = self.channels[self.currentChannel - 1].getItemLiveID(0)
+                 if REAL_SETTINGS.getSetting('tvdb.showart') == 'true':                            
+                    if LiveID[0:5] == 'tvdb_':
+                        tvdbid = LiveID.split('_', 1)[-1]
+                        self.log('tvdbid.overlay = ' + str(tvdbid))#debug
+                        try:
+                            t = Tvdb(banners = True)
+                            tvdb_poster =  t[tvdbid]['_banners']['poster']['_bannerpath']
+                            self.log('tvdb_poster = ' + str(tvdb_poster))#debug
+                        except:
+                            pass
+                            
+                    elif LiveID[0:5] == 'imdb_':
+                        imdbid = LiveID.split('_', 1)[-1]
+                        self.log('imdbid.overlay = ' + str(imdbid))#debug
+                        try:
+                            t = Tvdb(banners = True)
+                            imdb_poster =  t[imdbid]['_banners']['poster']['_bannerpath']
+                            self.log('imdb_poster = ' + str(imdb_poster))#debug
+                        except:
+                            pass
+                 
                     # TVDBID = LiveID.split('_', 1)[-1]
                     # TVDBposter = TVDBID.append('-1.jpg')
                     # self.log("TVDBposter = " + str(TVDBposter))
@@ -687,7 +708,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                             # localFile.close()
                             # self.getControl(910).setImage(localfile)
                     
-                 # elif LiveID[0:5] == 'imdb_':
+                
                  
                  # else:#set default images
 

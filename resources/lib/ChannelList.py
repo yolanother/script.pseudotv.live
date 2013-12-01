@@ -1819,6 +1819,14 @@ class ChannelList:
                                 except:
                                     pass
                             
+                            # Try TVDBID by IMDBID
+                            if tvdbid == 0 and imdbid != 0:
+                                try:
+                                    tvdbid = tvdbAPI.getIdByIMDB(imdbid)  
+                                    self.log('title.tvdbid.3 = ' + str(title) + ' - ' + str(imdbid))#debug     
+                                except:
+                                    pass 
+                                    
                             ## Correct Invaild IMDBID format   
                             if imdbid != 0 and str(imdbid[0:2]) != 'tt':
                                 imdbid = ('tt' + str(imdbid))
@@ -1836,54 +1844,50 @@ class ChannelList:
                                         episode = ET.fromstring(tvdbAPI.getEpisodeByAirdate(tvdbid, airdate))
                                         episode = episode.find("Episode")
                                         seasonNumber = episode.findtext("SeasonNumber")
-                                        seasonNumber = ('0' if seasonNumber < 10 + seasonNumber else seasonNumber)
+                                        self.log('title.seasonNumber.1 = ' + str(title) + ' - ' + str(seasonNumber))#debug
                                         episodeNumber = episode.findtext("EpisodeNumber")
-                                        episodeNumber = ('0' if episodeNumber < 10 + episodeNumber else episodeNumber)
+                                        self.log('title.episodeNumber.1 = ' + str(title) + ' - ' + str(episodeNumber))#debug
                                         episodeDesc = episode.findtext("Overview")
                                         episodeName = episode.findtext("EpisodeName")  
                                     except:
                                         pass
+                                                                                
+                                ## Clean and reset invaild values.                                                                                                            
+                                if seasonNumber == None:
+                                    seasonNumber = 0             
+                                if episodeNumber == None:
+                                    episodeNumber = 0             
+                                if episodeDesc == None:
+                                    episodeDesc = ''       
+                                if episodeName == None:
+                                    episodeName = ''
 
-                            ## Clean and reset invaild values.                                                                                                            
-                            if seasonNumber == None:
-                                seasonNumber = 0
-                            elif seasonNumber == 'None':
-                                seasonNumber = 0             
-                            if episodeNumber == None:
-                                episodeNumber = 0
-                            elif episodeNumber == 'None':
-                                episodeNumber = 0             
-                            if episodeDesc == None:
-                                episodeDesc = ''
-                            elif episodeDesc == 'None':
-                                episodeDesc = ''       
-                            if episodeName == None:
-                                episodeName = ''
-                            elif episodeName == 'None':
-                                episodeName = ''
-                                            
                             ## Find missing information by compairing subtitle to episodename. 
                             if subtitle != 'LiveTV' and (seasonNumber == 0 or episodeNumber == 0):
                                 try:
                                     t = tvdb_api.Tvdb()
                                     episode = t[title].search(subtitle, key = 'episodename')# [<Episode 01x01 - My First Day>]
+                                    self.log('title.episode.1 = ' + str(title) + ' - ' + str(episode))#debug 
                                     episode = str(episode)
-                                    episode = episode.split(' -')[0]
-                                    episode = episode.split('[<Episode ', 1)[-1]
-                                    seasonNumber = episode.split('x')[0]
-                                    episodeNumber = episode.split('x', 1)[-1]
+                                    episodeNum = episode.split(' - ')[0]
+                                    episodeNum = episodeNum.split('[<Episode ', 1)[-1]
+                                    seasonNumber = episodeNum.split('x')[0]
+                                    self.log('title.seasonNumber.3 = ' + str(title) + ' - ' + str(seasonNumber))#debug 
+                                    episodeNumber = episodeNum.split('x', 1)[-1]
+                                    self.log('title.episodeNumber.3 = ' + str(title) + ' - ' + str(episodeNumber))#debug 
+                                    episodeName = episode.split(' - ', 1)[-1]
+                                    episodeName = episodeName.split('>]')[0]
+                                    self.log('title.episodeName.1 = ' + str(title) + ' - ' + str(episodeName))#debug 
                                 except:
                                     pass
                                                                             
                             ## Clean and reset invaild values. 
-                            if seasonNumber == []:
-                                seasonNumber = 0
-                            elif seasonNumber == '[]':
+                            if seasonNumber == '[]':
                                 seasonNumber = 0             
-                            if episodeNumber == []:
-                                episodeNumber = 0
-                            elif episodeNumber == '[]':
-                                episodeNumber = 0        
+                            if episodeNumber == '[]':
+                                episodeNumber = 0         
+                            if episodeName == '[]':
+                                episodeName = ''
                                     
                             ## Find missing information by using title and season/episode information.
                             if episodeDesc == '' and (seasonNumber > 0 and episodeNumber > 0):
@@ -1902,23 +1906,15 @@ class ChannelList:
                                 except:
                                     pass
                             
-                            # cleanup invaild data
-                            if seasonNumber == None:
-                                seasonNumber = 0
-                            elif seasonNumber == 'None':
-                                seasonNumber = 0
-                            if episodeNumber == None:
-                                episodeNumber = 0
-                            elif episodeNumber == 'None':
-                                episodeNumber = 0
-                            if episodeDesc == None:
-                                episodeDesc = ''
-                            elif episodeDesc == 'None':
-                                episodeDesc = ''
-                            if episodeName == None:
-                                episodeName = ''
-                            elif episodeName == 'None':
-                                episodeName = ''
+                            # # cleanup invaild data
+                            # if seasonNumber == None:
+                                # seasonNumber = 0
+                            # if episodeNumber == None:
+                                # episodeNumber = 0
+                            # if episodeDesc == None:
+                                # episodeDesc = ''
+                            # if episodeName == None:
+                                # episodeName = ''
 
                             # if episodeDesc != '': #Change Description to TVDB Overview, not always correct!
                                 # description = episodeDesc  
@@ -1965,6 +1961,24 @@ class ChannelList:
                         stopDate = self.parseXMLTVDate(elem.get('stop'))
                         startDate = self.parseXMLTVDate(elem.get('start'))
 
+                        if seasonNumber == 'None':
+                            seasonNumber = 0
+                        elif seasonNumber == '0':
+                            seasonNumber = 0
+                        
+                        if episodeName == 'None':
+                            episodeName = 0
+                        elif episodeName == '0':
+                            episodeName = 0
+
+                        if seasonNumber > 0 or seasonNumber != '0':
+                            seasonNumber = '%02d' % int(seasonNumber)
+                            self.log('title.seasonNumber.2 = ' + str(title) + ' - ' + str(seasonNumber))#debug
+                        
+                        if episodeName > 0 or episodeName != '0':
+                            episodeNumber = '%02d' % int(episodeNumber)
+                            self.log('title.episodeNumber.2 = ' + str(title) + ' - ' + str(episodeNumber))#debug  
+                            
                         #skip old shows that have already ended
                         if now > stopDate:
                             self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
