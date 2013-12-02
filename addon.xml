@@ -6,10 +6,12 @@
     provider-name="Lunatixz">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.requests" version="1.1.0"/><!-- 
+        <import addon="script.common.plugin.cache" version="0.9.1"/>
         <import addon="plugin.video.youtube" optional="true"/>
         <import addon="plugin.video.tgun" optional="true"/>
         <import addon="plugin.video.jtv" optional="true"/>
-        <import addon="plugin.video.ustvnow" optional="true"/>
+        <import addon="plugin.video.ustvnow" optional="true"/> -->
     </requires>
     <extension point="xbmc.python.script"
         defaultresolution="720p"

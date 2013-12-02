@@ -711,6 +711,8 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 
                  
                  # else:#set default images
+                 
+                            # moviePosterUrl = tmdbAPI.getPosterUrl(movieInfo['poster_path'])
 
         #self.log('setshowposition ' + str(position))
         self.getControl(503).setLabel(self.channels[self.currentChannel - 1].getItemTitle(position))
