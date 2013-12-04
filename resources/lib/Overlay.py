@@ -98,8 +98,8 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.ignoreInfoAction = False
         self.shortItemLength = 60
         self.runningActionChannel = 0
-        self.channelDelay = 0
-
+        self.channelDelay = 0    
+        
         for i in range(3):
             self.channelLabel.append(xbmcgui.ControlImage(50 + (50 * i), 50, 50, 50, IMAGES_LOC + 'solid.png', colorDiffuse=''))
             # self.channelLabel.append(xbmcgui.ControlImage(50 + (50 * i), 50, 50, 50, IMAGES_LOC + 'solid.png', colorDiffuse='0xFF00b4db'))
@@ -122,6 +122,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
     # override the doModal function so we can setup everything first
     def onInit(self):
         self.log('onInit')
+        self.log('Version = ' + VERSION)
         self.channelList = ChannelList()
         
         if REAL_SETTINGS.getSetting("Autotune") == "true" and REAL_SETTINGS.getSetting("Warning1") == "true":
@@ -505,31 +506,31 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                     self.channels[self.currentChannel - 1].setShowTime(0)
                     self.log('while loop')
 
-        # First, check to see if the video is a...
-        if self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[-4:].lower() == 'strm':
-            self.log("Ignoring a stop because of a strm")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
-            self.log("Ignoring a stop because of a hdhomerun")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'plugin':
-            self.log("Ignoring a stop because of a plugin")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtmp':
-            self.log("Ignoring a stop because of a rtmp")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'mms':
-            self.log("Ignoring a stop because of a mms")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtsp':
-            self.log("Ignoring a stop because of a rtsp")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'http':
-            self.log("Ignoring a stop because of a http")
-            self.Player.ignoreNextStop = True
-        elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'upnp':
-            self.log("Ignoring a stop because of a upnp")
-            self.Player.ignoreNextStop = True
+        # # First, check to see if the video is a...
+        # if self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[-4:].lower() == 'strm':
+            # self.log("Ignoring a stop because of a strm")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
+            # self.log("Ignoring a stop because of a hdhomerun")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'plugin':
+            # self.log("Ignoring a stop because of a plugin")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtmp':
+            # self.log("Ignoring a stop because of a rtmp")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'mms':
+            # self.log("Ignoring a stop because of a mms")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'rtsp':
+            # self.log("Ignoring a stop because of a rtsp")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'http':
+            # self.log("Ignoring a stop because of a http")
+            # self.Player.ignoreNextStop = True
+        # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'upnp':
+            # self.log("Ignoring a stop because of a upnp")
+            # self.Player.ignoreNextStop = True
         
         self.log("about to mute");
         # Mute the channel before changing

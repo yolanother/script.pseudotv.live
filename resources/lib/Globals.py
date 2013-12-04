@@ -21,9 +21,7 @@ import xbmcaddon, xbmc, xbmcgui
 import Settings
 import sys, re
 
-
 from FileAccess import FileLock
-
 
 
 def log(msg, level = xbmc.LOGDEBUG):
@@ -38,21 +36,21 @@ def uni(string, encoding = 'utf-8'):
         if not isinstance(string, unicode):
            string = unicode(string, encoding)
 
-	return string
+    return string
 
 def ascii(string):
     if isinstance(string, basestring):
         if isinstance(string, unicode):
            string = string.encode('ascii', 'ignore')
 
-	return string
+    return string
 
 ADDON_ID = 'script.pseudotv.live'
 REAL_SETTINGS = xbmcaddon.Addon(id=ADDON_ID)
 ADDON_INFO = REAL_SETTINGS.getAddonInfo('path')
-
+##
 VERSION = "0.1.9"
-
+##
 TIMEOUT = 15 * 1000
 TOTAL_FILL_CHANNELS = 20
 PREP_CHANNEL_TIME = 60 * 60 * 24 * 5
@@ -77,7 +75,7 @@ if REAL_SETTINGS.getSetting('ChannelSharing') == "true":
     CHANNEL_SHARING = True
     LOCK_LOC = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('SettingsFolder'), 'cache')) + '/'
 
-
+######################################################
 if int(REAL_SETTINGS.getSetting('SkinSelector')) == 0:
     Skin_Select = 'default'
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
@@ -100,13 +98,12 @@ elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 3:
         Skin_Select = 'default'
         if REAL_SETTINGS.getSetting("SkinLogos") == "true":
             REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
-
+########################################################
             
 if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'images'))):   
     IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'images')) + '/'
 else:
     IMAGES_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', 'default', 'images')) + '/'
-  
 log("IMAGES_LOC = " + IMAGES_LOC)
    
 PRESETS_LOC = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'presets')) + '/'
@@ -142,19 +139,6 @@ if USING_EDEN:
 TIME_BAR = 'pstvTimeBar.png'
 BUTTON_FOCUS = 'pstvButtonFocus.png'
 BUTTON_NO_FOCUS = 'pstvButtonNoFocus.png'
-BUTTON_NO_FOCUS_CHILD = 'pstvButtonNoFocusChildren.png'
-BUTTON_NO_FOCUS_COMEDY = 'pstvButtonNoFocusComedy.png'
-BUTTON_NO_FOCUS_DRAMA = 'pstvButtonNoFocusDrama.png'
-BUTTON_NO_FOCUS_ITV = 'pstvButtonNoFocusInternetTV.png'
-BUTTON_NO_FOCUS_MOVIE = 'pstvButtonNoFocusMovie.png'
-BUTTON_NO_FOCUS_MUSIC = 'pstvButtonNoFocusMusic.png'
-BUTTON_NO_FOCUS_NEWS = 'pstvButtonNoFocusNews.png'
-BUTTON_NO_FOCUS_SPORTS = 'pstvButtonNoFocusSports.png'
-BUTTON_NO_FOCUS_TV = 'pstvButtonNoFocusTV.png'
-BUTTON_NO_FOCUS_UNKNOWN = 'pstvButtonNoFocusUnknown.png'
-BUTTON_NO_FOCUS_MIXED = 'pstvButtonNoFocusMixed.png'
-BUTTON_NO_FOCUS_CUSTOM = 'pstvButtonNoFocusCustom.png'
-BUTTON_NO_FOCUS_YOUTUBE = 'pstvButtonNoFocusYoutube.png'
 
 RULES_ACTION_START = 1
 RULES_ACTION_JSON = 2

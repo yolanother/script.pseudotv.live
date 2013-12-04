@@ -1769,6 +1769,7 @@ class ChannelList:
                         if movie:
                             category = 'Movie'
 
+
                         #Decipher the TVDB ID by using the Zap2it ID in dd_progid
                         dd_progid = ''
                         tvdbid = 0
@@ -1777,6 +1778,7 @@ class ChannelList:
                         episodeNumber = 0
                         episodeDesc = ''
                         episodeName = ''
+                        episodeGenre = ''
                         
                         if not movie and REAL_SETTINGS.getSetting('tvdb.enabled') == 'true':
                             episodeNumList = elem.findall("episode-num")
@@ -1917,6 +1919,20 @@ class ChannelList:
                                     episode = t[title][seasonNumber][episodeNumber]
                                     episodeName = episode['episodename']
                                     # self.log('title.episodeName.3 = ' + title + ' - ' + str(episodeName))#debug
+                                except:
+                                    pass
+                            
+                            if episodeGenre == '' and category == 'Unknown':
+                                try:
+                                    t = tvdb_api.Tvdb()
+                                    episodeGenre = t[title]['genre']## Output ex. Comedy|Talk Show|
+                                    self.log('title.episodeGenre.1 = ' + title + ' - ' + str(episodeGenre))#debug
+                                    episodeGenre = episodeGenre.split('|', 1)[-1]
+                                    # self.log('title.episodeGenre.2 = ' + title + ' - ' + str(episodeGenre))#debug
+                                    category = episodeGenre.split("|")[0]
+                                    # self.log('title.episodeGenre.3 = ' + title + ' - ' + str(category))#debug
+                                    if category == 0 or category == '0' or category == None or category == 'None': #clean output
+                                        category = 'Unknown'  
                                 except:
                                     pass
                             

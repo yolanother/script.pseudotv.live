@@ -15,8 +15,7 @@
     <string id="30201">Show info when changing channels</string>
     <string id="30202">Info window duration (seconds)</string>   
     <string id="30203">Use Season/Episode format (S00E00)</string>
-    <string id="30213">Enable EPG Genre Color</string>
-    <string id="30214">Enable EPG Channel Color</string>
+    <string id="30213">EPG Color</string>
     <string id="30204">Always show channel bug</string>
     <string id="30205">Use color channel logo</string>
     <string id="30206">Channel Logo Folder</string>
@@ -24,7 +23,7 @@
     <string id="30208">Show Coming Up Next box</string>
     <string id="30209">Hide very short videos</string>
     <string id="30210">Duration of "short" videos</string>  
-    <string id="30211">Select Skin</string>
+    <string id="30211">Select Skin (Coming Soon)</string>
     <string id="30212">Use Selected Skins Channel Logos</string>   
 <string id="30040">Tweaks</string>
     <string id="30041">Channel Change Delay (seconds)</string>

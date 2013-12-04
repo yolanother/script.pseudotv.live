@@ -17,8 +17,7 @@
         <setting id="InfoOnChange" type="bool" label="30201" default="true"/>
         <setting id="InfoTimer" subsetting="true" visible="eq(-1,true)" type="enum" label="30202" values="5|10|15|20|25" default="0"/>
         <setting id="ShowSeEp" type="bool" label="30203" default="true"/>
-        <setting id="EPGcolor_enabled" label="30213" type="bool" default="false"/>   
-        <setting id="EPGcolorChtype_enabled" label="30214" type="bool" default="false"/>   
+        <setting id="EPGcolor_enabled" label="30213" type="enum" values="Disabled|Genre|Channel" default="0" />
         <setting id="ShowChannelBug" type="bool" label="30204" default="true"/>
     	<setting id="ColorOverlay" type="bool" label="30205" default="false"/>
     	<setting id="ChannelLogoFolder" type="folder" source="auto" label="30206" default="special://home/addons/script.pseudotv.live/resources/skins/default/images/"/>
