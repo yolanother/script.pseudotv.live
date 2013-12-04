@@ -6,6 +6,22 @@
         <posy>0</posy>
     </coordinates>
     <controls>
+        <!--TextColor/Focusedcolor/ChannelBugColor--><!--TODO-->
+<!--         <control type="group" id="100">
+            <control type="label" id="100">
+                <description>TextColor</description>
+                <label>font14</label>
+            </control>  
+            <control type="label" id="100">
+                <description>Focusedcolor</description>
+                <label>FF7d7d7d</label>
+            </control>  
+            <control type="label" id="100">
+                <description>Channelbugcolor</description>
+                <label>FF00b4db</label>
+            </control>   
+        </control>   --> 
+        <!--Background-->
         <control type="image" id="101">
             <description>Background</description>
             <posx>0</posx>
@@ -15,6 +31,7 @@
             <texture>pstvSolid.png</texture>
             <colordiffuse>FF000000</colordiffuse>
         </control>
+        <!--Channel Bug Position-->
         <control type="image" id="103">
             <description>Channel Bug</description>
             <posx>150r</posx>
@@ -25,7 +42,7 @@
             <texture></texture>
             <animation effect="fade" start="40" end="40" condition="True">Conditional</animation>
         </control>
-<!--Background Image -->
+        <!--Background Image -->
         <control type="group" id="102">
             <animation effect="fade" time="500">VisibleChange</animation>
             <control type="image">
@@ -36,7 +53,6 @@
                 <height>720</height>
                 <texture>pstvInfoWindow.png</texture>
             </control>
-			
 <!--line 1 -->
             <control type="grouplist">
                 <posx>155</posx>
