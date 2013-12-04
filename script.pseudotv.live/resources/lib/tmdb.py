@@ -29,7 +29,10 @@ class TMDB(object):
     def __init__(self, api_key='c974c461a9767defec862674bf6c704e'):
         self.apikey = api_key
         self.baseurl = 'http://api.themoviedb.org/3'
-        self.imagebaseurl = self._getPosterBaseUrl()
+        try:
+            self.imagebaseurl = self._getPosterBaseUrl()
+        except:
+            pass
 
     def __repr__(self):
         return 'TMDB(apikey=%s, baseurl=%s, imagebaseurl=%s)' % (self.apikey,self.baseurl,self.imagebaseurl)

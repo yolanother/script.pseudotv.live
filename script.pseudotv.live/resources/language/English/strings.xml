@@ -15,6 +15,8 @@
     <string id="30201">Show info when changing channels</string>
     <string id="30202">Info window duration (seconds)</string>   
     <string id="30203">Use Season/Episode format (S00E00)</string>
+    <string id="30213">Enable EPG Genre Color</string>
+    <string id="30214">Enable EPG Channel Color</string>
     <string id="30204">Always show channel bug</string>
     <string id="30205">Use color channel logo</string>
     <string id="30206">Channel Logo Folder</string>
@@ -109,11 +111,11 @@
     <string id="30888">Enable TVDB</string>
     <string id="30889">TVDB API KEY</string>
     <string id="30890">Enable TVDB Art (Coming Soon)</string>
-    <string id="30891">Enable TMDB</string>
+    <string id="30891">Enable TMDB (Coming Soon)</string>
     <string id="30892">TMDB API KEY</string>
     <string id="30893">Enable TMDB Art (Coming Soon)</string>
     <string id="30894">Enable SickBeard</string>
-    <string id="30895">Base URL (including port)</string>
+    <string id="30895">http://IP:Port</string>
     <string id="30896">API Key</string>
     <string id="30897">Enable CouchPotato (Coming Soon)</string>
 <string id="30900">Misc.</string>

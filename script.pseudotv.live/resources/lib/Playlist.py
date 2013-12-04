@@ -33,6 +33,7 @@ class PlaylistItem:
         self.description = ''
         self.title = ''
         self.episodetitle = ''
+        self.genre = ''
         self.timestamp = ''
         self.LiveID = '' ## tvdb/tmdb id
         
@@ -81,9 +82,9 @@ class Playlist:
         self.processingSemaphore.acquire()
 
         if index >= 0 and index < len(self.itemlist):
-            desc = self.itemlist[index].LiveID
+            lid = self.itemlist[index].LiveID
             self.processingSemaphore.release()
-            return desc
+            return lid
 
         self.processingSemaphore.release()
         return ''
@@ -93,9 +94,21 @@ class Playlist:
         self.processingSemaphore.acquire()
 
         if index >= 0 and index < len(self.itemlist):
-            desc = self.itemlist[index].timestamp
+            tstp = self.itemlist[index].timestamp
             self.processingSemaphore.release()
-            return desc
+            return tstp
+
+        self.processingSemaphore.release()
+        return ''    
+    
+    
+    def getgenre(self, index):
+        self.processingSemaphore.acquire()
+
+        if index >= 0 and index < len(self.itemlist):
+            genr = self.itemlist[index].genre
+            self.processingSemaphore.release()
+            return genr
 
         self.processingSemaphore.release()
         return ''
@@ -214,13 +227,18 @@ class Playlist:
                             index = tmpitem.description.find('//')
                             
                             if index >= 0:
-                                tmpitem.timestamp = tmpitem.description[index + 2:]
+                                tmpitem.genre = tmpitem.description[index + 2:]
                                 tmpitem.description = tmpitem.description[:index]
-                                index = tmpitem.timestamp.find('//')
-                                
+                                index = tmpitem.genre.find('//')                            
+                            
                                 if index >= 0:
-                                    tmpitem.LiveID = tmpitem.timestamp[index + 2:]
-                                    tmpitem.timestamp = tmpitem.timestamp[:index]
+                                    tmpitem.timestamp = tmpitem.genre[index + 2:]
+                                    tmpitem.genre = tmpitem.genre[:index]
+                                    index = tmpitem.timestamp.find('//')
+                                    
+                                    if index >= 0:
+                                        tmpitem.LiveID = tmpitem.timestamp[index + 2:]
+                                        tmpitem.timestamp = tmpitem.timestamp[:index]
 
                 realindex += 1
                 tmpitem.filename = uni(lines[realindex].rstrip())
@@ -249,7 +267,7 @@ class Playlist:
 
         for i in range(self.size()):
             tmpstr = str(self.getduration(i)) + ','
-            tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i) + "//" + self.gettimestamp(i) + "//" + self.getLiveID(i)
+            tmpstr += self.getTitle(i) + "//" + self.getepisodetitle(i) + "//" + self.getdescription(i) + "//" + self.getgenre(i) + "//" + self.gettimestamp(i) + "//" + self.getLiveID(i)
             tmpstr = tmpstr[:600]
             tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
             tmpstr = tmpstr + '\n' + self.getfilename(i)

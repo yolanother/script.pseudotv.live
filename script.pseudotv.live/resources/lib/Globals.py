@@ -142,6 +142,19 @@ if USING_EDEN:
 TIME_BAR = 'pstvTimeBar.png'
 BUTTON_FOCUS = 'pstvButtonFocus.png'
 BUTTON_NO_FOCUS = 'pstvButtonNoFocus.png'
+BUTTON_NO_FOCUS_CHILD = 'pstvButtonNoFocusChildren.png'
+BUTTON_NO_FOCUS_COMEDY = 'pstvButtonNoFocusComedy.png'
+BUTTON_NO_FOCUS_DRAMA = 'pstvButtonNoFocusDrama.png'
+BUTTON_NO_FOCUS_ITV = 'pstvButtonNoFocusInternetTV.png'
+BUTTON_NO_FOCUS_MOVIE = 'pstvButtonNoFocusMovie.png'
+BUTTON_NO_FOCUS_MUSIC = 'pstvButtonNoFocusMusic.png'
+BUTTON_NO_FOCUS_NEWS = 'pstvButtonNoFocusNews.png'
+BUTTON_NO_FOCUS_SPORTS = 'pstvButtonNoFocusSports.png'
+BUTTON_NO_FOCUS_TV = 'pstvButtonNoFocusTV.png'
+BUTTON_NO_FOCUS_UNKNOWN = 'pstvButtonNoFocusUnknown.png'
+BUTTON_NO_FOCUS_MIXED = 'pstvButtonNoFocusMixed.png'
+BUTTON_NO_FOCUS_CUSTOM = 'pstvButtonNoFocusCustom.png'
+BUTTON_NO_FOCUS_YOUTUBE = 'pstvButtonNoFocusYoutube.png'
 
 RULES_ACTION_START = 1
 RULES_ACTION_JSON = 2

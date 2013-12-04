@@ -325,15 +325,15 @@ class ChannelList:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
             #disable force rebuild for livetv channels w/ TVDB and TMDB, else force rebuild:
-            if chtype == 8 or chtype == 9:
-                if (REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true') and chtype == 8):
+            if chtype == 8:
+                if (REAL_SETTINGS.getSetting('ForceChannelReset') == 'true' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'false' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'false')):
                     self.log("Force LiveTV rebuild - Disabled")
-                    needsreset = False
-                    makenewlist = False
-                else:                
-                    self.log("Force LiveTV/InternetTV rebuild")
                     needsreset = True
                     makenewlist = True
+
+            if chtype == 9:
+                needsreset = True
+                makenewlist = True
             
             if needsreset:
                 self.channels[channel - 1].isSetup = False
@@ -490,7 +490,7 @@ class ChannelList:
 
                 if tottime > (self.channels[channel - 1].totalTimePlayed - (60 * 60 * 12)):
                     tmpstr = str(self.channels[channel - 1].getItemDuration(i)) + ','
-                    tmpstr += self.channels[channel - 1].getItemTitle(i) + "//" + self.channels[channel - 1].getItemEpisodeTitle(i) + "//" + self.channels[channel - 1].getItemDescription(i) + "//" + self.channels[channel - 1].getItemtimestamp(i) + "//" + self.channels[channel - 1].getItemLiveID(i)
+                    tmpstr += self.channels[channel - 1].getItemTitle(i) + "//" + self.channels[channel - 1].getItemEpisodeTitle(i) + "//" + self.channels[channel - 1].getItemDescription(i) + "//" + self.channels[channel - 1].getItemgenre(i) + "//" + self.channels[channel - 1].getItemtimestamp(i) + "//" + self.channels[channel - 1].getItemLiveID(i)
                     tmpstr = uni(tmpstr[:500])
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                     tmpstr = uni(tmpstr) + uni('\n') + uni(self.channels[channel - 1].getItemFilename(i))
@@ -585,8 +585,9 @@ class ChannelList:
             self.log("Building LiveTV Channel, " + setting1 + " , " + setting2 + " , " + setting3)
             
             # HDhomerun #
-            #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
-            if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
+            if setting2[0:9] == 'hdhomerun' and REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
+                #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, 
+                #this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
                 self.log("Building LiveTV using tuner0")
                 setting2 = re.sub(r'\d/tuner\d',"0/tuner0",setting2)
             else:
@@ -609,12 +610,12 @@ class ChannelList:
                     fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel) 
                 else:
                 
-                    if setting2[0:4] == 'rtmp': #rtmp check
+                    if setting2[0:4] == 'rtmp':#rtmp check
                         self.rtmpDump(setting2)  
                         if self.rtmpVaild == True:   
                             fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
                         else:
-                            self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
+                            self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'RTMP invalid: ' + str(setting2))
                             return    
                     
                     elif setting2[0:4] == 'http':#http check     
@@ -633,8 +634,10 @@ class ChannelList:
                             self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
                             return
                     else:
-                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
-                    
+                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)   
+            else:
+                return
+                
         elif chtype == 9: # InternetTV
             self.log("Building InternetTV Channel, " + setting1 + " , " + setting2 + " , " + setting3)
             
@@ -644,7 +647,7 @@ class ChannelList:
                 fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
             else:
             
-                if setting2[0:4] == 'rtmp': #rtmp check
+                if setting2[0:4] == 'rtmp':#rtmp check
                     self.rtmpDump(setting2)
                     if self.rtmpVaild == True:
                         fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
@@ -1567,11 +1570,18 @@ class ChannelList:
                             tmpstr = str(dur) + ','
                             showtitle = re.search('"showtitle" *: *"(.*?)"', f)
                             plot = re.search('"plot" *: *"(.*?)",', f)
+                            genre = re.search('"genreid" *: *"(.*?)",', f)
+                            
 
                             if plot == None:
                                 theplot = ""
                             else:
                                 theplot = plot.group(1)
+                                
+                            if genre == None:
+                                genre = ""
+                            else:
+                                genre = genre.group(1)
 
                             # This is a TV show
                             if showtitle != None and len(showtitle.group(1)) > 0:
@@ -1594,7 +1604,7 @@ class ChannelList:
                                     seasonval = -1
                                     epval = -1
 
-                                tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot
+                                tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot + "//" + genre
                                 istvshow = True
                             else:
                                 tmpstr += title.group(1) + "//"
@@ -1730,7 +1740,7 @@ class ChannelList:
                         istvshow = True
                         movie = False
                         Unaired = False
-                        category = 'Normal'
+                        category = 'Unknown'
                         categories = ''
                         categoryList = elem.findall("category")
                         for cat in categoryList:
@@ -1999,6 +2009,7 @@ class ChannelList:
                         subtitle = uni(subtitle)
                         episodeDesc = uni(episodeDesc)
                         episodeName = uni(episodeName)
+                        genre = uni(category)
                         
                         #skip old shows that have already ended
                         if now > stopDate:
@@ -2041,10 +2052,10 @@ class ChannelList:
                                     episodetitle = episodetitle.split("- ", 1)[-1]
                                     
                                 episodetitle = uni(episodetitle)
-                                tmpstr = uni(str(dur) + ',' + title + "//" + episodetitle[:100] + "//" + description[:200] + "//" + str(startDate) + "//" + LiveID + '\n' + url)
+                                tmpstr = uni(str(dur) + ',' + title + "//" + episodetitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url)
                             
                             else: #Movie IMDB           
-                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + str(startDate) + "//" + LiveID + '\n' + url
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url
                         
                         elif imdbid == 0 and tvdbid > 0: #tvdb Enhanced backup
                             LiveID = ('tvdb_' + str(tvdbid))
@@ -2059,15 +2070,15 @@ class ChannelList:
                                     episodetitle = episodetitle.split("- ", 1)[-1]
                                     
                                 episodetitle = uni(episodetitle)
-                                tmpstr = str(dur) + ',' + title + "//" + episodetitle[:100] + "//" + description[:200] + "//" + str(startDate) + "//" + LiveID + '\n' + url
+                                tmpstr = str(dur) + ',' + title + "//" + episodetitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url
 
                         else: #Default Playlist
                             
                             if movie == False: #TV fallback  
-                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url               
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url               
                             
                             else: #Movie fallback         
-                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url       
                         
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         showList.append(tmpstr)

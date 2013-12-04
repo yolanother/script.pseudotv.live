@@ -115,6 +115,14 @@ class Channel:
     def getItemtimestamp(self, index):
         return self.Playlist.gettimestamp(self.fixPlaylistIndex(index))
 
+    def getCurrentgenre(self):
+        return self.getItemgenre(self.playlistPosition)
+
+
+    def getItemgenre(self, index):
+        return self.Playlist.getgenre(self.fixPlaylistIndex(index))
+
+
     def getCurrentDescription(self):
         return self.getItemDescription(self.playlistPosition)
 

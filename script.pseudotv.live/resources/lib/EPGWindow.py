@@ -44,9 +44,9 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.channelLogos = ''
         self.textcolor = "FFFFFFFF"
         self.focusedcolor = "FF7d7d7d"
+        self.Channelbugcolor = "FF00b4db"
         self.clockMode = 0
         self.textfont  = "font14"
-        # self.textfont = self.getControl(801).getFont
         self.startup = time.time()
 
         if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'media'))): 
@@ -72,7 +72,88 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
             self.textureButtonNoFocus = self.mediaPath + BUTTON_NO_FOCUS
         else:
             self.textureButtonNoFocus = 'button-nofocus.png'
-
+        
+        ## EPG Genres  
+        ## Child
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_CHILD):
+            self.textureButtonNoFocusChild = self.mediaPath + BUTTON_NO_FOCUS_CHILD
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_CHILD):
+            self.textureButtonNoFocusChild = self.mediaPath + BUTTON_NO_FOCUS_CHILD
+        else:
+            self.textureButtonNoFocusChild = 'button-nofocus.png'
+        
+        ## Comedy
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_COMEDY):
+            self.textureButtonNoFocusComedy = self.mediaPath + BUTTON_NO_FOCUS_COMEDY
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_COMEDY):
+            self.textureButtonNoFocusComedy = self.mediaPath + BUTTON_NO_FOCUS_COMEDY
+        else:
+            self.textureButtonNoFocusComedy = 'button-nofocus.png'
+        
+        ## Drama
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_DRAMA):
+            self.textureButtonNoFocusDrama = self.mediaPath + BUTTON_NO_FOCUS_DRAMA
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_DRAMA):
+            self.textureButtonNoFocusDrama = self.mediaPath + BUTTON_NO_FOCUS_DRAMA
+        else:
+            self.textureButtonNoFocusDrama = 'button-nofocus.png'
+        
+        ## Movie
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_MOVIE):
+            self.textureButtonNoFocusMovie = self.mediaPath + BUTTON_NO_FOCUS_MOVIE
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_MOVIE):
+            self.textureButtonNoFocusMovie = self.mediaPath + BUTTON_NO_FOCUS_MOVIE
+        else:
+            self.textureButtonNoFocusMovie = 'button-nofocus.png'
+        
+        ## News
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_NEWS):
+            self.textureButtonNoFocusNews = self.mediaPath + BUTTON_NO_FOCUS_NEWS
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_NEWS):
+            self.textureButtonNoFocusNews = self.mediaPath + BUTTON_NO_FOCUS_NEWS
+        else:
+            self.textureButtonNoFocusNews = 'button-nofocus.png'
+        
+        ## Sports
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_SPORTS):
+            self.textureButtonNoFocusSports = self.mediaPath + BUTTON_NO_FOCUS_SPORTS
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_SPORTS):
+            self.textureButtonNoFocusSports = self.mediaPath + BUTTON_NO_FOCUS_SPORTS
+        else:
+            self.textureButtonNoFocusSports = 'button-nofocus.png'
+        
+        ## Unknown
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_UNKNOWN):
+            self.textureButtonNoFocusUnknown = self.mediaPath + BUTTON_NO_FOCUS_UNKNOWN
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_UNKNOWN):
+            self.textureButtonNoFocusUnknown = self.mediaPath + BUTTON_NO_FOCUS_UNKNOWN
+        else:
+            self.textureButtonNoFocusUnknown = 'button-nofocus.png'
+        
+        ## Mixed
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_MIXED):
+            self.textureButtonNoFocusMixed = self.mediaPath + BUTTON_NO_FOCUS_MIXED
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_MIXED):
+            self.textureButtonNoFocusMixed = self.mediaPath + BUTTON_NO_FOCUS_MIXED
+        else:
+            self.textureButtonNoFocusMixed = 'button-nofocus.png'
+        
+        ## Playlist/Directory
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_CUSTOM):
+            self.textureButtonNoFocusCustom = self.mediaPath + BUTTON_NO_FOCUS_CUSTOM
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_CUSTOM):
+            self.textureButtonNoFocusCustom = self.mediaPath + BUTTON_NO_FOCUS_CUSTOM
+        else:
+            self.textureButtonNoFocusCustom = 'button-nofocus.png'
+        
+        ## Youtube/RSS
+        if os.path.exists(self.mediaPath + BUTTON_NO_FOCUS_YOUTUBE):
+            self.textureButtonNoFocusYoutube = self.mediaPath + BUTTON_NO_FOCUS_YOUTUBE
+        elif xbmc.skinHasImage(self.mediaPath + BUTTON_NO_FOCUS_YOUTUBE):
+            self.textureButtonNoFocusYoutube = self.mediaPath + BUTTON_NO_FOCUS_YOUTUBE
+        else:
+            self.textureButtonNoFocusYoutube = 'button-nofocus.png'
+            
         for i in range(self.rowCount):
             self.channelButtons[i] = []
 
@@ -122,6 +203,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         try:
             textcolor = int(self.getControl(100).getLabel(), 16)
             focusedcolor = int(self.getControl(100).getLabel2(), 16)
+            Channelbugcolor = int(self.getControl(100).getLabel3(), 16)
             self.textfont =  self.getControl(105).getLabel()
 
             if textcolor > 0:
@@ -129,6 +211,11 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
 
             if focusedcolor > 0:
                 self.focusedcolor = hex(focusedcolor)[2:]
+            
+            if Channelbugcolor > 0:
+                self.Channelbugcolor = hex(Channelbugcolor)[2:]
+                self.Channelbugcolor = hex(Channelbugcolor)[2:]
+
         except:
             pass
 
@@ -415,7 +502,53 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
 
                     if shouldskip == False and width >= 30:
                         mylabel = self.MyOverlayWindow.channels[curchannel - 1].getItemTitle(playlistpos)
-                        self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                        mygenre = self.MyOverlayWindow.channels[curchannel - 1].getItemgenre(playlistpos)
+                        chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(curchannel) + '_type'))
+                        # self.log('mygenre = ' + str(mygenre))#debug
+                        
+                        if REAL_SETTINGS.getSetting('EPGcolor_enabled') == 'true':
+
+                            if mygenre == 'Children' or mygenre == 'Kids':
+                                self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusChild, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            elif mygenre == 'Comedy':
+                                self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusComedy, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            elif mygenre == 'Drama':
+                                self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusDrama, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            elif mygenre == 'Movie':
+                                self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusMovie, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            elif mygenre == 'News':
+                                self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusNews, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            elif mygenre == 'Sports':
+                                self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusSports, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            # if mygenre == 'Unknown' or mygenre == 'Normal':
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusUnknown, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            else:
+                                self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+
+                        # if REAL_SETTINGS.getSetting('EPGcolorChtype_enabled') == 'true':
+                            
+                            # if chtype == 0 or chtype == 7:#Playlist/Directory
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.pstvButtonNoFocusCustom, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            
+                            # elif chtype == 1 or chtype == 3 or chtype == 6:#TV
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusTV, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                                                
+                            # elif chtype == 2 or chtype == 4:#Movie
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusMovie, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            
+                            # elif chtype == 5:#Mixed
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusMixed, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            
+                            # elif chtype == 9:#InternetTV
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusITV, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            
+                            # elif chtype == 10 or chtype == 11:#Youtube/RSS
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusYoutube, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+
+                            # elif chtype == 12:#Music
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusMusic, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                            # else:
+                                # self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
 
                     totaltime += tmpdur
                     reftime += tmpdur
