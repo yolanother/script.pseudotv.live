@@ -1,5 +1,5 @@
 #
-#      Copyright (C) 2013 Tommy Winther
+#      Copyright (C) 2013 Tommy Winther, Lunatixz
 #      http://tommy.winther.nu
 #
 #  This Program is free software; you can redistribute it and/or modify

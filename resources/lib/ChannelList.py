@@ -29,6 +29,7 @@ import urllib2
 import feedparser
 import tvdb_api
 import tmdbsimple
+import shutil
 
 
 from urllib import unquote
@@ -385,7 +386,15 @@ class ChannelList:
             self.channels[channel - 1].isValid = False
 
             if makenewlist:
-                try:
+            
+                try:#clean artwork folder
+                    artworkLOC = (xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/'))
+                    self.log("artworkLOC = " + str(artworkLOC))
+                    shutil.rmtree(artworkLOC)
+                except:
+                    pass
+
+                try:#remove old playlist
                     os.remove(CHANNELS_LOC + 'channel_' + str(channel) + '.m3u')
                 except:
                     pass
@@ -595,25 +604,21 @@ class ChannelList:
                 self.log("Building LiveTV using tuner1")
                 setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
             
-            # Vaildate XMLTV Data #
-            if setting3 == 'ustvnow':
+            # Validate XMLTV Data #
+            if setting3 != '':
                 self.xmltv_ok(setting3)
             
-            elif setting3 != 'ustvnow':  
-                self.xmltv_ok(setting3)
-            
-            # Vaildate LiveTV Feed #
-            if self.xmltvVaild == True:
-            
+            # Validate LiveTV Feed #
+            if self.xmltvValid == True:
                 #Override Checks# 
                 if REAL_SETTINGS.getSetting('Override_ok') == "true":
-                    self.log("Overriding Stream Vaildation")
+                    self.log("Overriding Stream Validation")
                     fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel) 
                 else:
                 
                     if setting2[0:4] == 'rtmp':#rtmp check
                         self.rtmpDump(setting2)  
-                        if self.rtmpVaild == True:   
+                        if self.rtmpValid == True:   
                             fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
                         else:
                             self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'RTMP invalid: ' + str(setting2))
@@ -621,7 +626,7 @@ class ChannelList:
                     
                     elif setting2[0:4] == 'http':#http check     
                         self.url_ok(setting2) 
-                        if self.urlVaild == True: 
+                        if self.urlValid == True: 
                             fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
                         else:
                             self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
@@ -644,13 +649,13 @@ class ChannelList:
             
             #Override Checks# 
             if REAL_SETTINGS.getSetting('Override_ok') == "true":
-                self.log("Overriding Stream Vaildation")
+                self.log("Overriding Stream Validation")
                 fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
             else:
             
                 if setting2[0:4] == 'rtmp':#rtmp check
                     self.rtmpDump(setting2)
-                    if self.rtmpVaild == True:
+                    if self.rtmpValid == True:
                         fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     else:
                         self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'RTMP invalid: ' + str(setting2))
@@ -658,7 +663,7 @@ class ChannelList:
        
                 elif setting2[0:4] == 'http':#http check                
                     self.url_ok(setting2)
-                    if self.urlVaild == True:
+                    if self.urlValid == True:
                         fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     else:
                         self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
@@ -1573,7 +1578,6 @@ class ChannelList:
                             plot = re.search('"plot" *: *"(.*?)",', f)
                             genre = re.search('"genreid" *: *"(.*?)",', f)
                             
-
                             if plot == None:
                                 theplot = ""
                             else:
@@ -1725,7 +1729,10 @@ class ChannelList:
                     if setting1 == channel:
                         inSet = True
                         title = elem.findtext('title')
-                        title = title.split("*")[0] #Remove "*" from title
+                        try:
+                            title = title.split("*")[0] #Remove "*" from title
+                        except:
+                            pass
                         description = elem.findtext("desc")
                         subtitle = elem.findtext("sub-title")
                         if not description:
@@ -1840,7 +1847,7 @@ class ChannelList:
                                 except:
                                     pass 
                                     
-                            ## Correct Invaild IMDBID format   
+                            ## Correct Invalid IMDBID format   
                             if imdbid != 0 and str(imdbid[0:2]) != 'tt':
                                 imdbid = ('tt' + str(imdbid))
                                     
@@ -1867,7 +1874,7 @@ class ChannelList:
                                     except:
                                         pass
  
-                                ## Clean and reset invaild values.                                                                                                            
+                                ## Clean and reset Invalid values.                                                                                                            
                                 if seasonNumber == None or seasonNumber == 'None' or seasonNumber == '0':
                                     seasonNumber = 0             
                                 if episodeNumber == None or episodeNumber == 'None' or episodeNumber == '0':
@@ -1896,7 +1903,7 @@ class ChannelList:
                                 except:
                                     pass
                                                                             
-                            ## Clean and reset invaild values. 
+                            ## Clean and reset Invalid values. 
                             if seasonNumber == '[]':
                                 seasonNumber = 0             
                             if episodeNumber == '[]':
@@ -1937,7 +1944,7 @@ class ChannelList:
                                 except:
                                     pass
                             
-                            # # cleanup invaild data
+                            # # cleanup Invalid data
                             # if seasonNumber == None:
                                 # seasonNumber = 0
                             # if episodeNumber == None:
@@ -2010,13 +2017,19 @@ class ChannelList:
                             episodeNumber = '%02d' % int(episodeNumber)
                             # self.log('title.episodeNumber.3 = ' + title + ' - ' + str(episodeNumber))#debug  
                                                    
+                        #filter unwanted ids by title
+                        if title == ('Paid Programming'):
+                            tvdbid = 0
+                            imdbid = 0
+                            
                         #Read the "new" boolean for this program
                         if elem.find("new") != None:
                             Unaired = True
                             title = (title + '*NEW*')
                         else:
                             Unaired = False
-                        
+
+                        #Correct encoding??
                         title = uni(title)
                         description = uni(description)
                         subtitle = uni(subtitle)
@@ -2052,7 +2065,6 @@ class ChannelList:
                         else:
                             LiveID = (LiveID + '|' + 'OLD' + '|')
 
-                        
                         
                         LiveID = LiveID.replace('||','|')
                         self.log('LiveID = ' + LiveID)##Debug
@@ -2105,10 +2117,10 @@ class ChannelList:
                         else: #Default Playlist
                             
                             if movie == False: #TV fallback  
-                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url               
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID|' + '\n' + url               
                             
                             else: #Movie fallback         
-                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url       
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID|' + '\n' + url       
                         
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         showList.append(tmpstr)
@@ -2291,7 +2303,7 @@ class ChannelList:
                     try:
                         thumburl = feed.entries[i].media_thumbnail[0]['url']
                     except:
-                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
+                        self.log("createYoutubeFilelist, Invalid media_thumbnail")
                         return 
             
                     #Time when the episode was published
@@ -2459,7 +2471,7 @@ class ChannelList:
                     try:
                         thumburl = feed.entries[i].media_thumbnail[0]['url']
                     except:
-                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
+                        self.log("createYoutubeFilelist, Invalid media_thumbnail")
                         return
                     #Time when the episode was published
                     time = (feed.entries[i].published_parsed)
@@ -2626,7 +2638,7 @@ class ChannelList:
                     try:
                         thumburl = feed.entries[i].media_thumbnail[0]['url']
                     except:
-                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
+                        self.log("createYoutubeFilelist, Invalid media_thumbnail")
                         return 
                     #Time when the episode was published
                     time = (feed.entries[i].published_parsed)
@@ -2811,7 +2823,7 @@ class ChannelList:
                     try:
                         thumburl = feed.entries[i].media_thumbnail[0]['url']
                     except:
-                        self.log("createRSSFileList, Invaild media_thumbnail")
+                        self.log("createRSSFileList, Invalid media_thumbnail")
                         return 
 
                     if not '<p>' in feed.entries[i].summary_detail.value:
@@ -3309,47 +3321,47 @@ class ChannelList:
         # return fileList
         
     def xmltv_ok(self, setting3):
-        self.xmltvVaild = False
-        self.xmlTvFile = '' 
+        self.xmltvValid = False
+        self.xmlTvFile = ''
         self.log("setting3 = " + str(setting3))
         
         if setting3 == 'ustvnow':
             self.log("xmltv_ok, testing " + str(setting3))
             url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow XMLTV list
-            url_bak = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow XMLTV list
+            url_bak = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow BACKUP XMLTV list
             try: 
                 urllib2.urlopen(url)
                 self.log("INFO: URL Connected...")
-                self.xmltvVaild = True
+                self.xmltvValid = True
                 self.xmlTvFile = url 
             except urllib2.URLError as e:
                 urllib2.urlopen(url_bak)
                 self.log("INFO: URL_BAK Connected...")
-                self.xmltvVaild = True
+                self.xmltvValid = True
                 self.xmlTvFile = url_bak
             except urllib2.URLError as e:
                 if "Errno 10054" in e:
                     raise
                 else:                
-                    self.log("ERROR: Problem accessing the DNS. USTVnow XMLTV URL NOT VAILD, ERROR: " + str(e))
-                    self.xmltvVaild = False
+                    self.log("ERROR: Problem accessing the DNS. USTVnow XMLTV URL NOT VALiD, ERROR: " + str(e))
+                    self.xmltvValid = False
 
         elif setting3 != 'ustvnow':
-            self.log("xmltv_ok, testing " + str(setting3) +".xml")
-            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(setting3) +'.xml'))
+            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltvLOC'), str(setting3) +'.xml'))
+            self.log("xmltv_ok, testing " + str(self.xmlTvFile))
             try:
                 FileAccess.exists(self.xmlTvFile)
                 self.log("INFO: XMLTV Data Found...")
-                self.xmltvVaild = True
+                self.xmltvValid = True
             except IOError as e:
-                self.xmltvVaild = False
+                self.xmltvValid = False
                 self.log("ERROR: Problem accessing the DNS. " + str(setting3) +".xml XMLTV file NOT FOUND, ERROR: " + str(e))
 
-        self.log("xmltvVaild = " + str(self.xmltvVaild))
+        self.log("xmltvValid = " + str(self.xmltvValid))
                     
         
     def rtmpDump(self, stream):
-        self.rtmpVaild = False
+        self.rtmpValid = False
         url = unquote(stream)
         
         OSplat = REAL_SETTINGS.getSetting('os')
@@ -3398,38 +3410,38 @@ class ChannelList:
         self.log("output = " + output)
         
         if "ERROR:" in output:
-            self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VAILD")
-            self.rtmpVaild = False 
+            self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VALiD")
+            self.rtmpValid = False 
         elif "WARNING:" in output:
-            self.log("WARNING: Problem accessing the DNS. RTMP URL NOT VAILD")
-            self.rtmpVaild = False
+            self.log("WARNING: Problem accessing the DNS. RTMP URL NOT VALiD")
+            self.rtmpValid = False
         elif "INFO: Connected..." in output:
             self.log("INFO: Connected...")
-            self.rtmpVaild = True
+            self.rtmpValid = True
         else:
             self.log("ERROR?: Unknown responce...")
-            self.rtmpVaild = False
+            self.rtmpValid = False
         
-        self.log("rtmpVaild = " + str(self.rtmpVaild))
+        self.log("rtmpValid = " + str(self.rtmpValid))
 
         
     def url_ok(self, url):
-        self.urlVaild = False
+        self.urlValid = False
         url = unquote(url)
         try: 
             urllib2.urlopen(urllib2.Request(url))
             self.log("INFO: Connected...")
-            self.urlVaild = True
+            self.urlValid = True
         except urllib2.URLError as e:
-            self.log("ERROR: Problem accessing the DNS. HTTP URL NOT VAILD, ERROR: " + str(e))
-            self.urlVaild = False
+            self.log("ERROR: Problem accessing the DNS. HTTP URL NOT VALiD, ERROR: " + str(e))
+            self.urlValid = False
         
-        self.log("urlVaild = " + str(self.urlVaild))
+        self.log("urlValid = " + str(self.urlValid))
         
         
     def plugin_ok(self, plugin):
         self.PluginFound = False
-        self.PluginVaild = False
+        self.PlugInvalid = False
         stream = plugin
         self.log("plugin stream = " + stream)
         id = plugin.split("/?")[0]
@@ -3450,7 +3462,7 @@ class ChannelList:
                 # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
                 # self.log('json_folder_detail = ' + str(json_folder_detail))
                 # self.log('file_detail = ' + str(file_detail))
-                # self.PluginVaild = True        
+                # self.PlugInvalid = True        
             # except Exception:
-                # self.PluginVaild = False
+                # self.PlugInvalid = False
 

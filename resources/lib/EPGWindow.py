@@ -760,14 +760,20 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
             return
         
         URLimage = ''
-        Artpath = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/')
+        Artpath = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/')##write code to clean on channel rebuild
         chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(newchan) + '_type'))
         title = (self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
         tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
         LiveID = (self.MyOverlayWindow.channels[newchan - 1].getItemLiveID(plpos))
         self.log('EPG.LiveID.1 = ' + str(LiveID))##Debug
         
-        if chtype == 8 and LiveID != 'LiveI':
+        if chtype == 8 and LiveID == 'LiveID': #fallback fanart for no id
+            try:
+                self.getControl(508).setImage('fanart.png')
+            except:
+                pass
+        
+        if chtype == 8 and LiveID != 'LiveID':
             LiveLST = LiveID.split("|", 4)
             self.log('EPG.LiveID.2 = ' + str(LiveLST))##Debug
             imdbid = LiveLST[0]
@@ -781,19 +787,25 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
             Unaired = LiveLST[3]
             self.log('EPG.LiveLST.Unaired = ' + str(Unaired))##Debug
             
-            #Sickbeard/Couchpotato
-            if SBCP == 'SB':
-                self.getControl(505).setImage(self.mediaPath + 'sb-logo-tiny.png')
-            elif SBCP == 'CP':
-                self.getControl(505).setImage(self.mediaPath + 'cp-logo-tiny.png')
-            else:
-                self.getControl(505).setImage(self.mediaPath + 'NA.png')
-                        
-            #Unaired/aired
-            if Unaired == 'NEW':
-                self.getControl(506).setImage(self.mediaPath + 'label_blue_new.png')
-            else:
-                self.getControl(506).setImage(self.mediaPath + 'NA.png')
+            try:#Try, and pass if label isn't found (Backward compatibility with PTV Skins)
+                #Sickbeard/Couchpotato
+                if SBCP == 'SB':
+                    self.getControl(505).setImage(self.mediaPath + 'SB.png')
+                elif SBCP == 'CP':
+                    self.getControl(505).setImage(self.mediaPath + 'CP.png')
+                else:
+                    self.getControl(505).setImage(self.mediaPath + 'NA.png')
+            except:
+                pass
+            
+            try:#Try, and pass if label isn't found (Backward compatibility with PTV Skins)             
+                #Unaired/aired
+                if Unaired == 'NEW':
+                    self.getControl(506).setImage(self.mediaPath + 'NEW.png')
+                else:
+                    self.getControl(506).setImage(self.mediaPath + 'NA.png')
+            except:
+                pass
             
             #TVDB
             if tvdbid > 0 and (REAL_SETTINGS.getSetting("tvdb.showart") == "true" and REAL_SETTINGS.getSetting("tvdb.enabled") == "true"):
@@ -830,7 +842,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
                             self.log('EPG.tvdb.output = ' + str(output))##Debug
                             output.write(resource.read())
                             output.close()
-               except:
+                except:
                     pass
                 
                 
