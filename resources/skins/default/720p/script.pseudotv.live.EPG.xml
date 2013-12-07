@@ -112,8 +112,27 @@
             <texture>$INFO[Player.Art(tvshow.landscape)]</texture>
             <aspectratio aligny="center">keep</aspectratio>
         </control>
-       
-        
+       <control type="label" id="507">
+            <description>Dynamic art</description><!-- Calls art by label given, labels include type (ie fanart,poster,series,graphical(banner))-->
+            <label>graphical</label>
+            <visible>false</visible>
+        </control>
+       <control type="image" id="508">
+            <description>Dynamic art</description><!-- Calls art by label given-->
+            <posx>955</posx>
+            <posy>570</posy>
+            <width>285</width>
+            <height>125</height>
+            <aspectratio>keep</aspectratio>
+        </control>
+        <control type="image" id="506">
+            <description>Unaired NEW Icon</description>            
+            <posx>1000</posx>
+            <posy>600</posy>
+            <width>40</width>
+            <height>40</height>
+            <aspectratio>keep</aspectratio>
+        </control>
 <!--LEFT/RIGHT art-->
         <control type="image">
             <description>left</description>
@@ -226,35 +245,39 @@
             <posy>520</posy>
             <width>1000</width>
             <height>40</height>
+            <align>left</align>
+            <aligny>bottom</aligny>
             <orientation>horizontal</orientation>
-            <itemgap>10</itemgap>
+            <itemgap>5</itemgap>
             <control type="label" id="500">
                 <description>Show Name Label</description>
-                <width min="100" max="800">auto</width>
-                <height>40</height>
+                <width min="5" max="840">auto</width>
                 <label>Show Name</label>
                 <font>font_bold20</font>
-                <align>left</align>
                 <textcolor>FF00b4db</textcolor>
             </control>
             <control type="label">
                 <description>Show Name Label</description>
                 <width>40</width>
-                <height>40</height>
                 <label>•</label>
                 <font>font12</font>
-                <align>left</align>
                 <textcolor>FF00b4db</textcolor>
             </control>
             <control type="label" id="501">
                 <description>Show Title Label</description>
-                <width min="100" max="800">auto</width>
-                <height>40</height>
+                <width min="-5" max="840">auto</width>
                 <label>Show Title</label>
                 <font>font_bold20</font>
-                <align>left</align>
                 <textcolor>FFFFFFFF</textcolor>
-            </control>
+            </control>        
+        </control>
+        <control type="image" id="505">
+            <description>Sickbeard/Couchpotato Icon</description>            
+            <posx>880</posx>
+            <posy>525</posy>
+            <width>20</width>
+            <height>20</height>
+            <aspectratio>keep</aspectratio>
         </control>
         <control type="label" id="502">
             <description>Show Description Label</description>
@@ -278,7 +301,7 @@
             <height>1</height>
             <aspectratio>keep</aspectratio>
             <aligny>top</aligny>
-        </control>
+        </control>                
         <control type="label" id="101">
             <description>Time Left Label</description>
             <posx>400</posx>

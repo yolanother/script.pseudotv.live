@@ -20,13 +20,18 @@ import xbmc, xbmcgui, xbmcaddon
 import subprocess, os
 import time, threading
 import datetime, traceback
+import sys, re
+import tvdb_api
+import urllib
+import urllib2
 
 from Playlist import Playlist
 from Globals import *
 from Channel import Channel
 from ChannelList import ChannelList
 from FileAccess import FileLock, FileAccess
-
+from tvdb import *
+from xml.etree import ElementTree as ET
 
 class EPGWindow(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
@@ -308,8 +313,6 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
             self.log("setbuttonnowtime " + str(nowDate))
             if self.MyOverlayWindow.channels[curchannel - 1].isPaused:
                 self.channelButtons[row].append(xbmcgui.ControlButton(basex, basey, basew, baseh, self.MyOverlayWindow.channels[curchannel - 1].getCurrentTitle() + " (paused)", focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, textColor=self.textcolor, focusedColor=self.focusedcolor))
-            # elif self.channels[self.currentChannel - 1].getItemFilename(self.channels[self.currentChannel - 1].playlistPosition)[0:9].lower() == 'hdhomerun':
-                # self.log("hdhomerun epg")
             else:
                 # Find the show that was running at the given time
                 # Use the current time and show offset to calculate it
@@ -755,8 +758,123 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         if plpos == -1:
             self.log('Unable to find the proper playlist to set from EPG')
             return
+        
+        URLimage = ''
+        Artpath = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/')
         chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(newchan) + '_type'))
+        title = (self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
+        tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
+        LiveID = (self.MyOverlayWindow.channels[newchan - 1].getItemLiveID(plpos))
+        self.log('EPG.LiveID.1 = ' + str(LiveID))##Debug
+        
+        if chtype == 8 and LiveID != 'LiveI':
+            LiveLST = LiveID.split("|", 4)
+            self.log('EPG.LiveID.2 = ' + str(LiveLST))##Debug
+            imdbid = LiveLST[0]
+            self.log('EPG.LiveLST.imdbid = ' + str(imdbid))##Debug
+            tvdbid = LiveLST[1]
+            self.log('EPG.LiveLST.tvdbid.1 = ' + str(tvdbid))##Debug
+            tvdbid = tvdbid.split('tvdb_', 1)[-1]
+            self.log('EPG.LiveLST.tvdbid.2 = ' + str(tvdbid))##Debug
+            SBCP = LiveLST[2]
+            self.log('EPG.LiveLST.SBCP = ' + str(SBCP))##Debug
+            Unaired = LiveLST[3]
+            self.log('EPG.LiveLST.Unaired = ' + str(Unaired))##Debug
+            
+            #Sickbeard/Couchpotato
+            if SBCP == 'SB':
+                self.getControl(505).setImage(self.mediaPath + 'sb-logo-tiny.png')
+            elif SBCP == 'CP':
+                self.getControl(505).setImage(self.mediaPath + 'cp-logo-tiny.png')
+            else:
+                self.getControl(505).setImage(self.mediaPath + 'NA.png')
+                        
+            #Unaired/aired
+            if Unaired == 'NEW':
+                self.getControl(506).setImage(self.mediaPath + 'label_blue_new.png')
+            else:
+                self.getControl(506).setImage(self.mediaPath + 'NA.png')
+            
+            #TVDB
+            if tvdbid > 0 and (REAL_SETTINGS.getSetting("tvdb.showart") == "true" and REAL_SETTINGS.getSetting("tvdb.enabled") == "true"):
+                try:
+                    type = 'fanart'
+                    # type = str(self.getControl(507).getLabel()) #art type (ie fanart,poster,series,graphical(banner))
+                    self.log('EPG.tvdb.type = ' + str(type))##Debug
+                    Banner = tvdbAPI.getBannerByID(tvdbid, type)
+                    Banner = str(Banner)
+                    self.log('EPG.tvdb.Banners.1 = ' + str(Banner))##Debug
+                    if Banner != 0:
+                        Banner = Banner.split("', '")[0]
+                        self.log('EPG.tvdb.Banners.2 = ' + str(Banner))##Debug
+                        Banner = Banner.split("[('", 1)[-1]
+                        self.log('EPG.tvdb.Banners.3 = ' + str(Banner))##Debug
+                        URLimage = Banner            
+                        URLimage = URLimage.split("http://www.thetvdb.com/banners/", 1)[-1]
+                        self.log('EPG.tvdb.URLimage.1 = ' + str(URLimage))##Debug
+                        URLimage = URLimage.rsplit('/', 1)[-1]
+                        self.log('EPG.tvdb.URLimage.2 = ' + str(URLimage))##Debug
+                        URLimage = (type + '-' + URLimage)
+                        self.log('EPG.tvdb.URLimage.3 = ' + str(URLimage))##Debug
+                        flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage)
+                        
+                        if FileAccess.exists(flename):
+                            self.getControl(508).setImage(flename)
+                        else:
+                            if not os.path.exists(os.path.join(Artpath)):
+                                os.makedirs(os.path.join(Artpath))
+                            
+                            resource = urllib.urlopen(Banner)
+                            self.log('EPG.tvdb.resource = ' + str(resource))##Debug
+                            output = open(flename,"wb")
+                            self.log('EPG.tvdb.output = ' + str(output))##Debug
+                            output.write(resource.read())
+                            output.close()
+               except:
+                    pass
+                
+                
+                
 
+
+
+
+           # import imdb
+
+            # access = imdb.IMDb()
+            # movie = access.get_movie(1132626)
+
+            # print "title: %s year: %s" % (movie['title'], movie['year'])
+            # print "Cover url: %s" % movie['cover url']
+            
+        
+        
+            # #Fanart.tv
+            # if REAL_SETTINGS.getSetting("fandb.showart") == "true" and REAL_SETTINGS.getSetting("fandb.enabled") == "true":
+                # # try:
+                    # tvdbid_fanart = t[title]['fanart']
+                    # self.log('EPG.tvdbid.fanart = ' + str(tvdbid_fanart))##Debug tvdbid.fanart = http://thetvdb.com/banners/fanart/original/71489-10.jpg
+                    # URLimage = tvdbid_fanart.split('http://thetvdb.com/banners/fanart/original/', 1)[-1]
+                    # self.log('EPG.tvdbid.URLimage = ' + str(URLimage))##Debug
+                
+                    # if FileAccess.exists(flename):
+                        # self.getControl(506).setImage(flename)
+                    # else:
+                        # if not os.path.exists(os.path.join(Artpath)):
+                            # os.makedirs(os.path.join(Artpath))
+                        # resource = urllib.urlopen("tvdbid_fanart")
+                        # self.log('EPG.tvdbid.resource = ' + str(resource))##Debug
+                        # output = open(flename,"wb")
+                        # self.log('EPG.tvdbid.output = ' + str(output))##Debug
+                        # output.write(resource.read())
+                        # output.close()
+                # except:
+                    # pass
+                
+                # http://api.fanart.tv/webservice/series/apikey/thetvdb_id/format/type/sort/limit/
+                # self.log('EPG.Fanart.tv = ' + str(tvshow))##Debug
+        
+        
         self.getControl(500).setLabel(self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
         #code to display "Live TV" instead of date (date does confirm sync)
         #if chtype == 8:
@@ -765,6 +883,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.getControl(501).setLabel(self.MyOverlayWindow.channels[newchan - 1].getItemEpisodeTitle(plpos))
         self.getControl(502).setLabel(self.MyOverlayWindow.channels[newchan - 1].getItemDescription(plpos))
         self.getControl(503).setImage(self.channelLogos + ascii(self.MyOverlayWindow.channels[newchan - 1].name) + '_c.png')
+        # self.getControl(503).setImage(self.channelLogos + ascii(self.MyOverlayWindow.channels[newchan - 1].name) + '_c.png')
         self.log('setShowInfo return')
 
     # using the currently selected button, play the proper shows

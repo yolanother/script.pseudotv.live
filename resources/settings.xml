@@ -17,7 +17,7 @@
         <setting id="InfoOnChange" type="bool" label="30201" default="true"/>
         <setting id="InfoTimer" subsetting="true" visible="eq(-1,true)" type="enum" label="30202" values="5|10|15|20|25" default="0"/>
         <setting id="ShowSeEp" type="bool" label="30203" default="true"/>
-        <setting id="EPGcolor_enabled" label="30213" type="enum" values="Disabled|Genre|Channel" default="0" />
+        <setting id="EPGcolor_enabled" label="30213" type="enum" values="Disabled|Genre Type|Channel Type" default="0" />
         <setting id="ShowChannelBug" type="bool" label="30204" default="true"/>
     	<setting id="ColorOverlay" type="bool" label="30205" default="false"/>
     	<setting id="ChannelLogoFolder" type="folder" source="auto" label="30206" default="special://home/addons/script.pseudotv.live/resources/skins/default/images/"/>
@@ -117,11 +117,14 @@
         <setting id="PVR_Folder" subsetting="true" label="30802" visible="eq(-1,true)" type="text" default="" />    
         <setting label="30887" type="lsep"/>     
         <setting id="tvdb.enabled" label="30888" type="bool" default="false" />
-        <setting id="tvdb.apikey" subsetting="true" label="30889" visible="eq(-1,true)" type="text" default="01F0668B2FC765B9" />
+        <setting id="tvdb.apikey" subsetting="true" label="30889" visible="eq(-1,true)" type="text" default="Enter API KEY" />
         <setting id="tvdb.showart" subsetting="true" label="30890" visible="eq(-2,true)" type="bool" default="false" />
-		<setting id="tmdb.enabled" label="30891" type="bool" default="false" />
-        <setting id="tmdb.apikey" subsetting="true" label="30892" visible="eq(-1,true)" type="text" default="c974c461a9767defec862674bf6c704e"/>
+        <setting id="tmdb.enabled" label="30891" type="bool" default="false" />
+        <setting id="tmdb.apikey" subsetting="true" label="30892" visible="eq(-1,true)" type="text" default="Enter API KEY"/>
         <setting id="tmdb.showart" subsetting="true" label="30893" visible="eq(-2,true)" type="bool" default="false" />
+        <setting id="fandb.enabled" label="30898" type="bool" default="false" />
+        <setting id="fandb.apikey" subsetting="true" label="30899" visible="eq(-1,true)" type="text" default="Enter API KEY"/>
+        <setting id="fandb.showart" subsetting="true" label="30899" visible="eq(-2,true)" type="bool" default="false" />
         <setting id="sickbeard.enabled" label="30894" type="bool" default="false" />
         <setting id="sickbeard.baseurl" subsetting="true" label="30895" visible="eq(-1,true)" type="text" default="http://localhost:8081"/>
         <setting id="sickbeard.apikey" subsetting="true" label="30896" visible="eq(-2,true)" type="text" default="cf6a9873e3f6dd25abbb654c7e362d9d"/>

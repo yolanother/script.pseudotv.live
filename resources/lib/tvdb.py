@@ -24,6 +24,8 @@ import ChannelList
 
 from Channel import Channel
 from Globals import *
+from xml.etree import ElementTree as ET
+
 
 class TVDB(object):
     def __init__(self, api_key='01F0668B2FC765B9'):
@@ -88,6 +90,32 @@ class TVDB(object):
                 return 0
         except:
             return 0    
+    
+    def getBannerByID(self, tvdbid, type):
+        try:
+            response = urllib2.urlopen(self._buildUrl(self.apikey + '/series/' + tvdbid + '/banners.xml'))
+            tree = ET.parse(response)
+            images = []
+            banner_data = tree.find("Banners")
+            banner_nodes = tree.getiterator("Banner")
+            for banner in banner_nodes:
+                banner_path = banner.findtext("BannerPath")
+                banner_type = banner.findtext("BannerType")
+                banner_type2 = banner.findtext("BannerType2")
+                if banner_type == 'season':
+                    banner_season = banner.findtext("Season")
+                else:
+                    banner_season = ''
+                banner_url = "%s/banners/%s" % ('http://www.thetvdb.com', banner_path)
+                if type in banner_path:
+                    images.append((banner_url, banner_type, banner_type2, banner_season))
+                    break
+                # else:
+                    # images.append((banner_url, banner_type, banner_type2, banner_season))
+            return images
+        except:
+            return 0    
+       
             
     def getIMDBbyShowName(self, showName):
         try:

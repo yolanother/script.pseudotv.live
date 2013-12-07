@@ -30,6 +30,7 @@ import feedparser
 import tvdb_api
 import tmdbsimple
 
+
 from urllib import unquote
 from urllib import urlopen
 from xml.etree import ElementTree as ET
@@ -1617,7 +1618,7 @@ class ChannelList:
                                     if tagline != None:
                                         tmpstr += tagline.group(1)
 
-                                    tmpstr += "//" + theplot
+                                    tmpstr += "//" + theplot + "//" + genre
                                 else:
                                     artist = re.search('"artist" *: *"(.*?)"', f)
                                     tmpstr += album.group(1) + "//" + artist.group(1)
@@ -1972,10 +1973,7 @@ class ChannelList:
                             except:
                                 pass
 
-                        
-                        ####################################################################
-                        ##Move to Overlay!, also search livetv title for * to label Unaired...
-                        
+
                         #Rob Newton - 20130130 - Check for show being managed by SickBeard
                         sbManaged = False
                         if REAL_SETTINGS.getSetting('sickbeard.enabled') == 'true':
@@ -1994,7 +1992,6 @@ class ChannelList:
                                     # self.getControl(901).setImage("cp-logo-tiny.png")
                             except:
                                 pass
-                        ######################################################################
                         
                         now = datetime.datetime.now()
                         stopDate = self.parseXMLTVDate(elem.get('stop'))
@@ -2027,6 +2024,39 @@ class ChannelList:
                         episodeName = uni(episodeName)
                         genre = uni(category)
                         
+                        #Build LiveID (imdb/tvdb/sickbeard or couchpoato/unaired or aired)
+                        LiveID = ''
+                        if imdbid != 0:
+                            IID = ('imdb_' + str(imdbid))
+                            LiveID = (IID + '|')
+                        else:
+                            LiveID = ('NA' + '|')
+                        
+                        if tvdbid != 0:
+                            TID = ('tvdb_' + str(tvdbid))
+                            LiveID = (LiveID + '|' + TID + '|')
+                        else:
+                            LiveID = (LiveID + '|' + 'NA' + '|')
+                                              
+                        if sbManaged == True:
+                            SB = ('SB')
+                            LiveID = (LiveID + '|' + SB + '|')
+                        elif cpManaged == True:
+                            CP = ('CP')
+                            LiveID = (LiveID + '|' + CP + '|')
+                        else:
+                            LiveID = (LiveID + '|' + 'NA' + '|')
+                            
+                        if Unaired == True:
+                            LiveID = (LiveID + '|' + 'NEW' + '|')
+                        else:
+                            LiveID = (LiveID + '|' + 'OLD' + '|')
+
+                        
+                        
+                        LiveID = LiveID.replace('||','|')
+                        self.log('LiveID = ' + LiveID)##Debug
+                        
                         #skip old shows that have already ended
                         if now > stopDate:
                             self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
@@ -2055,10 +2085,9 @@ class ChannelList:
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (default to 60 min)")
                                 raise
 
-                        if imdbid > 0:#Default Enhanced using IMDB
-                            LiveID = ('imdb_' + str(imdbid))
+                        if imdbid > 0 or tvdbid > 0:#Enhanced tmpstr
                             
-                            if movie == False: #TV IMDB
+                            if movie == False: #TV IMDB/TVDB
                                 if self.showSeasonEpisode:
                                     episodetitle = ('S' + ('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'E' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ episodeName)
                                 else:
@@ -2068,33 +2097,18 @@ class ChannelList:
                                     episodetitle = episodetitle.split("- ", 1)[-1]
                                     
                                 episodetitle = uni(episodetitle)
-                                tmpstr = uni(str(dur) + ',' + title + "//" + episodetitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url)
+                                tmpstr = uni(str(dur) + ',' + title + "//" + episodetitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url)
                             
                             else: #Movie IMDB           
-                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url
                         
-                        elif imdbid == 0 and tvdbid > 0: #tvdb Enhanced backup
-                            LiveID = ('tvdb_' + str(tvdbid))
-                            
-                            if movie == False: #TV IMDB
-                                if self.showSeasonEpisode:
-                                    episodetitle = ('S' + ('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'E' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ episodeName)
-                                else:
-                                    episodetitle = (('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'x' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ episodeName)
-                            
-                                if str(episodetitle[0:6]) == 'S00E00':
-                                    episodetitle = episodetitle.split("- ", 1)[-1]
-                                    
-                                episodetitle = uni(episodetitle)
-                                tmpstr = str(dur) + ',' + title + "//" + episodetitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url
-
                         else: #Default Playlist
                             
                             if movie == False: #TV fallback  
-                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url               
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url               
                             
                             else: #Movie fallback         
-                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:100] + "//" + description[:200] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url       
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url       
                         
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         showList.append(tmpstr)
