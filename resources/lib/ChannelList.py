@@ -616,7 +616,7 @@ class ChannelList:
                     fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel) 
                 else:
                 
-                    if setting2[0:4] == 'rtmp':#rtmp check
+                    if setting2[0:4] == 'rtmp' or setting2[0:5] == 'rtmpe':#rtmp check
                         self.rtmpDump(setting2)  
                         if self.rtmpValid == True:   
                             fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
@@ -1506,13 +1506,58 @@ class ChannelList:
         self.log("makeMixedList return " + str(newlist))
         return newlist
 
+    def buildGenreLiveID(self, showtitle): ##return genre and LiveID by json
+        #query GetTVShows/GetMovies for by tv or movie: get title/genre, match title return genre...
+        self.log("buildGenreLiveID")
+        json_query = uni('{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"properties":["title","genre","imdbnumber","playcount"]},"id":7}' % (self.escapeDirJSON(name)))
+    
+        jsonobject = self.sendJSON(json_query)
+        Medialist = []
+        if jsonobject['result'].has_key('title'):
+            for item in jsonobject['result']['title']:
+                    Medialist.append({'dbid': item.get('movieid',''),'id': item.get('imdbnumber',''),'name': item.get('label','')})
+        for titles in Medialist:
+            title = re.search('"title" *: *"(.*?)",', f)
+            self.log("buildGenreLiveID.title = " + str(title))
+            genre = re.search('"title" *: *"(.*?)",', f)
+            self.log("buildGenreLiveID.genre = " + str(genre))
+            imdbid = re.search('"imdbnumber" *: *"(.*?)",', f)
+            self.log("buildGenreLiveID.imdbid = " + str(imdbid))            
+            
+            if showtitle == title:
+                break
 
+        
+        
+        
+        # json_detail = self.sendJSON(json_query)
+        # self.log(json_detail)
+        # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_detail)
+
+        # for f in file_detail:
+            # if self.threadPause() == False:
+                # del fileList[:]
+                # break
+
+            # f = uni(f)
+            # title = re.search('"title" *: *"(.*?)",', f)
+            # self.log("buildGenreLiveID.title = " + str(title))
+            # genre = re.search('"title" *: *"(.*?)",', f)
+            # self.log("buildGenreLiveID.genre = " + str(genre))
+            # imdbid = re.search('"imdbnumber" *: *"(.*?)",', f)
+            # self.log("buildGenreLiveID.imdbid = " + str(imdbid))
+            # istvshow = False
+            
+            # if showtitle == title:
+                # break
+
+    
     def buildFileList(self, dir_name, channel): ##fix music channel todo
         self.log("buildFileList")
         fileList = []
         seasoneplist = []
         filecount = 0
-        json_query = uni('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "fields":["season","episode","playcount","streamdetails","duration","runtime","tagline","showtitle","album","artist","plot"]}, "id": 1}' % (self.escapeDirJSON(dir_name)))
+        json_query = uni('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "fields":["season","episode","playcount","streamdetails","duration","runtime","tagline","showtitle","album","artist","plot","plotoutline"]}, "id": 1}' % (self.escapeDirJSON(dir_name)))
 
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "adding videos", "querying database")
@@ -1576,17 +1621,13 @@ class ChannelList:
                             tmpstr = str(dur) + ','
                             showtitle = re.search('"showtitle" *: *"(.*?)"', f)
                             plot = re.search('"plot" *: *"(.*?)",', f)
-                            genre = re.search('"genreid" *: *"(.*?)",', f)
+                            self.log('genre.build ' + str(genre))
                             
                             if plot == None:
                                 theplot = ""
                             else:
                                 theplot = plot.group(1)
-                                
-                            if genre == None:
-                                genre = ""
-                            else:
-                                genre = genre.group(1)
+                                theplot = theplot[:150]
 
                             # This is a TV show
                             if showtitle != None and len(showtitle.group(1)) > 0:
@@ -1608,8 +1649,11 @@ class ChannelList:
                                 except:
                                     seasonval = -1
                                     epval = -1
+                                    
+                                # #insert query genreliveid     
+                                # self.buildGenreLiveID(showtitle)    
 
-                                tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot + "//" + genre
+                                tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot + "//"
                                 istvshow = True
                             else:
                                 tmpstr += title.group(1) + "//"
@@ -1627,7 +1671,7 @@ class ChannelList:
                                     artist = re.search('"artist" *: *"(.*?)"', f)
                                     tmpstr += album.group(1) + "//" + artist.group(1)
 
-                            tmpstr = tmpstr[:500]
+                            # tmpstr = tmpstr[:500]
                             tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                             tmpstr = tmpstr + '\n' + match.group(1).replace("\\\\", "\\")
 
@@ -1936,9 +1980,9 @@ class ChannelList:
                                     episodeGenre = t[title]['genre']## Output ex. Comedy|Talk Show|
                                     self.log('title.episodeGenre.1 = ' + title + ' - ' + str(episodeGenre))#debug
                                     episodeGenre = episodeGenre.split('|', 1)[-1]
-                                    # self.log('title.episodeGenre.2 = ' + title + ' - ' + str(episodeGenre))#debug
+                                    self.log('title.episodeGenre.2 = ' + title + ' - ' + str(episodeGenre))#debug
                                     category = episodeGenre.split("|")[0]
-                                    # self.log('title.episodeGenre.3 = ' + title + ' - ' + str(category))#debug
+                                    self.log('title.episodeGenre.3 = ' + title + ' - ' + str(category))#debug
                                     if category == 0 or category == '0' or category == None or category == 'None': #clean output
                                         category = 'Unknown'  
                                 except:
@@ -3466,3 +3510,4 @@ class ChannelList:
             # except Exception:
                 # self.PlugInvalid = False
 
+# xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "id": 1, "params": {"directory": "plugin://plugin.video.youtube"}}')

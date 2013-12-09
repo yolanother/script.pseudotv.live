@@ -42,7 +42,7 @@
         <setting id="os" type="enum" values="Android Arm|Android x86|ATV1 Linux|ATV1 Stock|ATV2|IOS|Linux 32bit|Linux 64bit|Mac 32bit|Mac 64bit|Rasberry Pi|Windows|TLBB" label="30401" default="11" />
        	<setting id="IncludeIceLib" type="bool" label="30402" visible="eq(-1,!true)" default="true"/>
         <setting label="30403" type="lsep"/>
-        <setting id="xmltv" type="folder" source="auto" label="30404" default="" />
+        <setting id="xmltvLOC" type="folder" source="auto" label="30404" default="" />
         <setting label="30405" type="lsep"/>
         <setting id="Parselimit" type="enum" label="30406" values="50|100|150|200|250" default="0"/>
         <setting id="Includestrms" type="bool" label="30407" default="false"/>

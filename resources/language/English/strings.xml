@@ -27,8 +27,7 @@
     <string id="30212">Use Selected Skins Channel Logos</string>   
 <string id="30040">Tweaks</string>
     <string id="30041">Channel Change Delay (seconds)</string>
-    <string id="30043">Autostart Options:</string>
-    <string id="30044">Activate Service</string>
+    <string id="30044">Activate Autostart</string>
     <string id="30045">Delay Service (seconds)</string>
     <string id="30046">Show Notification</string>
     <string id="30047">AutoStart PseudoTV Live</string>
@@ -125,7 +124,7 @@
     <string id="30902">Username:Password</string>
     <string id="30903">* = Enchanced Content, Thanks for your support!</string>
     <string id="30990">DEBUGGING: (Use with Caution!)</string>
-    <string id="30991">Override Stream Vaildation</string>
+    <string id="30991">Override Stream Validation</string>
     <string id="30992">Disable Google Analytics</string>
     <string id="30999">Optimize Configurations</string>
 </strings>

@@ -23,7 +23,8 @@ import datetime, traceback
 import sys, re
 import tvdb_api
 import urllib
-import urllib2
+import urllib2            
+import fnmatch
 
 from Playlist import Playlist
 from Globals import *
@@ -32,6 +33,7 @@ from ChannelList import ChannelList
 from FileAccess import FileLock, FileAccess
 from tvdb import *
 from xml.etree import ElementTree as ET
+
 
 class EPGWindow(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
@@ -50,10 +52,11 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.channelLogos = ''
         self.textcolor = "FFFFFFFF"
         self.focusedcolor = "FF7d7d7d"
-        self.Channelbugcolor = "FF00b4db"
         self.clockMode = 0
         self.textfont  = "font14"
         self.startup = time.time()
+        
+        self.log('Using EPG Coloring = ' + str(REAL_SETTINGS.getSetting('EPGcolor_enabled')))
 
         if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'media'))): 
             self.mediaPath = xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'media')) + '/'
@@ -78,12 +81,13 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
             self.textureButtonNoFocus = self.mediaPath + BUTTON_NO_FOCUS
         else:
             self.textureButtonNoFocus = 'pstvButtonNoFocus.png'
-            
+
         for i in range(self.rowCount):
             self.channelButtons[i] = []
 
         self.clockMode = ADDON_SETTINGS.getSetting("ClockMode")
         self.toRemove = []
+
 
     def onFocus(self, controlid):
         pass
@@ -127,7 +131,6 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         try:
             textcolor = int(self.getControl(100).getLabel(), 16)
             focusedcolor = int(self.getControl(100).getLabel2(), 16)
-            Channelbugcolor = int(self.getControl(100).getLabel3(), 16)
             self.textfont =  self.getControl(105).getLabel()
 
             if textcolor > 0:
@@ -135,11 +138,6 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
 
             if focusedcolor > 0:
                 self.focusedcolor = hex(focusedcolor)[2:]
-            
-            if Channelbugcolor > 0:
-                self.Channelbugcolor = hex(Channelbugcolor)[2:]
-                self.Channelbugcolor = hex(Channelbugcolor)[2:]
-
         except:
             pass
 
@@ -428,30 +426,23 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
                         chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(curchannel) + '_type'))
                         # self.log('mygenre = ' + str(mygenre))#debug
                                 
-                        ## EPG Genres
+                        ## EPG Genres button path
                         if FileAccess.exists(self.mediaPath + '/epg-genres/' + mygenre + '.png'):
-                            self.textureButtonNoFocusGenre = (self.mediaPath + 'epg-genres/' + mygenre + '.png')
-                        elif xbmc.skinHasImage(self.mediaPath + '/epg-genres/' + mygenre + '.png'):
                             self.textureButtonNoFocusGenre = (self.mediaPath + 'epg-genres/' + mygenre + '.png')
                         else:
                             self.textureButtonNoFocusGenre = self.mediaPath + BUTTON_NO_FOCUS
 
-                        if REAL_SETTINGS.getSetting('EPGcolor_enabled') == '1':
-                            self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusGenre, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
-                        else:
-                            self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
-                                                        
-                        ## EPG Chtype
+                        ## EPG Chtype button path
                         if FileAccess.exists(self.mediaPath + '/epg-genres/' + str(chtype) + '.png'):
-                            self.textureButtonNoFocusChtype = (self.mediaPath + 'epg-genres/' + str(chtype) + '.png')
-                        elif xbmc.skinHasImage(self.mediaPath + '/epg-genres/' + str(chtype) + '.png'):
                             self.textureButtonNoFocusChtype = (self.mediaPath + 'epg-genres/' + str(chtype) + '.png')
                         else:
                             self.textureButtonNoFocusChtype = self.mediaPath + BUTTON_NO_FOCUS
-            
-                        if REAL_SETTINGS.getSetting('EPGcolor_enabled') == '2':
+                                    
+                        if REAL_SETTINGS.getSetting('EPGcolor_enabled') == '1':
+                            self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusGenre, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
+                        elif REAL_SETTINGS.getSetting('EPGcolor_enabled') == '2':
                             self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocusChtype, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
-                        else:
+                        else:            
                             self.channelButtons[row].append(xbmcgui.ControlButton(xpos, basey, width, baseh, mylabel, focusTexture=self.textureButtonFocus, noFocusTexture=self.textureButtonNoFocus, alignment=4, font=self.textfont, textColor=self.textcolor, focusedColor=self.focusedcolor))
 
                     totaltime += tmpdur
@@ -761,132 +752,114 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         
         URLimage = ''
         Artpath = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/')##write code to clean on channel rebuild
+        mediapath = str(self.MyOverlayWindow.channels[newchan - 1].getItemFilename(plpos))
+        self.log('EPG.mediapath.1 = ' + str(mediapath))##Debug
+        type = 'fanart'
+        # type = str(self.getControl(507).getLabel()) #art type (ie fanart,poster,series,graphical(banner))        
         chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(newchan) + '_type'))
         title = (self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
         tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
         LiveID = (self.MyOverlayWindow.channels[newchan - 1].getItemLiveID(plpos))
         self.log('EPG.LiveID.1 = ' + str(LiveID))##Debug
         
-        if chtype == 8 and LiveID == 'LiveID': #fallback fanart for no id
-            try:
-                self.getControl(508).setImage('fanart.png')
-            except:
-                pass
+        if chtype <= 7:
+            # try:
+            mediapathSeason, filename = os.path.split(mediapath)
+            self.log('EPG.mediapath.2 = ' + str(mediapathSeason))##Debug  
+            mediapathSeries = os.path.dirname(mediapathSeason)
+            self.log('EPG.mediapath.3 = ' + str(mediapathSeries))##Debug 
+            mediapathSeason = (mediapathSeason + '/' + type + ('.jpg' or '.png'))
+            self.log('EPG.mediapath.mediapathSeason = ' + str(mediapathSeason))##Debug 
+            mediapathSeries = (mediapathSeries + '/' + type + ('.jpg' or '.png'))
+            self.log('EPG.mediapath.mediapathSeries = ' + str(mediapathSeries))##Debug 
+
+            if FileAccess.exists(mediapathSeason): #check art type at season level
+                self.getControl(508).setImage(mediapathSeason)
+            elif FileAccess.exists(mediapathSeries):#check art type at series level
+                self.getControl(508).setImage(mediapathSeries)
+            else:
+                self.getControl(508).setImage(type + '.png')#default fallback art
+            # except:
+                # pass
         
-        if chtype == 8 and LiveID != 'LiveID':
-            LiveLST = LiveID.split("|", 4)
-            self.log('EPG.LiveID.2 = ' + str(LiveLST))##Debug
-            imdbid = LiveLST[0]
-            self.log('EPG.LiveLST.imdbid = ' + str(imdbid))##Debug
-            tvdbid = LiveLST[1]
-            self.log('EPG.LiveLST.tvdbid.1 = ' + str(tvdbid))##Debug
-            tvdbid = tvdbid.split('tvdb_', 1)[-1]
-            self.log('EPG.LiveLST.tvdbid.2 = ' + str(tvdbid))##Debug
-            SBCP = LiveLST[2]
-            self.log('EPG.LiveLST.SBCP = ' + str(SBCP))##Debug
-            Unaired = LiveLST[3]
-            self.log('EPG.LiveLST.Unaired = ' + str(Unaired))##Debug
-            
-            try:#Try, and pass if label isn't found (Backward compatibility with PTV Skins)
-                #Sickbeard/Couchpotato
-                if SBCP == 'SB':
-                    self.getControl(505).setImage(self.mediaPath + 'SB.png')
-                elif SBCP == 'CP':
-                    self.getControl(505).setImage(self.mediaPath + 'CP.png')
-                else:
-                    self.getControl(505).setImage(self.mediaPath + 'NA.png')
-            except:
-                pass
-            
-            try:#Try, and pass if label isn't found (Backward compatibility with PTV Skins)             
-                #Unaired/aired
-                if Unaired == 'NEW':
-                    self.getControl(506).setImage(self.mediaPath + 'NEW.png')
-                else:
-                    self.getControl(506).setImage(self.mediaPath + 'NA.png')
-            except:
-                pass
-            
-            #TVDB
-            if tvdbid > 0 and (REAL_SETTINGS.getSetting("tvdb.showart") == "true" and REAL_SETTINGS.getSetting("tvdb.enabled") == "true"):
+        if chtype == 8:
+        
+            if LiveID == 'LiveID': #fallback all artwork because there is no id
                 try:
-                    type = 'fanart'
-                    # type = str(self.getControl(507).getLabel()) #art type (ie fanart,poster,series,graphical(banner))
-                    self.log('EPG.tvdb.type = ' + str(type))##Debug
-                    Banner = tvdbAPI.getBannerByID(tvdbid, type)
-                    Banner = str(Banner)
-                    self.log('EPG.tvdb.Banners.1 = ' + str(Banner))##Debug
-                    if Banner != 0:
-                        Banner = Banner.split("', '")[0]
-                        self.log('EPG.tvdb.Banners.2 = ' + str(Banner))##Debug
-                        Banner = Banner.split("[('", 1)[-1]
-                        self.log('EPG.tvdb.Banners.3 = ' + str(Banner))##Debug
-                        URLimage = Banner            
-                        URLimage = URLimage.split("http://www.thetvdb.com/banners/", 1)[-1]
-                        self.log('EPG.tvdb.URLimage.1 = ' + str(URLimage))##Debug
-                        URLimage = URLimage.rsplit('/', 1)[-1]
-                        self.log('EPG.tvdb.URLimage.2 = ' + str(URLimage))##Debug
-                        URLimage = (type + '-' + URLimage)
-                        self.log('EPG.tvdb.URLimage.3 = ' + str(URLimage))##Debug
-                        flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage)
-                        
-                        if FileAccess.exists(flename):
-                            self.getControl(508).setImage(flename)
-                        else:
-                            if not os.path.exists(os.path.join(Artpath)):
-                                os.makedirs(os.path.join(Artpath))
-                            
-                            resource = urllib.urlopen(Banner)
-                            self.log('EPG.tvdb.resource = ' + str(resource))##Debug
-                            output = open(flename,"wb")
-                            self.log('EPG.tvdb.output = ' + str(output))##Debug
-                            output.write(resource.read())
-                            output.close()
+                    self.getControl(508).setImage('fanart.png')
+                    self.getControl(505).setImage(self.mediaPath + 'NA.png')
+                except:
+                    pass
+            
+            elif LiveID != 'LiveID':
+                LiveLST = LiveID.split("|", 4)
+                self.log('EPG.LiveID.2 = ' + str(LiveLST))##Debug
+                imdbid = LiveLST[0]
+                self.log('EPG.LiveLST.imdbid = ' + str(imdbid))##Debug
+                tvdbid = LiveLST[1]
+                self.log('EPG.LiveLST.tvdbid.1 = ' + str(tvdbid))##Debug
+                tvdbid = tvdbid.split('tvdb_', 1)[-1]
+                self.log('EPG.LiveLST.tvdbid.2 = ' + str(tvdbid))##Debug
+                SBCP = LiveLST[2]
+                self.log('EPG.LiveLST.SBCP = ' + str(SBCP))##Debug
+                Unaired = LiveLST[3]
+                self.log('EPG.LiveLST.Unaired = ' + str(Unaired))##Debug
+                
+                try:#Try, and pass if label isn't found (Backward compatibility with PTV Skins)
+                    #Sickbeard/Couchpotato
+                    if SBCP == 'SB':
+                        self.getControl(505).setImage(self.mediaPath + 'SB.png')
+                    elif SBCP == 'CP':
+                        self.getControl(505).setImage(self.mediaPath + 'CP.png')
+                    else:
+                        self.getControl(505).setImage(self.mediaPath + 'NA.png')
                 except:
                     pass
                 
+                try:#Try, and pass if label isn't found (Backward compatibility with PTV Skins)             
+                    #Unaired/aired
+                    if Unaired == 'NEW':
+                        self.getControl(506).setImage(self.mediaPath + 'NEW.png')
+                    else:
+                        self.getControl(506).setImage(self.mediaPath + 'NA.png')
+                except:
+                    pass
                 
-                
-
-
-
-
-           # import imdb
-
-            # access = imdb.IMDb()
-            # movie = access.get_movie(1132626)
-
-            # print "title: %s year: %s" % (movie['title'], movie['year'])
-            # print "Cover url: %s" % movie['cover url']
-            
-        
-        
-            # #Fanart.tv
-            # if REAL_SETTINGS.getSetting("fandb.showart") == "true" and REAL_SETTINGS.getSetting("fandb.enabled") == "true":
-                # # try:
-                    # tvdbid_fanart = t[title]['fanart']
-                    # self.log('EPG.tvdbid.fanart = ' + str(tvdbid_fanart))##Debug tvdbid.fanart = http://thetvdb.com/banners/fanart/original/71489-10.jpg
-                    # URLimage = tvdbid_fanart.split('http://thetvdb.com/banners/fanart/original/', 1)[-1]
-                    # self.log('EPG.tvdbid.URLimage = ' + str(URLimage))##Debug
-                
-                    # if FileAccess.exists(flename):
-                        # self.getControl(506).setImage(flename)
-                    # else:
-                        # if not os.path.exists(os.path.join(Artpath)):
-                            # os.makedirs(os.path.join(Artpath))
-                        # resource = urllib.urlopen("tvdbid_fanart")
-                        # self.log('EPG.tvdbid.resource = ' + str(resource))##Debug
-                        # output = open(flename,"wb")
-                        # self.log('EPG.tvdbid.output = ' + str(output))##Debug
-                        # output.write(resource.read())
-                        # output.close()
-                # except:
-                    # pass
-                
-                # http://api.fanart.tv/webservice/series/apikey/thetvdb_id/format/type/sort/limit/
-                # self.log('EPG.Fanart.tv = ' + str(tvshow))##Debug
-        
-        
+                #TVDB
+                if tvdbid > 0 and (REAL_SETTINGS.getSetting("tvdb.showart") == "true" and REAL_SETTINGS.getSetting("tvdb.enabled") == "true"):
+                    try:
+                        self.log('EPG.tvdb.type = ' + str(type))##Debug
+                        Banner = tvdbAPI.getBannerByID(tvdbid, type)
+                        Banner = str(Banner)
+                        self.log('EPG.tvdb.Banners.1 = ' + str(Banner))##Debug
+                        if Banner != 0:
+                            Banner = Banner.split("', '")[0]
+                            self.log('EPG.tvdb.Banners.2 = ' + str(Banner))##Debug
+                            Banner = Banner.split("[('", 1)[-1]
+                            self.log('EPG.tvdb.Banners.3 = ' + str(Banner))##Debug
+                            URLimage = Banner            
+                            URLimage = URLimage.split("http://www.thetvdb.com/banners/", 1)[-1]
+                            self.log('EPG.tvdb.URLimage.1 = ' + str(URLimage))##Debug
+                            URLimage = URLimage.rsplit('/', 1)[-1]
+                            self.log('EPG.tvdb.URLimage.2 = ' + str(URLimage))##Debug
+                            URLimage = (type + '-' + URLimage)
+                            self.log('EPG.tvdb.URLimage.3 = ' + str(URLimage))##Debug
+                            flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage)
+                            
+                            if FileAccess.exists(flename):
+                                self.getControl(508).setImage(flename)
+                            else:
+                                if not os.path.exists(os.path.join(Artpath)):
+                                    os.makedirs(os.path.join(Artpath))
+                                
+                                resource = urllib.urlopen(Banner)
+                                self.log('EPG.tvdb.resource = ' + str(resource))##Debug
+                                output = open(flename,"wb")
+                                self.log('EPG.tvdb.output = ' + str(output))##Debug
+                                output.write(resource.read())
+                                output.close()
+                    except:
+                        pass
         self.getControl(500).setLabel(self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
         #code to display "Live TV" instead of date (date does confirm sync)
         #if chtype == 8:
@@ -895,7 +868,6 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.getControl(501).setLabel(self.MyOverlayWindow.channels[newchan - 1].getItemEpisodeTitle(plpos))
         self.getControl(502).setLabel(self.MyOverlayWindow.channels[newchan - 1].getItemDescription(plpos))
         self.getControl(503).setImage(self.channelLogos + ascii(self.MyOverlayWindow.channels[newchan - 1].name) + '_c.png')
-        # self.getControl(503).setImage(self.channelLogos + ascii(self.MyOverlayWindow.channels[newchan - 1].name) + '_c.png')
         self.log('setShowInfo return')
 
     # using the currently selected button, play the proper shows
