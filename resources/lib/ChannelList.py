@@ -1506,50 +1506,50 @@ class ChannelList:
         self.log("makeMixedList return " + str(newlist))
         return newlist
 
-    def buildGenreLiveID(self, showtitle): ##return genre and LiveID by json
-        #query GetTVShows/GetMovies for by tv or movie: get title/genre, match title return genre...
-        self.log("buildGenreLiveID")
-        json_query = uni('{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"properties":["title","genre","imdbnumber","playcount"]},"id":7}' % (self.escapeDirJSON(name)))
+    # def buildGenreLiveID(self, showtitle): ##return genre and LiveID by json
+        # #query GetTVShows/GetMovies for by tv or movie: get title/genre, match title return genre...
+        # self.log("buildGenreLiveID")
+        # json_query = uni('{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"properties":["title","genre","imdbnumber","playcount"]},"id":7}' % (self.escapeDirJSON(name)))
     
-        jsonobject = self.sendJSON(json_query)
-        Medialist = []
-        if jsonobject['result'].has_key('title'):
-            for item in jsonobject['result']['title']:
-                    Medialist.append({'dbid': item.get('movieid',''),'id': item.get('imdbnumber',''),'name': item.get('label','')})
-        for titles in Medialist:
-            title = re.search('"title" *: *"(.*?)",', f)
-            self.log("buildGenreLiveID.title = " + str(title))
-            genre = re.search('"title" *: *"(.*?)",', f)
-            self.log("buildGenreLiveID.genre = " + str(genre))
-            imdbid = re.search('"imdbnumber" *: *"(.*?)",', f)
-            self.log("buildGenreLiveID.imdbid = " + str(imdbid))            
-            
-            if showtitle == title:
-                break
-
-        
-        
-        
-        # json_detail = self.sendJSON(json_query)
-        # self.log(json_detail)
-        # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_detail)
-
-        # for f in file_detail:
-            # if self.threadPause() == False:
-                # del fileList[:]
-                # break
-
-            # f = uni(f)
+        # jsonobject = self.sendJSON(json_query)
+        # Medialist = []
+        # if jsonobject['result'].has_key('title'):
+            # for item in jsonobject['result']['title']:
+                    # Medialist.append({'dbid': item.get('movieid',''),'id': item.get('imdbnumber',''),'name': item.get('label','')})
+        # for titles in Medialist:
             # title = re.search('"title" *: *"(.*?)",', f)
             # self.log("buildGenreLiveID.title = " + str(title))
             # genre = re.search('"title" *: *"(.*?)",', f)
             # self.log("buildGenreLiveID.genre = " + str(genre))
             # imdbid = re.search('"imdbnumber" *: *"(.*?)",', f)
-            # self.log("buildGenreLiveID.imdbid = " + str(imdbid))
-            # istvshow = False
+            # self.log("buildGenreLiveID.imdbid = " + str(imdbid))            
             
             # if showtitle == title:
                 # break
+
+        
+        
+        
+        # # json_detail = self.sendJSON(json_query)
+        # # self.log(json_detail)
+        # # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_detail)
+
+        # # for f in file_detail:
+            # # if self.threadPause() == False:
+                # # del fileList[:]
+                # # break
+
+            # # f = uni(f)
+            # # title = re.search('"title" *: *"(.*?)",', f)
+            # # self.log("buildGenreLiveID.title = " + str(title))
+            # # genre = re.search('"title" *: *"(.*?)",', f)
+            # # self.log("buildGenreLiveID.genre = " + str(genre))
+            # # imdbid = re.search('"imdbnumber" *: *"(.*?)",', f)
+            # # self.log("buildGenreLiveID.imdbid = " + str(imdbid))
+            # # istvshow = False
+            
+            # # if showtitle == title:
+                # # break
 
     
     def buildFileList(self, dir_name, channel): ##fix music channel todo
@@ -1557,7 +1557,7 @@ class ChannelList:
         fileList = []
         seasoneplist = []
         filecount = 0
-        json_query = uni('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "fields":["season","episode","playcount","streamdetails","duration","runtime","tagline","showtitle","album","artist","plot","plotoutline"]}, "id": 1}' % (self.escapeDirJSON(dir_name)))
+        json_query = uni('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "fields":["season","episode","playcount","streamdetails","duration","runtime","tagline","showtitle","album","artist","plot"]}, "id": 1}' % (self.escapeDirJSON(dir_name)))
 
         if self.background == False:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "adding videos", "querying database")
@@ -1621,13 +1621,11 @@ class ChannelList:
                             tmpstr = str(dur) + ','
                             showtitle = re.search('"showtitle" *: *"(.*?)"', f)
                             plot = re.search('"plot" *: *"(.*?)",', f)
-                            self.log('genre.build ' + str(genre))
                             
                             if plot == None:
                                 theplot = ""
                             else:
                                 theplot = plot.group(1)
-                                theplot = theplot[:150]
 
                             # This is a TV show
                             if showtitle != None and len(showtitle.group(1)) > 0:
@@ -1653,7 +1651,7 @@ class ChannelList:
                                 # #insert query genreliveid     
                                 # self.buildGenreLiveID(showtitle)    
 
-                                tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot + "//"
+                                tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot
                                 istvshow = True
                             else:
                                 tmpstr += title.group(1) + "//"
@@ -1666,12 +1664,12 @@ class ChannelList:
                                     if tagline != None:
                                         tmpstr += tagline.group(1)
 
-                                    tmpstr += "//" + theplot + "//" + genre
+                                    tmpstr += "//" + theplot
                                 else:
                                     artist = re.search('"artist" *: *"(.*?)"', f)
                                     tmpstr += album.group(1) + "//" + artist.group(1)
 
-                            # tmpstr = tmpstr[:500]
+                            tmpstr = tmpstr[:500]
                             tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                             tmpstr = tmpstr + '\n' + match.group(1).replace("\\\\", "\\")
 
