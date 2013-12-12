@@ -21,19 +21,18 @@ import subprocess, os
 import time, threading
 import datetime, traceback
 import sys, re
-import tvdb_api
 import urllib
-import urllib2            
-import fnmatch
+import urllib2
+import fanarttv
 
 from Playlist import Playlist
 from Globals import *
 from Channel import Channel
 from ChannelList import ChannelList
 from FileAccess import FileLock, FileAccess
-from tvdb import *
 from xml.etree import ElementTree as ET
-
+from fanarttv import *
+# from tvdb import *
 
 class EPGWindow(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
@@ -55,6 +54,9 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.clockMode = 0
         self.textfont  = "font14"
         self.startup = time.time()
+        # self.showingInfo = False
+        self.infoOffset = 0
+        self.infoOffsetV = 0
         
         self.log('Using EPG Coloring = ' + str(REAL_SETTINGS.getSetting('EPGcolor_enabled')))
 
@@ -115,7 +117,10 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
     def log(self, msg, level = xbmc.LOGDEBUG):
         log('EPGWindow: ' + msg, level)
 
-
+    def logDebug(self, msg, level = xbmc.LOGDEBUG):
+        if REAL_SETTINGS.getSetting('enable_Debug') == "true":
+            log('EPGWindow: ' + msg, level)
+                
     def onInit(self):
         self.log('onInit')
         timex, timey = self.getControl(120).getPosition()
@@ -185,6 +190,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
             self.log("Unknown EPG Initialization Exception", xbmc.LOGERROR)
             self.log(traceback.format_exc(), xbmc.LOGERROR)
 
+
             try:
                 self.close()
             except:
@@ -237,6 +243,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
                 self.getControl(311 + i).setLabel(str(curchannel))
             except:
                 pass
+
 
             try:
                 self.getControl(321 + i).setImage(self.channelLogos + self.MyOverlayWindow.channels[curchannel - 1].name + '_c.png')
@@ -475,19 +482,36 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
 
         try:
             if action in ACTION_PREVIOUS_MENU:
-                self.closeEPG()
-            elif action == ACTION_MOVE_DOWN:
-                self.GoDown()
+                self.closeEPG()           
+                if self.showingInfo:
+                    self.infoOffset = 0
+                    self.infoOffsetV = 0
+            elif action == ACTION_MOVE_DOWN: 
+                self.GoDown()           
+                if self.showingInfo:
+                    self.infoOffsetV -= 1
             elif action == ACTION_MOVE_UP:
-                self.GoUp()
+                self.GoUp()           
+                if self.showingInfo:
+                    self.infoOffsetV += 1
             elif action == ACTION_MOVE_LEFT:
-                self.GoLeft()
+                self.GoLeft()           
+                if self.showingInfo:
+                    self.infoOffset -= 1
             elif action == ACTION_MOVE_RIGHT:
-                self.GoRight()
+                self.GoRight()           
+                if self.showingInfo:
+                    self.infoOffset += 1
             elif action == ACTION_STOP:
-                self.closeEPG()
+                self.closeEPG()           
+                if self.showingInfo:
+                    self.infoOffset = 0
+                    self.infoOffsetV = 0
             elif action == ACTION_SELECT_ITEM:
-                lastaction = time.time() - self.lastActionTime
+                lastaction = time.time() - self.lastActionTime           
+                if self.showingInfo:
+                    self.infoOffset = 0
+                    self.infoOffsetV = 0
 
                 if lastaction >= 2:
                     self.selectShow()
@@ -720,8 +744,15 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.log('setProperButton return')
 
 
+
+
+
+
+
+
     def setShowInfo(self):
         self.log('setShowInfo')
+        self.showingInfo = True
         basex, basey = self.getControl(111 + self.focusRow).getPosition()
         baseh = self.getControl(111 + self.focusRow).getHeight()
         basew = self.getControl(111 + self.focusRow).getWidth()
@@ -749,117 +780,342 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         if plpos == -1:
             self.log('Unable to find the proper playlist to set from EPG')
             return
-        
-        URLimage = ''
-        Artpath = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/')##write code to clean on channel rebuild
-        mediapath = str(self.MyOverlayWindow.channels[newchan - 1].getItemFilename(plpos))
-        self.log('EPG.mediapath.1 = ' + str(mediapath))##Debug
-        type = 'fanart'
-        # type = str(self.getControl(507).getLabel()) #art type (ie fanart,poster,series,graphical(banner))        
-        chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(newchan) + '_type'))
-        title = (self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
-        tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
-        LiveID = (self.MyOverlayWindow.channels[newchan - 1].getItemLiveID(plpos))
-        self.log('EPG.LiveID.1 = ' + str(LiveID))##Debug
-        
-        if chtype <= 7:
-            # try:
-            mediapathSeason, filename = os.path.split(mediapath)
-            self.log('EPG.mediapath.2 = ' + str(mediapathSeason))##Debug  
-            mediapathSeries = os.path.dirname(mediapathSeason)
-            self.log('EPG.mediapath.3 = ' + str(mediapathSeries))##Debug 
-            mediapathSeason = (mediapathSeason + '/' + type + ('.jpg' or '.png'))
-            self.log('EPG.mediapath.mediapathSeason = ' + str(mediapathSeason))##Debug 
-            mediapathSeries = (mediapathSeries + '/' + type + ('.jpg' or '.png'))
-            self.log('EPG.mediapath.mediapathSeries = ' + str(mediapathSeries))##Debug 
+                
+        if self.infoOffset > 0:
+            self.getControl(522).setLabel('COMING UP:')
+        elif self.infoOffset < 0:
+            self.getControl(522).setLabel('ALREADY SEEN:')
+        elif self.infoOffset == 0 and self.infoOffsetV == 0:
+            self.getControl(522).setLabel('NOW WATCHING:')
+ 
+        if self.infoOffsetV < 0 and self.infoOffset == 0:
+            self.getControl(522).setLabel('ON NOW:')
+        elif self.infoOffsetV > 0 and self.infoOffset == 0:
+            self.getControl(522).setLabel('ON NOW:')
+        elif self.infoOffset == 0 and self.infoOffsetV == 0:
+            self.getControl(522).setLabel('NOW WATCHING:')
 
-            if FileAccess.exists(mediapathSeason): #check art type at season level
-                self.getControl(508).setImage(mediapathSeason)
-            elif FileAccess.exists(mediapathSeries):#check art type at series level
-                self.getControl(508).setImage(mediapathSeries)
-            else:
-                self.getControl(508).setImage(type + '.png')#default fallback art
-            # except:
-                # pass
-        
-        if chtype == 8:
-        
-            if LiveID == 'LiveID': #fallback all artwork because there is no id
-                try:
-                    self.getControl(508).setImage('fanart.png')
-                    self.getControl(505).setImage(self.mediaPath + 'NA.png')
-                except:
-                    pass
-            
-            elif LiveID != 'LiveID':
+
+        tvdbid = 0
+        imdbid = 0
+        Artpath = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/')##write code to clean on channel rebuild
+        self.logDebug('EPG.Artpath.1 = ' + str(Artpath))
+        mediapath = uni(self.MyOverlayWindow.channels[newchan - 1].getItemFilename(plpos))
+        self.logDebug('EPG.mediapath.1 = ' + uni(mediapath))
+        chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(newchan) + '_type'))
+        genre = str(self.MyOverlayWindow.channels[newchan - 1].getItemgenre(plpos))
+        title = uni(self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
+        LiveID = str(self.MyOverlayWindow.channels[newchan - 1].getItemLiveID(plpos))
+        self.logDebug('EPG.LiveID.1 = ' + str(LiveID))
+        # type1 = str(self.getControl(507).getLabel())
+        # type2 = str(self.getControl(509).getLabel())
+        type1 = 'landscape'    
+        type2 = 'clearlogo'
+
+        if not 'LiveID' in LiveID:
+            try:
                 LiveLST = LiveID.split("|", 4)
-                self.log('EPG.LiveID.2 = ' + str(LiveLST))##Debug
+                self.logDebug('EPG.LiveLST = ' + str(LiveLST))
                 imdbid = LiveLST[0]
-                self.log('EPG.LiveLST.imdbid = ' + str(imdbid))##Debug
+                self.logDebug('EPG.LiveLST.imdbid.1 = ' + str(imdbid))
+                imdbid = imdbid.split('imdb_tt', 1)[-1]
+                self.logDebug('EPG.LiveLST.imdbid.2 = ' + str(imdbid))
                 tvdbid = LiveLST[1]
-                self.log('EPG.LiveLST.tvdbid.1 = ' + str(tvdbid))##Debug
+                self.logDebug('EPG.LiveLST.tvdbid.1 = ' + str(tvdbid))
                 tvdbid = tvdbid.split('tvdb_', 1)[-1]
-                self.log('EPG.LiveLST.tvdbid.2 = ' + str(tvdbid))##Debug
+                self.logDebug('EPG.LiveLST.tvdbid.2 = ' + str(tvdbid))
                 SBCP = LiveLST[2]
-                self.log('EPG.LiveLST.SBCP = ' + str(SBCP))##Debug
+                self.logDebug('EPG.LiveLST.SBCP = ' + str(SBCP))
                 Unaired = LiveLST[3]
-                self.log('EPG.LiveLST.Unaired = ' + str(Unaired))##Debug
-                
-                try:#Try, and pass if label isn't found (Backward compatibility with PTV Skins)
-                    #Sickbeard/Couchpotato
-                    if SBCP == 'SB':
-                        self.getControl(505).setImage(self.mediaPath + 'SB.png')
-                    elif SBCP == 'CP':
-                        self.getControl(505).setImage(self.mediaPath + 'CP.png')
+                self.logDebug('EPG.LiveLST.Unaired = ' + str(Unaired))
+            except:
+                pass     
+            try:
+                #Try, and pass if label isn't found (Backward compatibility with PTV Skins)
+                #Sickbeard/Couchpotato
+                if SBCP == 'SB':
+                    self.getControl(511).setImage(self.mediaPath + 'SB.png')
+                elif SBCP == 'CP':
+                    self.getControl(511).setImage(self.mediaPath + 'CP.png')
+                else:
+                    self.getControl(511).setImage(self.mediaPath + 'NA.png')
+            except:
+                self.getControl(511).setImage(self.mediaPath + 'NA.png')
+                pass     
+
+            try:
+                #Try, and pass if label isn't found (Backward compatibility with PTV Skins)             
+                #Unaired/aired
+                if Unaired == 'NEW':
+                    self.getControl(512).setImage(self.mediaPath + 'NEW.png')
+                elif Unaired == 'OLD':
+                    self.getControl(512).setImage(self.mediaPath + 'OLD.png')                  
+                else:
+                    self.getControl(512).setImage(self.mediaPath + 'NA.png')
+            except:
+                self.getControl(512).setImage(self.mediaPath + 'NA.png')
+                pass     
+
+
+        if REAL_SETTINGS.getSetting("art.enable") == "true":
+            self.log('setShowInfo, Dynamic artwork enabled')
+        
+            if chtype <= 7:
+                try:
+                    mediapathSeason, filename = os.path.split(mediapath)
+                    self.logDebug('EPG.mediapath.2 = ' + str(mediapathSeason))  
+                    mediapathSeries = os.path.dirname(mediapathSeason)
+                    self.logDebug('EPG.mediapath.3 = ' + str(mediapathSeries))
+                    mediapathSeason1PNG = (mediapathSeason + '/' + type1 + ('.png'))
+                    mediapathSeason1JPG = (mediapathSeason + '/' + type1 + ('.jpg'))
+                    if FileAccess.exists(mediapathSeason1PNG):
+                        mediapathSeason1 = mediapathSeason1PNG
                     else:
-                        self.getControl(505).setImage(self.mediaPath + 'NA.png')
+                        mediapathSeason1 = mediapathSeason1JPG
+                    
+                    mediapathSeason2PNG = (mediapathSeason + '/' + type2 + ('.png'))
+                    mediapathSeason2JPG = (mediapathSeason + '/' + type2 + ('.jpg'))
+                    if FileAccess.exists(mediapathSeason2PNG):
+                        mediapathSeason2 = mediapathSeason2PNG
+                    else:
+                        mediapathSeason2 = mediapathSeason2JPG
+                    self.logDebug('EPG.mediapath.mediapathSeason = ' + str(mediapathSeason1) + ',' + str(mediapathSeason2)) 
+
+                    mediapathSeries1PNG = (mediapathSeries + '/' + type1 + ('.png'))
+                    mediapathSeries1JPG = (mediapathSeries + '/' + type1 + ('.jpg'))
+                    if FileAccess.exists(mediapathSeries1PNG):
+                        mediapathSeries1 = mediapathSeries1PNG
+                    else:
+                        mediapathSeries1 = mediapathSeries1JPG
+                    
+                    mediapathSeries2PNG = (mediapathSeries + '/' + type2 + ('.png'))
+                    mediapathSeries2JPG = (mediapathSeries + '/' + type2 + ('.jpg'))
+                    if FileAccess.exists(mediapathSeries1PNG):
+                        mediapathSeries2 = mediapathSeries2PNG
+                    else:
+                        mediapathSeries2 = mediapathSeries2JPG
+                    self.logDebug('EPG.mediapath.mediapathSeason = ' + str(mediapathSeries1) + ',' + str(mediapathSeries2)) 
+
+                    if FileAccess.exists(mediapathSeason1): #check art type at season level
+                        self.getControl(508).setImage(mediapathSeason1)
+                    elif FileAccess.exists(mediapathSeries1):#check art type at series level
+                        self.getControl(508).setImage(mediapathSeries1)
+                    else:
+                        self.getControl(508).setImage(self.mediaPath + type1 + '.png')#default fallback art
+                    
+                    if FileAccess.exists(mediapathSeason2): #check art type at season level
+                        self.getControl(510).setImage(mediapathSeason2)
+                    elif FileAccess.exists(mediapathSeries2):#check art type at series level
+                        self.getControl(510).setImage(mediapathSeries2)
+                    else:
+                        self.getControl(510).setImage(self.mediaPath + type2 + '.png')#default fallback art
                 except:
                     pass
-                
-                try:#Try, and pass if label isn't found (Backward compatibility with PTV Skins)             
-                    #Unaired/aired
-                    if Unaired == 'NEW':
-                        self.getControl(506).setImage(self.mediaPath + 'NEW.png')
-                    else:
-                        self.getControl(506).setImage(self.mediaPath + 'NA.png')
-                except:
-                    pass
-                
-                #TVDB
-                if tvdbid > 0 and (REAL_SETTINGS.getSetting("tvdb.showart") == "true" and REAL_SETTINGS.getSetting("tvdb.enabled") == "true"):
-                    try:
-                        self.log('EPG.tvdb.type = ' + str(type))##Debug
-                        Banner = tvdbAPI.getBannerByID(tvdbid, type)
-                        Banner = str(Banner)
-                        self.log('EPG.tvdb.Banners.1 = ' + str(Banner))##Debug
-                        if Banner != 0:
-                            Banner = Banner.split("', '")[0]
-                            self.log('EPG.tvdb.Banners.2 = ' + str(Banner))##Debug
-                            Banner = Banner.split("[('", 1)[-1]
-                            self.log('EPG.tvdb.Banners.3 = ' + str(Banner))##Debug
-                            URLimage = Banner            
-                            URLimage = URLimage.split("http://www.thetvdb.com/banners/", 1)[-1]
-                            self.log('EPG.tvdb.URLimage.1 = ' + str(URLimage))##Debug
-                            URLimage = URLimage.rsplit('/', 1)[-1]
-                            self.log('EPG.tvdb.URLimage.2 = ' + str(URLimage))##Debug
-                            URLimage = (type + '-' + URLimage)
-                            self.log('EPG.tvdb.URLimage.3 = ' + str(URLimage))##Debug
-                            flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage)
-                            
-                            if FileAccess.exists(flename):
-                                self.getControl(508).setImage(flename)
+
+            
+            elif chtype == 8:#LiveTV w/ TVDBID via Fanart.TV
+                # try:
+                if tvdbid > 0 and genre != 'Movie':
+                    fanartTV = fanarttv.FTV_TVProvider()
+                    URLLST = fanartTV.get_image_list(tvdbid)
+                    self.logDebug('EPG.tvdb.URLLST.1 = ' + str(URLLST))
+                    if URLLST != []:
+                        URLLST = str(URLLST)
+                        URLLST = URLLST.split("{'art_type': ")
+                        self.logDebug('EPG.tvdb.URLLST.2 = ' + str(URLLST))
+                        try:
+                            Art1 = [s for s in URLLST if type1 in s]
+                            Art1 = Art1[0]
+                            self.logDebug('EPG.tvdb.Art1.1 = ' + str(Art1))
+                            Art1 = Art1[Art1.find("'url': '")+len("'url': '"):Art1.rfind("',")]
+                            self.logDebug('EPG.tvdb.Art1.2 = ' + str(Art1))
+                            Art1 = Art1.split("',")[0]
+                            self.logDebug('EPG.tvdb.Art1.3 = ' + str(Art1))
+                            URLimage1 = Art1
+                            URLimage1 = URLimage1.rsplit('/')[-1]
+                            self.logDebug('EPG.tvdb.URLimage1.1 = ' + str(URLimage1))
+                            URLimage1 = (type1 + '-' + URLimage1)
+                            self.logDebug('EPG.tvdb.URLimage1.2 = ' + str(URLimage1))
+                            flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage1)
+                            if FileAccess.exists(flename1):
+                                self.getControl(508).setImage(flename1)
                             else:
                                 if not os.path.exists(os.path.join(Artpath)):
                                     os.makedirs(os.path.join(Artpath))
                                 
-                                resource = urllib.urlopen(Banner)
-                                self.log('EPG.tvdb.resource = ' + str(resource))##Debug
-                                output = open(flename,"wb")
-                                self.log('EPG.tvdb.output = ' + str(output))##Debug
+                                resource = urllib.urlopen(Art1)
+                                self.logDebug('EPG.tvdb.resource = ' + str(resource))
+                                output = open(flename1,"wb")
+                                self.logDebug('EPG.tvdb.output = ' + str(output))
                                 output.write(resource.read())
                                 output.close()
-                    except:
-                        pass
+                                self.getControl(508).setImage(flename1)
+                        except:
+                            self.getControl(508).setImage(self.mediaPath + type1 + '.png')
+                            pass
+                        try:
+                            Art2 = [s for s in URLLST if type2 in s]
+                            Art2 = Art2[0]
+                            self.logDebug('EPG.tvdb.Art2 = ' + str(Art2))
+                            Art2 = Art2[Art2.find("'url': '")+len("'url': '"):Art2.rfind("',")]
+                            self.logDebug('EPG.tvdb.Art2.2 = ' + str(Art2))
+                            Art2 = Art2.split("',")[0]
+                            self.logDebug('EPG.tvdb.Art2.3 = ' + str(Art2))
+                            URLimage2 = Art2
+                            URLimage2 = URLimage2.rsplit('/')[-1]
+                            self.logDebug('EPG.tvdb.URLimage1.1 = ' + str(URLimage1))
+                            URLimage2 = (type2 + '-' + URLimage2)
+                            self.logDebug('EPG.tvdb.URLimage2.2 = ' + str(URLimage2))        
+                            flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage2)
+                            if FileAccess.exists(flename2):
+                                self.getControl(510).setImage(flename2)
+                            else:
+                                if not os.path.exists(os.path.join(Artpath)):
+                                    os.makedirs(os.path.join(Artpath))
+                                
+                                resource = urllib.urlopen(Art2)
+                                self.logDebug('EPG.tvdb.resource = ' + str(resource))
+                                output = open(flename2,"wb")
+                                self.logDebug('EPG.tvdb.output = ' + str(output))
+                                output.write(resource.read())
+                                output.close()
+                                self.getControl(510).setImage(flename2)  
+                        except:
+                            self.getControl(510).setImage(self.mediaPath + type2 + '.png')
+                            pass
+
+                    else:#fallback all artwork because there is no id
+                        self.getControl(508).setImage(self.mediaPath + type1 + '.png')
+                        self.getControl(510).setImage(self.mediaPath + type2 + '.png')
+
+                elif imdbid > 0 and genre == 'Movie':#LiveTV w/ IMDBID via Fanart.TV
+                    fanartTV = fanarttv.FTV_TVProvider()
+                    URLLST = fanartTV.get_image_list(tvdbid)
+                    self.logDebug('EPG.imdb.URLLST.1 = ' + str(imdbid))
+                    if URLLST != []:
+                        URLLST = str(URLLST)
+                        URLLST = URLLST.split("{'art_type': ")
+                        self.logDebug('EPG.imdb.URLLST.2 = ' + str(URLLST))
+                        Art1 = [s for s in URLLST if type1 in s]
+                        Art1 = Art1[0]
+                        self.logDebug('EPG.imdb.Art1.1 = ' + str(Art1))
+                        Art2 = [s for s in URLLST if type2 in s]
+                        Art2 = Art2[0]
+                        self.logDebug('EPG.imdb.Art2 = ' + str(Art2))
+                        Art1 = Art1[Art1.find("'url': '")+len("'url': '"):Art1.rfind("',")]
+                        self.logDebug('EPG.imdb.Art1.2 = ' + str(Art1))
+                        Art1 = Art1.split("',")[0]
+                        self.logDebug('EPG.imdb.Art1.3 = ' + str(Art1))
+                        Art2 = Art2[Art2.find("'url': '")+len("'url': '"):Art2.rfind("',")]
+                        self.logDebug('EPG.imdb.Art2.2 = ' + str(Art2))
+                        Art2 = Art2.split("',")[0]
+                        self.logDebug('EPG.imdb.Art2.3 = ' + str(Art2))
+                        URLimage1 = Art1
+                        URLimage1 = URLimage1.rsplit('/')[-1]
+                        self.logDebug('EPG.imdb.URLimage1.1 = ' + str(URLimage1))
+                        URLimage2 = Art2
+                        URLimage1 = (type1 + '-' + URLimage1)
+                        self.logDebug('EPG.imdb.URLimage1.2 = ' + str(URLimage1))
+                        URLimage2 = URLimage1.rsplit('/')[-1]
+                        self.logDebug('EPG.imdb.URLimage2.2 = ' + str(URLimage2))
+                        URLimage2 = (type2 + '-' + URLimage2)
+                        
+                        ############################################### Move to function todo
+                        flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage1)
+
+                        if FileAccess.exists(flename1):
+                            self.getControl(508).setImage(flename1)
+                        else:
+                            if not os.path.exists(os.path.join(Artpath)):
+                                os.makedirs(os.path.join(Artpath))
+                            
+                            resource = urllib.urlopen(Art1)
+                            self.logDebug('EPG.tvdb.resource = ' + str(resource))
+                            output = open(flename1,"wb")
+                            self.logDebug('EPG.tvdb.output = ' + str(output))
+                            output.write(resource.read())
+                            output.close()
+                            self.getControl(508).setImage(flename1)
+                        
+                        flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage2)
+                        
+                        if FileAccess.exists(flename2):
+                            self.getControl(510).setImage(flename2)
+                        else:
+                            if not os.path.exists(os.path.join(Artpath)):
+                                os.makedirs(os.path.join(Artpath))
+                            
+                            resource = urllib.urlopen(Art2)
+                            self.logDebug('EPG.tvdb.resource = ' + str(resource))
+                            output = open(flename2,"wb")
+                            self.logDebug('EPG.tvdb.output = ' + str(output))
+                            output.write(resource.read())
+                            output.close()
+                            self.getControl(510).setImage(flename2)  
+                        ##############################################
+
+                    else:#fallback all artwork because there is no id
+                        self.getControl(508).setImage(self.mediaPath + type1 + '.png')
+                        self.getControl(510).setImage(self.mediaPath + type2 + '.png')
+                
+                else:#fallback all artwork because there is no id
+                    self.getControl(508).setImage(self.mediaPath + type1 + '.png')
+                    self.getControl(510).setImage(self.mediaPath + type2 + '.png')
+                # except:
+                    # pass
+
+            elif chtype == 9:
+                self.getControl(508).setImage(self.mediaPath + 'EPG.Internet.508.png')
+                self.getControl(510).setImage(self.mediaPath + 'EPG.Internet.510.png')
+            
+            elif chtype == 10:
+                self.getControl(508).setImage(self.mediaPath + 'EPG.Youtube.508.png')
+                self.getControl(510).setImage(self.mediaPath + 'EPG.Youtube.510.png')
+            
+            elif chtype == 11:
+                self.getControl(508).setImage(self.mediaPath + 'EPG.RSS.508.png')
+                self.getControl(510).setImage(self.mediaPath + 'EPG.RSS.510.png')
+
+                
+                # #TVDB
+                # if tvdbid > 0:
+                    # try:
+                    
+        # tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
+                        # self.logDebug('EPG.tvdb.type = ' + str(type))
+                        # Banner = tvdbAPI.getBannerByID(tvdbid, type)
+                        # Banner = str(Banner)
+                        # self.logDebug('EPG.tvdb.Banners.1 = ' + str(Banner))
+                        # if Banner != 0:
+                            # Banner = Banner.split("', '")[0]
+                            # self.logDebug('EPG.tvdb.Banners.2 = ' + str(Banner))
+                            # Banner = Banner.split("[('", 1)[-1]
+                            # self.logDebug('EPG.tvdb.Banners.3 = ' + str(Banner))
+                            # URLimage = Banner            
+                            # URLimage = URLimage.split("http://www.thetvdb.com/banners/", 1)[-1]
+                            # self.logDebug('EPG.tvdb.URLimage.1 = ' + str(URLimage))
+                            # URLimage = URLimage.rsplit('/', 1)[-1]
+                            # self.logDebug('EPG.tvdb.URLimage.2 = ' + str(URLimage))
+                            # URLimage = (type + '-' + URLimage)
+                            # self.logDebug('EPG.tvdb.URLimage.3 = ' + str(URLimage))
+                            # flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage)
+                            
+                            # if FileAccess.exists(flename):
+                                # self.getControl(508).setImage(flename)
+                            # else:
+                                # if not os.path.exists(os.path.join(Artpath)):
+                                    # os.makedirs(os.path.join(Artpath))
+                                
+                                # resource = urllib.urlopen(Banner)
+                                # self.logDebug('EPG.tvdb.resource = ' + str(resource))
+                                # output = open(flename,"wb")
+                                # self.logDebug('EPG.tvdb.output = ' + str(output))
+                                # output.write(resource.read())
+                                # output.close()
+                                # self.getControl(508).setImage(flename)
+                    # except:
+                        # pass
+        
         self.getControl(500).setLabel(self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
         #code to display "Live TV" instead of date (date does confirm sync)
         #if chtype == 8:

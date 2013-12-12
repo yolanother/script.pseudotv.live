@@ -30,7 +30,6 @@ def log(msg, level = xbmc.LOGDEBUG):
     except:
         pass
 
-
 def uni(string, encoding = 'utf-8'):
     if isinstance(string, basestring):
         if not isinstance(string, unicode):

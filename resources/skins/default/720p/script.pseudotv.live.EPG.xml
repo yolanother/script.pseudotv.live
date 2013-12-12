@@ -19,7 +19,18 @@
             <colordiffuse>FFFFFFFF</colordiffuse>
         </control>        
 <!--TEXT Now Playing-->
-        <control type="label">
+        <control type="label" id="522">
+            <description>Now watching Label</description>
+            <posx>950</posx>
+            <posy>525</posy>
+            <width min="100" max="300">auto</width>
+            <height>30</height>
+            <label>Now Playing</label>
+            <font>Font_Bold34</font>
+            <align>center</align>
+            <textcolor>C0C0C0C0</textcolor>
+        </control>   
+<!--         <control type="label">
             <description>Now Playing</description>
             <posx>950</posx>
             <posy>525</posy>
@@ -29,88 +40,44 @@
             <font>Font_Bold34</font>
             <align>center</align>
             <textcolor>C0C0C0C0</textcolor>
-        </control>
-<!--PTVlive.Fanart-->
-        <control type="image">
-            <description>PTVlive</description>
-            <posx>928</posx>
-            <posy>568</posy>
-            <width>350</width>
-            <height>128</height>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-			<aspectratio>keep</aspectratio>
-            <texture>guide.png</texture>
-            <visible>[substring(Player.FilenameAndPath,http) | substring(Player.FilenameAndPath,rtmp | substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp)]</visible>
-		</control>
-<!--hdhomerun.Fanart-->
-<!--         <control type="image">
-            <description>hdhomerun</description>
-            <posx>928</posx>
-            <posy>568</posy>
-            <width>350</width>
-            <height>128</height>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-			<aspectratio>keep</aspectratio>
-            <texture>fanart.png</texture>
-            <visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
-		</control>  -->       
+            <visible>false</visible>
+        </control>   -->
 <!--hulu.Fanart-->
-<!--         <control type="image">
+        <control type="image">
             <description>hulu</description>
-            <posx>928</posx>
-            <posy>568</posy>
-            <width>350</width>
-            <height>128</height>
+            <posx>960</posx>
+            <posy>570</posy>
+            <width>285</width>
+            <height>125</height>
+            <align>center</align>
             <colordiffuse>FFFFFFFF</colordiffuse>
 			<aspectratio>keep</aspectratio>
             <texture>huluf.png</texture>
-            <visible>[substring(Player.FilenameAndPath,hulu) + IsEmpty(Player.Art(tvshow.thumb)) + IsEmpty(Player.Art(tvshow.landscape))]</visible>
-		</control>   -->     
+            <visible>[substring(Player.FilenameAndPath,hulu) + IsEmpty(Player.Art(tvshow.landscape))]</visible>
+        </control>     
 <!--Movie.landscape Now Playing-->
         <control type="image">
-            <description>Fanart</description>
-            <posx>955</posx>
+            <description>landscape</description>
+            <posx>960</posx>
             <posy>570</posy>
             <width>285</width>
             <height>125</height>
             <align>center</align>
             <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture fallback="fanart.png">$INFO[Player.Art(fanart)]</texture>
-            <aspectratio aligny="center">keep</aspectratio>
-        </control>        
-        <control type="image">
-            <description>Fanart</description>
-            <posx>955</posx>
-            <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>$INFO[Player.Art(landscape)]</texture>
-            <aspectratio aligny="center">keep</aspectratio>
+            <texture fallback="landscape.png">$INFO[Player.Art(landscape)]</texture>
+            <aspectratio>keep</aspectratio>
         </control>
 <!--TV.landscape Now Playing-->
         <control type="image">
-            <description>Fanart</description>
-            <posx>955</posx>
-            <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>$INFO[Player.Art(tvshow.fanart)]</texture>
-            <aspectratio aligny="center">keep</aspectratio>
-        </control>        
-        <control type="image">
-            <description>Fanart</description>
-            <posx>955</posx>
+            <description>landscape</description>
+            <posx>960</posx>
             <posy>570</posy>
             <width>285</width>
             <height>125</height>
             <align>center</align>
             <colordiffuse>FFFFFFFF</colordiffuse>
             <texture>$INFO[Player.Art(tvshow.landscape)]</texture>
-            <aspectratio aligny="center">keep</aspectratio>
+            <aspectratio>keep</aspectratio>
         </control>
        <control type="label" id="507">
             <description>Dynamic art</description><!-- Calls art by label given, labels include type (ie fanart,poster,series,graphical(banner))-->
@@ -119,18 +86,35 @@
         </control>
        <control type="image" id="508">
             <description>Dynamic art</description><!-- Calls art by label given-->
-            <posx>955</posx>
+            <posx>960</posx>
             <posy>570</posy>
             <width>285</width>
             <height>125</height>
+            <align>center</align>
             <aspectratio>keep</aspectratio>
         </control>
-        <control type="image" id="506">
+      <!--  <control type="label" id="509">
+            <description>Dynamic art</description>
+            <label>graphical</label>
+            <visible>false</visible>
+        </control> -->
+       <!-- Calls art by label given-->
+        <control type="image" id="510">
+            <description>Dynamic art</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>0</width>
+            <height>0</height>
+            <align>center</align>
+            <aspectratio>keep</aspectratio>
+            <visible>false</visible>
+        </control>
+        <control type="image" id="512">
             <description>Unaired NEW Icon</description>            
-            <posx>1000</posx>
-            <posy>600</posy>
-            <width>40</width>
-            <height>40</height>
+            <posx>989</posx>
+            <posy>568</posy>
+            <width>100</width>
+            <height>100</height>
             <aspectratio>keep</aspectratio>
         </control>
 <!--LEFT/RIGHT art-->
@@ -160,7 +144,8 @@
             <width>284</width>
             <height>51</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>pstvButtonNoFocus1.png</texture>
+            <aspectratio>keep</aspectratio>
+            <!-- <texture>pstvButtonNoFocus1.png</texture> -->
         </control>
         <control type="image">
             <description>Channel Overlay</description>
@@ -169,7 +154,8 @@
             <width>284</width>
             <height>51</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>pstvButtonNoFocus1.png</texture>
+            <aspectratio>keep</aspectratio>
+            <!-- <texture>pstvButtonNoFocus1.png</texture> -->
         </control>
         <control type="image">
             <description>Channel Overlay</description>
@@ -178,7 +164,8 @@
             <width>284</width>
             <height>51</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>pstvButtonNoFocus1.png</texture>
+            <aspectratio>keep</aspectratio>
+            <!-- <texture>pstvButtonNoFocus1.png</texture> -->
         </control>    
         <control type="image">
             <description>Channel Overlay</description>
@@ -187,7 +174,8 @@
             <width>284</width>
             <height>51</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>pstvButtonNoFocus1.png</texture>
+            <aspectratio>keep</aspectratio>
+            <!-- <texture>pstvButtonNoFocus1.png</texture> -->
         </control>
         <control type="image">
             <description>Channel Overlay</description>
@@ -196,7 +184,8 @@
             <width>284</width>
             <height>51</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>pstvButtonNoFocus1.png</texture>
+            <aspectratio>keep</aspectratio>
+            <!-- <texture>pstvButtonNoFocus1.png</texture> -->
         </control>
         <control type="image">
             <description>Channel Overlay</description>
@@ -205,7 +194,8 @@
             <width>284</width>
             <height>51</height>
             <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>pstvButtonNoFocus1.png</texture>
+            <aspectratio>keep</aspectratio>
+            <!-- <texture>pstvButtonNoFocus1.png</texture> -->
         </control>
 <!--Time/Weather-->    
         <control type="label">
@@ -222,7 +212,7 @@
         <!--Weather-->
         <control type="image" id="800">
             <posx>180</posx>
-            <posy>45</posy>
+            <posy>46</posy>
             <width>60</width>
             <height>60</height>
             <aspectratio align="center">keep</aspectratio>
@@ -245,8 +235,8 @@
             <posy>520</posy>
             <width>1000</width>
             <height>40</height>
-            <!-- <align>left</align> -->
-            <!-- <aligny>bottom</aligny> -->
+            <align>left</align>
+            <aligny>bottom</aligny>
             <orientation>horizontal</orientation>
             <itemgap>5</itemgap>
             <control type="label" id="500">
@@ -271,7 +261,7 @@
                 <textcolor>FFFFFFFF</textcolor>
             </control>        
         </control>
-        <control type="image" id="505">
+        <control type="image" id="511">
             <description>Sickbeard/Couchpotato Icon</description>            
             <posx>880</posx>
             <posy>525</posy>
@@ -610,20 +600,7 @@
             <aligny>center</aligny>
             <aspectratio>keep</aspectratio>
             <visible>!StringCompare(Control.GetLabel(326),)</visible>
-        </control>   
-<!--hdhomerun.logo-->
-    <control type="image">
-        <description>hdhomerun</description>                
-        <posx>800</posx>
-        <posy>525</posy>
-        <width>170</width>
-        <height>30</height>
-        <colordiffuse>FFFFFFFF</colordiffuse>
-        <aspectratio>keep</aspectratio>
-        <align>center</align>
-        <texture>hdhomerun.png</texture>
-        <visible>[substring(Player.FilenameAndPath,hdhomerun)]</visible>
-    </control>                    
+        </control>                
     <!--hulu.logo-->
     <control type="image">
         <description>hulu</description>                
@@ -637,7 +614,6 @@
         <texture>hulu.png</texture>
         <visible>[substring(Player.FilenameAndPath,hulu)]</visible>
     </control>
-
 <!--     <control type="image">
         <description>NavFlagEpg Image</description>
         <posy>625</posy>

@@ -1,0 +1,30 @@
+507.label controls 508.image
+509.label controls 510.image
+
+Fanart.tv label art types:
+
+{'Fanart.TV name': 'PTVL's Label name',
+
+TV:
+{'clearlogo': 'logo',
+'hdtvlogo': 'clearlogo',
+'tvposter': 'poster',
+'showbackground': 'fanart',
+'clearart': 'clearart',
+'hdclearart': 'clearart',
+'tvthumb': 'landscape',
+'seasonthumb': 'seasonlandscape',
+'characterart': 'characterart',
+'tvbanner': 'banner',
+'seasonbanner': 'seasonbanner',
+}
+Movie:
+{'movielogo': 'logo',
+'moviedisc': 'discart',
+'movieart': 'clearart',
+'movieposter': 'poster',
+'moviebackground': 'fanart'
+'hdmovielogo': 'clearlogo',
+'hdmovieclearart': 'clearart',
+'moviebanner': 'banner',
+'moviethumb': 'landscape'}
