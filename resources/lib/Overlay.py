@@ -912,67 +912,70 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                     URLLST = fanartTV.get_image_list(imdbid)
                     self.logDebug('Overlay.imdb.URLLST.1 = ' + str(imdbid))
                     if URLLST != None:
-                        URLLST = str(URLLST)
-                        URLLST = URLLST.split("{'art_type': ")
-                        self.logDebug('Overlay.imdb.URLLST.2 = ' + str(URLLST))
-                        Art1 = [s for s in URLLST if type1 in s]
-                        Art1 = Art1[0]
-                        self.logDebug('Overlay.imdb.Art1.1 = ' + str(Art1))
-                        Art2 = [s for s in URLLST if type2 in s]
-                        Art2 = Art2[0]
-                        self.logDebug('Overlay.imdb.Art2 = ' + str(Art2))
-                        Art1 = Art1[Art1.find("'url': '")+len("'url': '"):Art1.rfind("',")]
-                        self.logDebug('Overlay.imdb.Art1.2 = ' + str(Art1))
-                        Art1 = Art1.split("',")[0]
-                        self.logDebug('Overlay.imdb.Art1.3 = ' + str(Art1))
-                        Art2 = Art2[Art2.find("'url': '")+len("'url': '"):Art2.rfind("',")]
-                        self.logDebug('Overlay.imdb.Art2.2 = ' + str(Art2))
-                        Art2 = Art2.split("',")[0]
-                        self.logDebug('Overlay.imdb.Art2.3 = ' + str(Art2))
-                        URLimage1 = Art1
-                        URLimage1 = URLimage1.rsplit('/')[-1]
-                        self.logDebug('Overlay.imdb.URLimage1.1 = ' + str(URLimage1))
-                        URLimage2 = Art2
-                        URLimage1 = (type1 + '-' + URLimage1)
-                        self.logDebug('Overlay.imdb.URLimage1.2 = ' + str(URLimage1))
-                        URLimage2 = URLimage1.rsplit('/')[-1]
-                        self.logDebug('Overlay.imdb.URLimage2.2 = ' + str(URLimage2))
-                        URLimage2 = (type2 + '-' + URLimage2)
-                        
-                        ############################################### Move to function todo
-                        flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage1)
+                        try:
+                            URLLST = str(URLLST)
+                            URLLST = URLLST.split("{'art_type': ")
+                            self.logDebug('Overlay.imdb.URLLST.2 = ' + str(URLLST))
+                            Art1 = [s for s in URLLST if type1 in s]
+                            Art1 = Art1[0]
+                            self.logDebug('Overlay.imdb.Art1.1 = ' + str(Art1))
+                            Art2 = [s for s in URLLST if type2 in s]
+                            Art2 = Art2[0]
+                            self.logDebug('Overlay.imdb.Art2 = ' + str(Art2))
+                            Art1 = Art1[Art1.find("'url': '")+len("'url': '"):Art1.rfind("',")]
+                            self.logDebug('Overlay.imdb.Art1.2 = ' + str(Art1))
+                            Art1 = Art1.split("',")[0]
+                            self.logDebug('Overlay.imdb.Art1.3 = ' + str(Art1))
+                            Art2 = Art2[Art2.find("'url': '")+len("'url': '"):Art2.rfind("',")]
+                            self.logDebug('Overlay.imdb.Art2.2 = ' + str(Art2))
+                            Art2 = Art2.split("',")[0]
+                            self.logDebug('Overlay.imdb.Art2.3 = ' + str(Art2))
+                            URLimage1 = Art1
+                            URLimage1 = URLimage1.rsplit('/')[-1]
+                            self.logDebug('Overlay.imdb.URLimage1.1 = ' + str(URLimage1))
+                            URLimage2 = Art2
+                            URLimage1 = (type1 + '-' + URLimage1)
+                            self.logDebug('Overlay.imdb.URLimage1.2 = ' + str(URLimage1))
+                            URLimage2 = URLimage1.rsplit('/')[-1]
+                            self.logDebug('Overlay.imdb.URLimage2.2 = ' + str(URLimage2))
+                            URLimage2 = (type2 + '-' + URLimage2)
 
-                        if FileAccess.exists(flename1):
-                            self.getControl(514).setImage(flename1)
-                        else:
-                            if not os.path.exists(os.path.join(Artpath)):
-                                os.makedirs(os.path.join(Artpath))
-                            
-                            resource = urllib.urlopen(Art1)
-                            self.logDebug('Overlay.tvdb.resource = ' + str(resource))
-                            output = open(flename1,"wb")
-                            self.logDebug('Overlay.tvdb.output = ' + str(output))
-                            output.write(resource.read())
-                            output.close()
-                            self.getControl(514).setImage(flename1)
-                        
-                        flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage2)
-                        
-                        if FileAccess.exists(flename2):
-                            self.getControl(516).setImage(flename2)
-                        else:
-                            if not os.path.exists(os.path.join(Artpath)):
-                                os.makedirs(os.path.join(Artpath))
-                            
-                            resource = urllib.urlopen(Art2)
-                            self.logDebug('Overlay.tvdb.resource = ' + str(resource))
-                            output = open(flename2,"wb")
-                            self.logDebug('Overlay.tvdb.output = ' + str(output))
-                            output.write(resource.read())
-                            output.close()
-                            self.getControl(516).setImage(flename2)  
-                        ##############################################
+                            ############################################### Move to function todo
+                            flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage1)
 
+                            if FileAccess.exists(flename1):
+                                self.getControl(514).setImage(flename1)
+                            else:
+                                if not os.path.exists(os.path.join(Artpath)):
+                                    os.makedirs(os.path.join(Artpath))
+                                
+                                resource = urllib.urlopen(Art1)
+                                self.logDebug('Overlay.tvdb.resource = ' + str(resource))
+                                output = open(flename1,"wb")
+                                self.logDebug('Overlay.tvdb.output = ' + str(output))
+                                output.write(resource.read())
+                                output.close()
+                                self.getControl(514).setImage(flename1)
+                            
+                            flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage2)
+                            
+                            if FileAccess.exists(flename2):
+                                self.getControl(516).setImage(flename2)
+                            else:
+                                if not os.path.exists(os.path.join(Artpath)):
+                                    os.makedirs(os.path.join(Artpath))
+                                
+                                resource = urllib.urlopen(Art2)
+                                self.logDebug('Overlay.tvdb.resource = ' + str(resource))
+                                output = open(flename2,"wb")
+                                self.logDebug('Overlay.tvdb.output = ' + str(output))
+                                output.write(resource.read())
+                                output.close()
+                                self.getControl(516).setImage(flename2)  
+                            ##############################################
+                        except:
+                            pass
+                       
                     else:#fallback all artwork because there is no id
                         self.getControl(514).setImage(self.mediaPath + type1 + '.png')
                         self.getControl(516).setImage(self.mediaPath + type2 + '.png')
