@@ -81,7 +81,7 @@
         </control>
        <control type="label" id="507">
             <description>Dynamic art</description><!-- Calls art by label given, labels include type (ie fanart,poster,series,graphical(banner))-->
-            <label>graphical</label>
+            <label>landscape</label>
             <visible>false</visible>
         </control>
        <control type="image" id="508">
@@ -93,11 +93,11 @@
             <align>center</align>
             <aspectratio>keep</aspectratio>
         </control>
-      <!--  <control type="label" id="509">
+      <control type="label" id="509">
             <description>Dynamic art</description>
-            <label>graphical</label>
+            <label>logo</label>
             <visible>false</visible>
-        </control> -->
+        </control>
        <!-- Calls art by label given-->
         <control type="image" id="510">
             <description>Dynamic art</description>

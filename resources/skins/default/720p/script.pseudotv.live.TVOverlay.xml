@@ -175,6 +175,21 @@
                 <aspectratio>keep</aspectratio>
                 <visible>VideoPlayer.Content(episodes)</visible>
             </control> -->
+            <control type="label" id="515">
+                <description>Dynamic art</description>
+                <label>logo</label>
+                <visible>false</visible>
+            </control>
+           <!-- Calls art by label given -->
+           <control type="image" id="516">
+                <description>Dynamic art</description>
+                <posx>155</posx>
+                <posy>540</posy>
+                <width>170</width>
+                <height>75</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+            </control>
             <control type="label" id="505">
                 <description>Show Description</description>
                 <posx>335</posx>
@@ -317,7 +332,7 @@
                 <aspectratio>scale</aspectratio>
                 <visible>substring(Player.FilenameAndPath,hdhomerun) | substring(Player.FilenameAndPath,mms) | substring(Player.FilenameAndPath,rtsp) | substring(Player.FilenameAndPath,hulu) | substring(Player.FilenameAndPath,rtmp) | substring(Player.FilenameAndPath,http) | substring(Player.FilenameAndPath,upnp) | substring(Player.FilenameAndPath,plugin)</visible>
             </control>  -->          
-            <control type="image" id="507">
+            <control type="image">
                 <texture fallback="poster.png">$INFO[VideoPlayer.Cover]</texture>
                 <posx>1040</posx>
                 <posy>420</posy>
@@ -342,36 +357,19 @@
                 <aspectratio>scale</aspectratio>
                 <visible>VideoPlayer.Content(episodes)</visible>
             </control> 
-           <control type="label" id="507">
+           <control type="label" id="513">
                 <description>Dynamic art</description><!-- Calls art by label given, labels include type (ie fanart,poster,series,graphical(banner))-->
                 <label>poster</label>
                 <visible>false</visible>
             </control>
-           <control type="image" id="508">
+           <control type="image" id="514">
                 <description>Dynamic art</description><!-- Calls art by label given-->
-                <posx>960</posx>
-                <posy>570</posy>
-                <width>285</width>
-                <height>125</height>
-                <align>center</align>
-                <aspectratio>keep</aspectratio>
-                <visible>false</visible>
+                <posx>1040</posx>
+                <posy>420</posy>
+                <width  max="200">auto</width>
+                <height  max="300">auto</height>
+                <aspectratio>scale</aspectratio>
             </control>
-       <control type="label" id="509">
-            <description>Dynamic art</description>
-            <label>logo</label>
-            <visible>false</visible>
-        </control>
-       <!-- Calls art by label given -->
-       <control type="image" id="510">
-            <description>Dynamic art</description>
-            <posx>155</posx>
-            <posy>540</posy>
-            <width>170</width>
-            <height>75</height>
-            <align>center</align>
-            <aspectratio>keep</aspectratio>
-        </control>
         <control type="image" id="512">
             <description>Unaired NEW Icon</description>            
             <posx>1040</posx>

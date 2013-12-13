@@ -637,14 +637,6 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             self.Error("No channels available. Exiting.")
             return
 
-
-
-
-
-
-
-
-
     def waitForVideoPaused(self):
         self.log('waitForVideoPaused')
         sleeptime = 0
@@ -668,10 +660,10 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
     def setShowInfo(self):
         self.log('setShowInfo')
         chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(self.currentChannel) + '_type'))
-        if chtype == 8:
-            self.showingInfo = False
-        else:
-            self.showingInfo = True
+        # if chtype == 8:
+            # self.showingInfo = False
+        # else:
+            # self.showingInfo = True
             
         if self.infoOffset > 0:
             self.getControl(502).setLabel('COMING UP:')
@@ -721,8 +713,10 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         title = uni(self.channels[self.currentChannel - 1].getItemTitle(position))
         LiveID = str(self.channels[self.currentChannel - 1].getItemLiveID(position))
         self.logDebug('Overlay.LiveID.1 = ' + str(LiveID))
-        # type1 = str(self.getControl(507).getLabel())
-        # type2 = str(self.getControl(509).getLabel())
+        # type1 = str(self.getControl(513).getLabel())
+        # self.logDebug('EPG.type1 = ' + str(type1))  
+        # type2 = str(self.getControl(515).getLabel())
+        # self.logDebug('EPG.type2 = ' + str(type2))  
         type1 = 'poster'    
         type2 = 'logo'
 
@@ -732,7 +726,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 self.logDebug('Overlay.LiveLST = ' + str(LiveLST))
                 imdbid = LiveLST[0]
                 self.logDebug('Overlay.LiveLST.imdbid.1 = ' + str(imdbid))
-                imdbid = imdbid.split('imdb_tt', 1)[-1]
+                imdbid = imdbid.split('imdb_', 1)[-1]
                 self.logDebug('Overlay.LiveLST.imdbid.2 = ' + str(imdbid))
                 tvdbid = LiveLST[1]
                 self.logDebug('Overlay.LiveLST.tvdbid.1 = ' + str(tvdbid))
@@ -819,18 +813,18 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 self.logDebug('Overlay.mediapath.mediapathSeason = ' + str(mediapathSeries1) + ',' + str(mediapathSeries2)) 
 
                 if FileAccess.exists(mediapathSeason1): #check art type at season level
-                    self.getControl(508).setImage(mediapathSeason1)
+                    self.getControl(514).setImage(mediapathSeason1)
                 elif FileAccess.exists(mediapathSeries1):#check art type at series level
-                    self.getControl(508).setImage(mediapathSeries1)
+                    self.getControl(514).setImage(mediapathSeries1)
                 else:
-                    self.getControl(508).setImage(self.mediaPath + type1 + '.png')#default fallback art
+                    self.getControl(514).setImage(self.mediaPath + type1 + '.png')#default fallback art
                 
                 if FileAccess.exists(mediapathSeason2): #check art type at season level
-                    self.getControl(510).setImage(mediapathSeason2)
+                    self.getControl(516).setImage(mediapathSeason2)
                 elif FileAccess.exists(mediapathSeries2):#check art type at series level
-                    self.getControl(510).setImage(mediapathSeries2)
+                    self.getControl(516).setImage(mediapathSeries2)
                 else:
-                    self.getControl(510).setImage(self.mediaPath + type2 + '.png')#default fallback art
+                    self.getControl(516).setImage(self.mediaPath + type2 + '.png')#default fallback art
                 # except:
                     # pass
 
@@ -841,7 +835,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                     fanartTV = fanarttv.FTV_TVProvider()
                     URLLST = fanartTV.get_image_list(tvdbid)
                     self.logDebug('Overlay.tvdb.URLLST.1 = ' + str(URLLST))
-                    if URLLST != []:
+                    if URLLST != None:
                         URLLST = str(URLLST)
                         URLLST = URLLST.split("{'art_type': ")
                         self.logDebug('Overlay.tvdb.URLLST.2 = ' + str(URLLST))
@@ -860,7 +854,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                             self.logDebug('Overlay.tvdb.URLimage1.2 = ' + str(URLimage1))
                             flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage1)
                             if FileAccess.exists(flename1):
-                                self.getControl(508).setImage(flename1)
+                                self.getControl(514).setImage(flename1)
                             else:
                                 if not os.path.exists(os.path.join(Artpath)):
                                     os.makedirs(os.path.join(Artpath))
@@ -871,9 +865,9 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                                 self.logDebug('Overlay.tvdb.output = ' + str(output))
                                 output.write(resource.read())
                                 output.close()
-                                self.getControl(508).setImage(flename1)
+                                self.getControl(514).setImage(flename1)
                         except:
-                            self.getControl(508).setImage(self.mediaPath + type1 + '.png')
+                            self.getControl(514).setImage(self.mediaPath + type1 + '.png')
                             pass
                         try:
                             Art2 = [s for s in URLLST if type2 in s]
@@ -885,13 +879,16 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                             self.logDebug('Overlay.tvdb.Art2.3 = ' + str(Art2))
                             URLimage2 = Art2
                             URLimage2 = URLimage2.rsplit('/')[-1]
-                            self.logDebug('Overlay.tvdb.URLimage1.1 = ' + str(URLimage1))
+                            self.logDebug('Overlay.tvdb.URLimage2.1 = ' + str(URLimage2))
                             URLimage2 = (type2 + '-' + URLimage2)
                             self.logDebug('Overlay.tvdb.URLimage2.2 = ' + str(URLimage2))        
                             flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage2)
+                            
                             if FileAccess.exists(flename2):
-                                self.getControl(510).setImage(flename2)
+                                self.getControl(516).setImage(flename2)
+                                self.logDebug('Overlay.tvdb.flename2, Found = ' + str(flename2))   
                             else:
+                                self.logDebug('Overlay.tvdb.flename2, Downloading... = ' + str(flename2))   
                                 if not os.path.exists(os.path.join(Artpath)):
                                     os.makedirs(os.path.join(Artpath))
                                 
@@ -901,20 +898,20 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                                 self.logDebug('Overlay.tvdb.output = ' + str(output))
                                 output.write(resource.read())
                                 output.close()
-                                self.getControl(510).setImage(flename2)  
+                                self.getControl(516).setImage(flename2)  
                         except:
-                            self.getControl(510).setImage(self.mediaPath + type2 + '.png')
+                            self.getControl(516).setImage(self.mediaPath + type2 + '.png')
                             pass
 
                     else:#fallback all artwork because there is no id
-                        self.getControl(508).setImage(self.mediaPath + type1 + '.png')
-                        self.getControl(510).setImage(self.mediaPath + type2 + '.png')
+                        self.getControl(514).setImage(self.mediaPath + type1 + '.png')
+                        self.getControl(516).setImage(self.mediaPath + type2 + '.png')
 
-                elif imdbid > 0 and genre == 'Movie':#LiveTV w/ IMDBID via Fanart.TV
-                    fanartTV = fanarttv.FTV_TVProvider()
-                    URLLST = fanartTV.get_image_list(tvdbid)
+                elif imdbid != 0 and genre == 'Movie':#LiveTV w/ IMDBID via Fanart.TV
+                    fanartTV = fanarttv.FTV_MovieProvider()
+                    URLLST = fanartTV.get_image_list(imdbid)
                     self.logDebug('Overlay.imdb.URLLST.1 = ' + str(imdbid))
-                    if URLLST != []:
+                    if URLLST != None:
                         URLLST = str(URLLST)
                         URLLST = URLLST.split("{'art_type': ")
                         self.logDebug('Overlay.imdb.URLLST.2 = ' + str(URLLST))
@@ -946,7 +943,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                         flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage1)
 
                         if FileAccess.exists(flename1):
-                            self.getControl(508).setImage(flename1)
+                            self.getControl(514).setImage(flename1)
                         else:
                             if not os.path.exists(os.path.join(Artpath)):
                                 os.makedirs(os.path.join(Artpath))
@@ -957,12 +954,12 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                             self.logDebug('Overlay.tvdb.output = ' + str(output))
                             output.write(resource.read())
                             output.close()
-                            self.getControl(508).setImage(flename1)
+                            self.getControl(514).setImage(flename1)
                         
                         flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/' + URLimage2)
                         
                         if FileAccess.exists(flename2):
-                            self.getControl(510).setImage(flename2)
+                            self.getControl(516).setImage(flename2)
                         else:
                             if not os.path.exists(os.path.join(Artpath)):
                                 os.makedirs(os.path.join(Artpath))
@@ -973,30 +970,30 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                             self.logDebug('Overlay.tvdb.output = ' + str(output))
                             output.write(resource.read())
                             output.close()
-                            self.getControl(510).setImage(flename2)  
+                            self.getControl(516).setImage(flename2)  
                         ##############################################
 
                     else:#fallback all artwork because there is no id
-                        self.getControl(508).setImage(self.mediaPath + type1 + '.png')
-                        self.getControl(510).setImage(self.mediaPath + type2 + '.png')
+                        self.getControl(514).setImage(self.mediaPath + type1 + '.png')
+                        self.getControl(516).setImage(self.mediaPath + type2 + '.png')
                 
                 else:#fallback all artwork because there is no id
-                    self.getControl(508).setImage(self.mediaPath + type1 + '.png')
-                    self.getControl(510).setImage(self.mediaPath + type2 + '.png')
+                    self.getControl(514).setImage(self.mediaPath + type1 + '.png')
+                    self.getControl(516).setImage(self.mediaPath + type2 + '.png')
                 # except:
                     # pass
                 
             elif chtype == 9:
-                self.getControl(508).setImage(self.mediaPath + 'Overlay.Internet.508.png')
-                self.getControl(510).setImage(self.mediaPath + 'Overlay.Internet.510.png')
+                self.getControl(514).setImage(self.mediaPath + 'Overlay.Internet.508.png')
+                self.getControl(516).setImage(self.mediaPath + 'Overlay.Internet.510.png')
             
             elif chtype == 10:
-                self.getControl(508).setImage(self.mediaPath + 'Overlay.Youtube.5.png')
-                self.getControl(510).setImage(self.mediaPath + 'Overlay.Youtube.510.png')
+                self.getControl(514).setImage(self.mediaPath + 'Overlay.Youtube.508.png')
+                self.getControl(516).setImage(self.mediaPath + 'Overlay.Youtube.510.png')
             
             elif chtype == 11:
-                self.getControl(508).setImage(self.mediaPath + 'Overlay.RSS.508.png')
-                self.getControl(510).setImage(self.mediaPath + 'Overlay.RSS.510.png')    
+                self.getControl(514).setImage(self.mediaPath + 'Overlay.RSS.508.png')
+                self.getControl(516).setImage(self.mediaPath + 'Overlay.RSS.510.png')    
 
 
         #self.log('setshowposition ' + str(position))

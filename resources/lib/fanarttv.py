@@ -159,7 +159,7 @@ class FTV_MovieProvider():
         self.name = 'fanart.tv - Movie API'
 
     def get_image_list(self, media_id):
-        data = self.get_data(API_URL_MOVIE%(API_KEY, media_id))
+        data = self.get_data(API_URL_MOVIE%(API_KEY,media_id), 'json')
         image_list = []
         if data == 'Empty' or not data:
             return image_list

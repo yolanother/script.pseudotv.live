@@ -301,7 +301,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
             basew = self.getControl(111 + row).getWidth()
 
             chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(curchannel) + '_type'))
-            self.lastExitTime = int(ADDON_SETTINGS.getSetting("LastExitTime"))
+            self.lastExitTime = (ADDON_SETTINGS.getSetting("LastExitTime"))
             self.log('chtype = ' + str(chtype))
             if xbmc.Player().isPlaying() == False:
                 self.log('No video is playing, not adding buttons')
@@ -743,13 +743,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         self.setShowInfo()
         self.log('setProperButton return')
 
-
-
-
-
-
-
-
+        
     def setShowInfo(self):
         self.log('setShowInfo')
         self.showingInfo = True
@@ -761,12 +755,9 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         width = self.channelButtons[self.focusRow][self.focusIndex].getWidth()
         left = left - basex + (width / 2)
         starttime = self.shownTime + (left / (basew / 5400.0))
-
-        
         chnoffset = self.focusRow - 2
         newchan = self.centerChannel
 
-       
         while chnoffset != 0:
             if chnoffset > 0:
                 newchan = self.MyOverlayWindow.fixChannel(newchan + 1, True)
@@ -795,7 +786,6 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         elif self.infoOffset == 0 and self.infoOffsetV == 0:
             self.getControl(522).setLabel('NOW WATCHING:')
 
-
         tvdbid = 0
         imdbid = 0
         Artpath = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/')##write code to clean on channel rebuild
@@ -806,11 +796,13 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         genre = str(self.MyOverlayWindow.channels[newchan - 1].getItemgenre(plpos))
         title = uni(self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
         LiveID = str(self.MyOverlayWindow.channels[newchan - 1].getItemLiveID(plpos))
-        self.logDebug('EPG.LiveID.1 = ' + str(LiveID))
+        self.logDebug('EPG.LiveID.1 = ' + str(LiveID))  
         # type1 = str(self.getControl(507).getLabel())
+        # self.logDebug('EPG.type1 = ' + str(type1))  
         # type2 = str(self.getControl(509).getLabel())
+        # self.logDebug('EPG.type2 = ' + str(type2))  
         type1 = 'landscape'    
-        type2 = 'clearlogo'
+        type2 = 'logo'
 
         if not 'LiveID' in LiveID:
             try:
@@ -818,7 +810,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
                 self.logDebug('EPG.LiveLST = ' + str(LiveLST))
                 imdbid = LiveLST[0]
                 self.logDebug('EPG.LiveLST.imdbid.1 = ' + str(imdbid))
-                imdbid = imdbid.split('imdb_tt', 1)[-1]
+                imdbid = imdbid.split('imdb_', 1)[-1]
                 self.logDebug('EPG.LiveLST.imdbid.2 = ' + str(imdbid))
                 tvdbid = LiveLST[1]
                 self.logDebug('EPG.LiveLST.tvdbid.1 = ' + str(tvdbid))
@@ -914,12 +906,11 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
 
             
             elif chtype == 8:#LiveTV w/ TVDBID via Fanart.TV
-                # try:
                 if tvdbid > 0 and genre != 'Movie':
                     fanartTV = fanarttv.FTV_TVProvider()
                     URLLST = fanartTV.get_image_list(tvdbid)
                     self.logDebug('EPG.tvdb.URLLST.1 = ' + str(URLLST))
-                    if URLLST != []:
+                    if URLLST != None:
                         URLLST = str(URLLST)
                         URLLST = URLLST.split("{'art_type': ")
                         self.logDebug('EPG.tvdb.URLLST.2 = ' + str(URLLST))
@@ -953,6 +944,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
                         except:
                             self.getControl(508).setImage(self.mediaPath + type1 + '.png')
                             pass
+                        
                         try:
                             Art2 = [s for s in URLLST if type2 in s]
                             Art2 = Art2[0]
@@ -988,11 +980,11 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
                         self.getControl(508).setImage(self.mediaPath + type1 + '.png')
                         self.getControl(510).setImage(self.mediaPath + type2 + '.png')
 
-                elif imdbid > 0 and genre == 'Movie':#LiveTV w/ IMDBID via Fanart.TV
-                    fanartTV = fanarttv.FTV_TVProvider()
-                    URLLST = fanartTV.get_image_list(tvdbid)
+                elif imdbid != 0 and genre == 'Movie':#LiveTV w/ IMDBID via Fanart.TV
+                    fanartTV = fanarttv.FTV_MovieProvider()
+                    URLLST = fanartTV.get_image_list(imdbid)
                     self.logDebug('EPG.imdb.URLLST.1 = ' + str(imdbid))
-                    if URLLST != []:
+                    if URLLST != None:
                         URLLST = str(URLLST)
                         URLLST = URLLST.split("{'art_type': ")
                         self.logDebug('EPG.imdb.URLLST.2 = ' + str(URLLST))
@@ -1222,7 +1214,7 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         channel = self.MyOverlayWindow.fixChannel(channel)
 
         chtype = int(ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_type'))
-        self.lastExitTime = int(ADDON_SETTINGS.getSetting("LastExitTime"))
+        self.lastExitTime = ADDON_SETTINGS.getSetting("LastExitTime")
         nowDate = datetime.datetime.now()
         # if the channel is paused, then it's just the current item
         if self.MyOverlayWindow.channels[channel - 1].isPaused:
