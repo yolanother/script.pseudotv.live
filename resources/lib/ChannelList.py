@@ -27,6 +27,17 @@ import base64
 import Globals
 import urllib2 
 import feedparser
+import tvdb_api
+import tmdbsimple
+import shutil
+# import json 
+# try:
+    # import StorageServer
+# except:
+   # import storageserverdummy as StorageServer
+
+   # cache = StorageServer.StorageServer(ADDON_ID, 24) # (Your plugin name, Cache time in hours)
+
 
 from urllib import unquote
 from urllib import urlopen
@@ -43,8 +54,6 @@ from sickbeard import *
 from couchpotato import *
 from tvdb import *
 from tmdb import *
-
-
 
 
 class ChannelList:
@@ -67,6 +76,7 @@ class ChannelList:
         self.enteredChannelCount = 0
         self.background = True
         random.seed()
+        self.cached_json_detailed = []
 
 
     def readConfig(self):
@@ -152,7 +162,10 @@ class ChannelList:
     def log(self, msg, level = xbmc.LOGDEBUG):
         log('ChannelList: ' + msg, level)
 
-        
+    def logDebug(self, msg, level = xbmc.LOGDEBUG):
+        if REAL_SETTINGS.getSetting('enable_Debug') == "true":
+            log('ChannelList: ' + msg, level)
+                    
     # Determine the maximum number of channels by opening consecutive
     # playlists until we don't find one
     def findMaxChannels(self):
@@ -324,16 +337,16 @@ class ChannelList:
         try:
             needsreset = ADDON_SETTINGS.getSetting('Channel_' + str(channel) + '_changed') == 'True'
             
-            #disable force rebuild for livetv channels w/ TVDB and TMDB, else force rebuild:
-            if chtype == 8 or chtype == 9:
-                if (REAL_SETTINGS.getSetting('ForceChannelReset') == 'false' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'true' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'true') and chtype == 8):
-                    self.log("Force LiveTV rebuild - Disabled")
-                    needsreset = False
-                    makenewlist = False
-                else:                
-                    self.log("Force LiveTV/InternetTV rebuild")
-                    needsreset = True
-                    makenewlist = True
+            # #disable force rebuild for livetv channels w/ TVDB and TMDB, else force rebuild:
+            # if chtype == 8:
+                # if (REAL_SETTINGS.getSetting('ForceChannelReset') == 'true' and (REAL_SETTINGS.getSetting('tvdb.enabled') == 'false' or REAL_SETTINGS.getSetting('tmdb.enabled') == 'false')):
+                    # self.log("Force LiveTV rebuild - Disabled")
+                    # needsreset = True
+                    # makenewlist = True
+
+            # if chtype == 9:
+                # needsreset = True
+                # makenewlist = True
             
             if needsreset:
                 self.channels[channel - 1].isSetup = False
@@ -384,7 +397,16 @@ class ChannelList:
             self.channels[channel - 1].isValid = False
 
             if makenewlist:
-                try:
+            
+                try:#clean artwork folder
+                    artworkLOC = (xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'artwork' + '/'))
+                    self.logDebug("artworkLOC = " + str(artworkLOC))
+                    shutil.rmtree(artworkLOC)
+                    self.log("artwork folder cleaned")
+                except:
+                    pass
+
+                try:#remove old playlist
                     os.remove(CHANNELS_LOC + 'channel_' + str(channel) + '.m3u')
                 except:
                     pass
@@ -490,8 +512,8 @@ class ChannelList:
 
                 if tottime > (self.channels[channel - 1].totalTimePlayed - (60 * 60 * 12)):
                     tmpstr = str(self.channels[channel - 1].getItemDuration(i)) + ','
-                    tmpstr += self.channels[channel - 1].getItemTitle(i) + "//" + self.channels[channel - 1].getItemEpisodeTitle(i) + "//" + self.channels[channel - 1].getItemDescription(i) + "//" + self.channels[channel - 1].getItemtimestamp(i) + "//" + self.channels[channel - 1].getItemLiveID(i)
-                    tmpstr = uni(tmpstr[:500])
+                    tmpstr += self.channels[channel - 1].getItemTitle(i) + "//" + self.channels[channel - 1].getItemEpisodeTitle(i) + "//" + self.channels[channel - 1].getItemDescription(i) + "//" + self.channels[channel - 1].getItemgenre(i) + "//" + self.channels[channel - 1].getItemtimestamp(i) + "//" + self.channels[channel - 1].getItemLiveID(i)
+                    tmpstr = uni(tmpstr)
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                     tmpstr = uni(tmpstr) + uni('\n') + uni(self.channels[channel - 1].getItemFilename(i))
                     flewrite += uni("#EXTINF:") + uni(tmpstr) + uni("\n")
@@ -585,41 +607,38 @@ class ChannelList:
             self.log("Building LiveTV Channel, " + setting1 + " , " + setting2 + " , " + setting3)
             
             # HDhomerun #
-            #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
-            if REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
+            if setting2[0:9] == 'hdhomerun' and REAL_SETTINGS.getSetting('HdhomerunMaster') == "true":
+                #If you're using a HDHomeRun Dual and want 1 Tuner assigned per instance of PseudoTV, 
+                #this will ensure Master instance uses tuner0 and slave instance uses tuner1 *Thanks Blazin912*
                 self.log("Building LiveTV using tuner0")
                 setting2 = re.sub(r'\d/tuner\d',"0/tuner0",setting2)
             else:
                 self.log("Building LiveTV using tuner1")
                 setting2 = re.sub(r'\d/tuner\d',"1/tuner1",setting2)
             
-            # Vaildate XMLTV Data #
-            if setting3 == 'ustvnow':
+            # Validate XMLTV Data #
+            if setting3 != '':
                 self.xmltv_ok(setting3)
             
-            elif setting3 != 'ustvnow':  
-                self.xmltv_ok(setting3)
-            
-            # Vaildate LiveTV Feed #
-            if self.xmltvVaild == True:
-            
+            # Validate LiveTV Feed #
+            if self.xmltvValid == True:
                 #Override Checks# 
                 if REAL_SETTINGS.getSetting('Override_ok') == "true":
-                    self.log("Overriding Stream Vaildation")
+                    self.log("Overriding Stream Validation")
                     fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel) 
                 else:
                 
-                    if setting2[0:4] == 'rtmp': #rtmp check
+                    if setting2[0:4] == 'rtmp' or setting2[0:5] == 'rtmpe':#rtmp check
                         self.rtmpDump(setting2)  
-                        if self.rtmpVaild == True:   
+                        if self.rtmpValid == True:   
                             fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
                         else:
-                            self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
+                            self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'RTMP invalid: ' + str(setting2))
                             return    
                     
                     elif setting2[0:4] == 'http':#http check     
                         self.url_ok(setting2) 
-                        if self.urlVaild == True: 
+                        if self.urlValid == True: 
                             fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
                         else:
                             self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
@@ -633,20 +652,22 @@ class ChannelList:
                             self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
                             return
                     else:
-                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)    
-                    
+                        fileList = self.buildLiveTVFileList(setting1, setting2, setting3, channel)   
+            else:
+                return
+                
         elif chtype == 9: # InternetTV
             self.log("Building InternetTV Channel, " + setting1 + " , " + setting2 + " , " + setting3)
             
             #Override Checks# 
             if REAL_SETTINGS.getSetting('Override_ok') == "true":
-                self.log("Overriding Stream Vaildation")
+                self.log("Overriding Stream Validation")
                 fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
             else:
             
-                if setting2[0:4] == 'rtmp': #rtmp check
+                if setting2[0:4] == 'rtmp':#rtmp check
                     self.rtmpDump(setting2)
-                    if self.rtmpVaild == True:
+                    if self.rtmpValid == True:
                         fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     else:
                         self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'RTMP invalid: ' + str(setting2))
@@ -654,7 +675,7 @@ class ChannelList:
        
                 elif setting2[0:4] == 'http':#http check                
                     self.url_ok(setting2)
-                    if self.urlVaild == True:
+                    if self.urlValid == True:
                         fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
                     else:
                         self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'HTTP invalid: ' + str(setting2))
@@ -667,6 +688,11 @@ class ChannelList:
                     else:
                         self.log('makeChannelList, CHANNEL: ' + str(channel) + ', CHTYPE: ' + str(chtype), 'PLUGIN invalid: ' + str(setting2))
                         return
+                
+                # elif setting2[-4:] == 'strm':#strm check todo
+                    # fileList = self.buildInternetTVFileList(setting1, setting2, setting3, setting4, channel)
+                    # self.log('makeChannelList, Building STRM channel')
+                        
                         
         elif chtype == 10: # Youtube
             self.log("Building Youtube Channel " + setting1 + " using type " + setting2 + "...")
@@ -1246,7 +1272,7 @@ class ChannelList:
             self.updateDialog.update(self.updateDialogProgress, "Updating channel " + str(self.settingChannel), "adding videos", "reading TV data")
 
         json_folder_detail = self.sendJSON(json_query)
-#        self.log(json_folder_detail)
+        self.logDebug(json_folder_detail)
         detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
 
         for f in detail:
@@ -1497,12 +1523,61 @@ class ChannelList:
         self.log("makeMixedList return " + str(newlist))
         return newlist
 
+    def buildGenreLiveID(self, showtitle): ##return genre and LiveID by json
+        #query GetTVShows for by tv or movie: get title/genre, match title return genre...
+        self.log("buildGenreLiveID")
+        match = []
+        json_query = uni('{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"properties":["title","year","genre","imdbnumber"]}, "id": 1}')
+        try:
+            if not self.cached_json_detailed:
+                self.logDebug('buildGenreLiveID, json_detail creating cache')
+                self.cached_json_detailed = self.sendJSON(json_query)
+                json_detail = self.cached_json_detailed 
+            else:
+                json_detail = self.cached_json_detailed
+                self.logDebug('buildGenreLiveID, json_detail using cache')
 
+            file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_detail)
+            ShowLST = json_detail.split("},{")
+            self.logDebug("buildGenreLiveID.ShowLST = " + str(ShowLST))
+            showtitle = ('"title":"' + showtitle + '"')
+            self.logDebug("buildGenreLiveID.showtitle = " + str(showtitle))
+            match = [s for s in ShowLST if showtitle in s]
+            self.logDebug("buildGenreLiveID.match.1 = " + str(match))
+            match = match[0]
+            self.logDebug("buildGenreLiveID.match.2 = " + str(match))
+            genre = match.split('"],"imdbnumber":')[0]
+            self.logDebug("buildGenreLiveID.genre.1 = " + str(genre))
+            genre = genre.split('"genre":["', 1)[-1]
+            self.logDebug("buildGenreLiveID.genre.2 = " + str(genre))
+            genre = genre.split('","')
+            self.logDebug("buildGenreLiveID.genre.3 = " + str(genre))
+            genre = genre[0]
+            self.logDebug("buildGenreLiveID.genre.4 = " + str(genre))
+            tvdbid = match.split('","label":')[0]
+            self.logDebug("buildGenreLiveID.tvdbid.1 = " + str(tvdbid))
+            tvdbid = tvdbid.split('"],"', 1)[-1]
+            self.logDebug("buildGenreLiveID.tvdbid.2 = " + str(tvdbid))
+            tvdbid = tvdbid.split('imdbnumber":"', 1)[-1]
+            self.logDebug("buildGenreLiveID.tvdbid.3 = " + str(tvdbid))
+            tvdbid = (str(tvdbid))
+            self.logDebug("buildGenreLiveID.tvdbid.4 = " + str(tvdbid))
+            GenreLiveID = ( str(genre) + ',' + str(tvdbid))
+            return GenreLiveID
+        except:
+            return 'Unknown,0'
+            self.logDebug('buildGenreLiveID, GenreLiveID failed')
+    
+    
     def buildFileList(self, dir_name, channel): ##fix music channel todo
         self.log("buildFileList")
         fileList = []
         seasoneplist = []
         filecount = 0
+        imdbid = 0
+        tvdbid = 0
+        genre = ''
+        LiveID = ''
         json_query = uni('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "fields":["season","episode","playcount","streamdetails","duration","runtime","tagline","showtitle","album","artist","plot"]}, "id": 1}' % (self.escapeDirJSON(dir_name)))
 
         if self.background == False:
@@ -1567,7 +1642,7 @@ class ChannelList:
                             tmpstr = str(dur) + ','
                             showtitle = re.search('"showtitle" *: *"(.*?)"', f)
                             plot = re.search('"plot" *: *"(.*?)",', f)
-
+                            
                             if plot == None:
                                 theplot = ""
                             else:
@@ -1593,9 +1668,88 @@ class ChannelList:
                                 except:
                                     seasonval = -1
                                     epval = -1
+                                    
+                                GenreLiveID = self.buildGenreLiveID(showtitle.group(1))
+                                self.logDebug('buildFileList.GenreLiveID.1 = ' + str(GenreLiveID))
+                                try:
+                                    if GenreLiveID != 'Unknown,0':
+                                        GenreLiveID = GenreLiveID.split(',')
+                                        self.logDebug('buildFileList.GenreLiveID.2 = ' + str(GenreLiveID))
+                                        genre = GenreLiveID[0]
+                                        self.logDebug('buildFileList.genre = ' + str(genre))
+                                        genre = uni(genre)
+                                        tvdbid = GenreLiveID[1]                     
+                                        tvdbid = int(tvdbid)
+                                        self.logDebug('buildFileList.tvdbid = ' + str(tvdbid))   
+                                    
+                                        # Lookup IMDBID, 1st with tvdb, then with tvdb_api
+                                        if imdbid == 0:
+                                            try:
+                                                tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
+                                                imdbid = tvdbAPI.getIMDBbyShowName(showtitle.group(1))  
+                                                self.logDebug('buildFileList.imdbid.1 = ' + showtitle.group(1) + ' - ' + str(imdbid))
+                                                if imdbid == 0 or imdbid == '0' or imdbid == None or imdbid == 'None':
+                                                    t = tvdb_api.Tvdb()
+                                                    imdbid = t[showtitle.group(1)]['imdb_id']  
+                                                    self.logDebug('buildFileList.imdbid.2 = ' + showtitle.group(1) + ' - ' + str(imdbid))
+                                                    if imdbid == 0 or imdbid == '0' or imdbid == None or imdbid == 'None':#clean output
+                                                        imdbid = 0
+                                            except:
+                                                imdbid = 0
+                                                self.logDebug('buildFileList, imdbid lookup failed')
+                                       
+                                        ## Correct Invalid IMDBID format   
+                                        if imdbid != 0 and str(imdbid[0:2]) != 'tt':
+                                            imdbid = ('tt' + str(imdbid))
+                                        
+                                        #Rob Newton - 20130130 - Check for show being managed by SickBeard
+                                        sbManaged = False
+                                        if REAL_SETTINGS.getSetting('sickbeard.enabled') == 'true':
+                                            try:
+                                                sbAPI = SickBeard(REAL_SETTINGS.getSetting('sickbeard.baseurl'),REAL_SETTINGS.getSetting('sickbeard.apikey'))
+                                                if sbAPI.isShowManaged(tvdbid):
+                                                    sbManaged = True
+                                            except:
+                                                pass
+                                        
+                                        #Build LiveID (imdb/tvdb/sickbeard or couchpoato/unaired or aired)
+                                        
+                                        if imdbid != 0:
+                                            IID = ('imdb_' + str(imdbid))
+                                            LiveID = (IID + '|')
+                                        else:
+                                            LiveID = ('NA' + '|')
+                                        
+                                        if tvdbid != 0:
+                                            TID = ('tvdb_' + str(tvdbid))
+                                            LiveID = (LiveID + '|' + TID + '|')
+                                        else:
+                                            LiveID = (LiveID + '|' + 'NA' + '|')
+                                                              
+                                        if sbManaged == True:
+                                            SB = ('SB')
+                                            LiveID = (LiveID + '|' + SB + '|')
+                                        elif cpManaged == True:
+                                            CP = ('CP')
+                                            LiveID = (LiveID + '|' + CP + '|')
+                                        else:
+                                            LiveID = (LiveID + '|' + 'NA' + '|')
+                                        
+                                        LiveID = (LiveID + '|' + 'NA' + '|')
+                                        LiveID = LiveID.replace('||','|')
+                                        LiveID = uni(LiveID)
+                                        genre = uni(genre)
+                                        self.logDebug('buildFileList.LiveID = ' + LiveID)
+                                        tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot[:250] + "//" + genre + "//" + "//" + LiveID
+                                        istvshow = True
 
-                                tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot
-                                istvshow = True
+                                    else:##Further parsing??
+                                        tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot[:250] + "//" + 'Unknown' + "////" + 'LiveID|'
+                                        istvshow = True
+                                   
+                                except:
+                                    tmpstr += showtitle.group(1) + "//" + swtitle + "//" + theplot[:250] + "//" + 'Unknown' + "////" + 'LiveID|'
+                                    istvshow = True
                             else:
                                 tmpstr += title.group(1) + "//"
                                 album = re.search('"album" *: *"(.*?)"', f)
@@ -1607,12 +1761,12 @@ class ChannelList:
                                     if tagline != None:
                                         tmpstr += tagline.group(1)
 
-                                    tmpstr += "//" + theplot
+                                    tmpstr += "//" + theplot[:250] + "//" + 'Movie' + "////" + 'LiveID|'
                                 else:
                                     artist = re.search('"artist" *: *"(.*?)"', f)
                                     tmpstr += album.group(1) + "//" + artist.group(1)
 
-                            tmpstr = tmpstr[:500]
+                            tmpstr = tmpstr
                             tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                             tmpstr = tmpstr + '\n' + match.group(1).replace("\\\\", "\\")
 
@@ -1714,33 +1868,38 @@ class ChannelList:
                     if setting1 == channel:
                         inSet = True
                         title = elem.findtext('title')
+                        try:
+                            title = title.split("*")[0] #Remove "*" from title
+                        except:
+                            pass
                         description = elem.findtext("desc")
-                        subtitle = elem.findtext("sub-title")
                         iconElement = elem.find("icon")
                         icon = None
                         if iconElement is not None:
                             icon = iconElement.get("src")
+                        subtitle = elem.findtext("sub-title")
                         if not description:
                             if not subtitle:
-                                description = title
+                                description = title  
                             else:
-                                description = subtitle                      
-                        if subtitle == None:                                
-                            subtitle = 'LiveTV'
-
-                        #Rob Newton - 20130127 - Parse the category of the program
-                        movie = False
+                                description = subtitle  
+                        if not subtitle:                        
+                                subtitle = 'LiveTV'                      
+                        
+                        ##################################
+                        #Parse the category of the program
                         istvshow = True
+                        movie = False
                         Unaired = False
-                        category = 'Normal'
+                        category = 'Unknown'
                         categories = ''
                         categoryList = elem.findall("category")
                         for cat in categoryList:
                             categories += ', ' + cat.text
                             if cat.text == 'Movie':
+                                category = cat.text
                                 movie = True
                                 istvshow = False
-                                category = cat.text
                             elif cat.text == 'Sports':
                                 category = cat.text
                             elif cat.text == 'Children':
@@ -1760,148 +1919,301 @@ class ChannelList:
                         #If the movie flag was set, it should override the rest (ex: comedy and movie sometimes come together)
                         if movie:
                             category = 'Movie'
-                        
-                        #Read the "new" boolean for this program and store as 1 or 0 for the db
-                        try:
-                            if elem.find("new") != None:
-                                Unaired = True
-                                self.log('new unaired')
-                                self.getControl(900).setLabel("Unaired")
-                                self.getControl(900).setImage("New")
-                            else:
-                                Unaired = False
-                                self.log('old aired')
-                                self.getControl(900).setLabel("Aired")
-                                self.getControl(900).setImage("Old")
-                        except:
-                            pass
-                        
+
+
                         #Decipher the TVDB ID by using the Zap2it ID in dd_progid
+                        dd_progid = ''
                         tvdbid = 0
-                        episodeId = 0
                         imdbid = 0
                         seasonNumber = 0
                         episodeNumber = 0
                         episodeDesc = ''
                         episodeName = ''
-                        episodeArt = ''
+                        episodeGenre = ''
                         
                         if not movie and REAL_SETTINGS.getSetting('tvdb.enabled') == 'true':
-                            dd_progid = ''
                             episodeNumList = elem.findall("episode-num")
                             for epNum in episodeNumList:
                                 if epNum.attrib["system"] == 'dd_progid':
                                     dd_progid = epNum.text
-                        
-                    
-                            self.log('dd_progid %s' % dd_progid) ##Debug
+                                    # self.log('dd_progid %s' % dd_progid) ##debug
 
                             #The Zap2it ID is the first part of the string delimited by the dot
                             #  Ex: <episode-num system="dd_progid">MV00044257.0000</episode-num>
                             dd_progid = dd_progid.split('.',1)[0]
-                            tvdbid = tvdbAPI.getIdByZap2it(dd_progid)
+                            try:
+                                tvdbid = tvdbAPI.getIdByZap2it(dd_progid)
+                                # self.log('title.tvdbid.1 = ' + title + ' - ' + str(tvdbid))#debug
+                                if tvdbid == 0 or tvdbid == '0' or tvdbid == None or tvdbid == 'None': #clean output
+                                    # self.log('clean.title.tvdbid.1 = ' + title + ' - ' + str(tvdbid))#debug
+                                    tvdbid = 0
+                            except:
+                                pass
                             
                             #Sometimes GetSeriesByRemoteID does not find by Zap2it so we use the series name as backup
+                            # Lookup TVDBID, 1st with tvdb_api, then with tvdb.
                             if tvdbid == 0:
-                                tvdbid = tvdbAPI.getIdByShowName(elem.findtext('title'))
-
-                            if tvdbid > 0:
-                                #Date element holds the original air date of the program
+                                try:
+                                    t = tvdb_api.Tvdb()
+                                    tvdbid = t[title]['seriesid']
+                                    # self.log('title.tvdbid.2 = ' + title + ' - ' + str(tvdbid))#debug
+                                    if tvdbid == 0 or tvdbid == '0' or tvdbid == None or tvdbid == 'None':
+                                        tvdbid = tvdbAPI.getIdByShowName(elem.findtext('title'))
+                                        # self.log('title.tvdbid.3 = ' + title + ' - ' + str(tvdbid))#debug
+                                        if tvdbid == 0 or tvdbid == '0' or tvdbid == None or tvdbid == 'None': #clean output
+                                            # self.log('clean.title.tvdbid.2 = ' + title + ' - ' + str(tvdbid))#debug
+                                            tvdbid = 0
+                                except:
+                                    pass
+                                    
+                            # Lookup IMDBID, 1st with tvdb, then with tvdb_api
+                            if imdbid == 0:
+                                try:
+                                    imdbid = tvdbAPI.getIMDBbyShowName(elem.findtext('title'))  
+                                    # self.log('title.imdbid.1 = ' + title + ' - ' + str(imdbid))#debug
+                                    if imdbid == 0 or imdbid == '0' or imdbid == None or imdbid == 'None':
+                                        t = tvdb_api.Tvdb()
+                                        imdbid = t[title]['imdb_id']  
+                                        # self.log('title.imdbid.2 = ' + title + ' - ' + str(imdbid))#debug
+                                        if imdbid == 0 or imdbid == '0' or imdbid == None or imdbid == 'None': #clean output
+                                            imdbid = 0
+                                except:
+                                    pass
+                            
+                            # last chance for tvdbid try by IMDBID
+                            if tvdbid == 0 and imdbid != 0:
+                                try:
+                                    tvdbid = tvdbAPI.getIdByIMDB(imdbid)  
+                                    # self.log('title.tvdbid.4 = ' + title + ' - ' + str(imdbid))#debug   
+                                    if tvdbid == 0 or tvdbid == '0' or tvdbid == None or tvdbid == 'None': #clean output
+                                        tvdbid = 0  
+                                except:
+                                    pass 
+                                    
+                            ## Correct Invalid IMDBID format   
+                            if imdbid != 0 and str(imdbid[0:2]) != 'tt':
+                                imdbid = ('tt' + str(imdbid))
+                                    
+                            if tvdbid != 0: #Find Episode info by air date.
+                                #Date element holds the original air date of the program                   
                                 airdateStr = elem.findtext('date')
-                                if airdateStr != None and Unaired == True: # If Show is new and has airdate, check tvdb by airdate.
+                                if airdateStr != None:
                                     try:
                                         #Change date format into the byAirDate lookup format (YYYY-MM-DD)
                                         t = time.strptime(airdateStr, '%Y%m%d')
                                         airDateTime = datetime.datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
                                         airdate = airDateTime.strftime('%Y-%m-%d')
-                                        
                                         #Only way to get a unique lookup is to use TVDB ID and the airdate of the episode
-                                        episode = ElementTree.fromstring(tvdbAPI.getEpisodeByAirdate(tvdbid, airdate))
+                                        episode = ET.fromstring(tvdbAPI.getEpisodeByAirdate(tvdbid, airdate))
                                         episode = episode.find("Episode")
-                                        episodeId = episode.findtext("id")
-                                        imdbid = episode.findtext("IMDB_ID")
                                         seasonNumber = episode.findtext("SeasonNumber")
+                                        # self.log('title.seasonNumber.1 = ' + title + ' - ' + str(seasonNumber))#debug
                                         episodeNumber = episode.findtext("EpisodeNumber")
+                                        # self.log('title.episodeNumber.1 = ' + title + ' - ' + str(episodeNumber))#debug
                                         episodeDesc = episode.findtext("Overview")
-                                        episodeName = episode.findtext("EpisodeName")
-                                        episodeArt = episode.findtext("filename")
+                                        # self.log('title.episodeDesc.1 = ' + title + ' - ' + episodeDesc)#debug 
+                                        episodeName = episode.findtext("EpisodeName")  
+                                        # self.log('title.episodename.1 = ' + title + ' - ' + episodeName)#debug 
                                     except:
                                         pass
-                                
-                                # if subtitle != 'LiveTV' and episodeId == 0:
-                                    # getTVDBseries = "http://thetvdb.com/api/"+REAL_SETTINGS.getSetting('tvdb.apikey')+"/series/"+str(tvdbid)+"/all/en.xml"
-                                    # # episode = ElementTree.fromstring(tvdbAPI.getEpisodeByID(tvdbid))
-                                    # try: 
-                                        # getTVDBseriesURL = urllib2.urlopen(getTVDBseries) 
-                                        # self.log('getTVDBseriesURL = ' + str(getTVDBseries))
-                                        # getTVDBseriesURL=getTVDBseriesURL.read()
-                                        # self.log('getTVDBseriesURL.read = ' + str(getTVDBseriesURL))
-                                        # episode = episode.find("Episode")
-                                        # episodeName = episode.findtext("EpisodeName")
-                                        # if episodeName == subtitle:                                        
-                                            # episodeId = episode.findtext("id")
-                                            # imdbid = episode.findtext("IMDB_ID")
-                                            # seasonNumber = episode.findtext("SeasonNumber")
-                                            # episodeNumber = episode.findtext("EpisodeNumber")
-                                            # episodeDesc = episode.findtext("Overview")
-                                            # episodeName = episode.findtext("EpisodeName")
-                                            # episodeArt = episode.findtext("filename")
-                                    # except:
-                                        # pass
+ 
+                                ## Clean and reset Invalid values.                                                                                                            
+                                if seasonNumber == None or seasonNumber == 'None' or seasonNumber == '0':
+                                    seasonNumber = 0             
+                                if episodeNumber == None or episodeNumber == 'None' or episodeNumber == '0':
+                                    episodeNumber = 0             
+                                if episodeDesc == None or episodeDesc == 'None' or episodeDesc == ' ':
+                                    episodeDesc = ''       
+                                if episodeName == None or episodeName == 'None' or episodeName == ' ':
+                                    episodeName = ''
+
+                            ## Find missing information by compairing subtitle to episodename. 
+                            if subtitle != 'LiveTV' and (seasonNumber == 0 or episodeNumber == 0):
+                                try:
+                                    t = tvdb_api.Tvdb()
+                                    episode = t[title].search(subtitle, key = 'episodename')# Output example: [<Episode 01x01 - My First Day>]
+                                    episode = str(episode)
+                                    # self.log('title.episodename.2 = ' + title + ' - ' + episode)#debug 
+                                    episodeNum = episode.split(' - ')[0]
+                                    episodeNum = episodeNum.split('[<Episode ', 1)[-1]
+                                    seasonNumber = episodeNum.split('x')[0]
+                                    # self.log('title.seasonNumber.2 = ' + title + ' - ' + str(seasonNumber))#debug 
+                                    episodeNumber = episodeNum.split('x', 1)[-1]
+                                    # self.log('title.episodeNumber.2 = ' + title + ' - ' + str(episodeNumber))#debug 
+                                    episodeName = episode.split(' - ', 1)[-1]
+                                    episodeName = episodeName.split('>]')[0]
+                                    # self.log('title.episodeName.2 = ' + title + ' - ' + str(episodeName))#debug
+                                except:
+                                    pass
+                                                                            
+                            ## Clean and reset Invalid values. 
+                            if seasonNumber == '[]':
+                                seasonNumber = 0             
+                            if episodeNumber == '[]':
+                                episodeNumber = 0         
+                            if episodeName == '[]':
+                                episodeName = ''
+                                    
+                            ## Find missing information by using title and season/episode information.
+                            if episodeDesc == '' and (seasonNumber != 0 and episodeNumber != 0):
+                                try:
+                                    t = tvdb_api.Tvdb()
+                                    episode = t[title][seasonNumber][episodeNumber]
+                                    episodeDesc = episode['overview'] 
+                                    # self.log('title.episodeDesc.2 = ' + title + ' - ' + str(episodeDesc))#debug
+                                except:
+                                    pass
                             
+                            if episodeName == '' and (seasonNumber != 0 and episodeNumber != 0):
+                                try:
+                                    t = tvdb_api.Tvdb()
+                                    episode = t[title][seasonNumber][episodeNumber]
+                                    episodeName = episode['episodename']
+                                    # self.log('title.episodeName.3 = ' + title + ' - ' + str(episodeName))#debug
+                                except:
+                                    pass
                             
-                            # self.log('tvdbid = ' + str(tvdbid)) ##Debug
+                            if episodeGenre == '' and category == 'Unknown':
+                                try:
+                                    t = tvdb_api.Tvdb()
+                                    episodeGenre = t[title]['genre']## Output ex. Comedy|Talk Show|
+                                    self.log('title.episodeGenre.1 = ' + title + ' - ' + str(episodeGenre))#debug
+                                    episodeGenre = episodeGenre.split('|', 1)[-1]
+                                    self.log('title.episodeGenre.2 = ' + title + ' - ' + str(episodeGenre))#debug
+                                    category = episodeGenre.split("|")[0]
+                                    self.log('title.episodeGenre.3 = ' + title + ' - ' + str(category))#debug
+                                    if category == 0 or category == '0' or category == None or category == 'None': #clean output
+                                        category = 'Unknown'  
+                                except:
+                                    pass
                             
-                            if seasonNumber == 0:
-                                seasonNumber = 1             
-                            if episodeNumber == 0:
-                                episodeNumber = 1   
-                            if episodeDesc != '':
-                                description = episodeDesc  
+                            # # cleanup Invalid data
+                            # if seasonNumber == None:
+                                # seasonNumber = 0
+                            # if episodeNumber == None:
+                                # episodeNumber = 0
+                            # if episodeDesc == None:
+                                # episodeDesc = ''
+                            # if episodeName == None:
+                                # episodeName = ''
+
+                            if episodeDesc != '': #Change Description to TVDB Overview, not always correct!
+                                description = episodeDesc
                             if episodeName == '':
                                 episodeName = subtitle
-     
-                            # self.log('episodeId = ' + str(episodeId))
-                            # self.log('imdbid = ' + str(imdbid))
-                            # self.log('seasonNumber = ' + str(seasonNumber))
-                            # self.log('episodeNumber = ' + str(episodeNumber))
-                            # self.log('episodeDesc = ' + str(episodeDesc))
-                            # self.log('episodeName = ' + str(episodeName))
-                            # self.log('episodeArt = ' + str(episodeArt))
-                                            
+
                         #Rob Newton - 20130131 - Lookup the movie info from TMDB
-                        imdbid = 0
                         if movie and REAL_SETTINGS.getSetting('tmdb.enabled') == 'true':
-                            #Date element holds the original air date of the program
-                            movieYear = elem.findtext('date')
-                            movieInfo = tmdbAPI.getMovie(uni(elem.findtext('title')), movieYear)
-                            imdbid = movieInfo['imdb_id']
-                            moviePosterUrl = tmdbAPI.getPosterUrl(movieInfo['poster_path'])
-                        
+                            try:
+                                #Date element holds the original air date of the program
+                                movieYear = elem.findtext('date')
+                                self.logDebug('movieYear = ' + str(movieYear))
+                                movieInfo = tmdbAPI.getMovie(uni(elem.findtext('title')), movieYear)
+                                imdbid = movieInfo['imdb_id']
+                                self.logDebug('movie.title.imdbid.1 = ' + title + ' - ' + str(imdbid))
+                                if imdbid == 0 or imdbid == '0' or imdbid == None or imdbid == 'None': ## Fix search
+                                    tmdbs = TMDB(REAL_SETTINGS.getSetting('tmdb.apikey'))
+                                    search = tmdbs.Search()
+                                    search.movie({'query': title + '(' + movieYear + ')'})
+                                    for s in search.results:
+                                        imdbid = (s['id'])
+                                        self.logDebug('movie.title.imdbid.2 = ' + title + ' - ' + str(imdbid))
+                                        if imdbid == 0 or imdbid == '0' or imdbid == None or imdbid == 'None': #clean output
+                                            imdbid == 0
+                            except:
+                                pass
+
+
                         #Rob Newton - 20130130 - Check for show being managed by SickBeard
                         sbManaged = False
                         if REAL_SETTINGS.getSetting('sickbeard.enabled') == 'true':
-                            if sbAPI.isShowManaged(tvdbid):
-                                sbManaged = True
-                                self.getControl(901).setImage('sb-logo-tiny')
-                                self.log('sbManaged = ' + str(sbManaged))
-                                
+                            try:
+                                if sbAPI.isShowManaged(tvdbid):
+                                    sbManaged = True
+                            except:
+                                pass
                         #Rob Newton - 20130130 - Check for movie being managed by CouchPotato
                         cpManaged = False
-                        #if REAL_SETTINGS.getSetting('couchpotato.enabled') == 'true':
-                        #    if cpAPI.isMovieManaged(imdbid):
-                        #        cpManaged = 1
-                                # self.getControl(901).setImage('cp-logo-tiny')
-                        #        self.log('cpManaged = yes')
+                        if REAL_SETTINGS.getSetting('couchpotato.enabled') == 'true':
+                            try:
+                                if cpAPI.isMovieManaged(imdbid):
+                                    cpManaged = True
+                            except:
+                                pass
                         
                         now = datetime.datetime.now()
                         stopDate = self.parseXMLTVDate(elem.get('stop'))
                         startDate = self.parseXMLTVDate(elem.get('start'))
 
+                        if seasonNumber == None or seasonNumber == 'None' or seasonNumber == '0':
+                            seasonNumber = 0
+                        if episodeName == None or episodeName == 'None' or episodeName == '0':
+                            episodeName = 0
+
+                        if seasonNumber > 0:
+                            seasonNumber = '%02d' % int(seasonNumber)
+                            # self.log('title.seasonNumber.3 = ' + title + ' - ' + str(seasonNumber))#debug
+                        
+                        if episodeName > 0:
+                            episodeNumber = '%02d' % int(episodeNumber)
+                            # self.log('title.episodeNumber.3 = ' + title + ' - ' + str(episodeNumber))#debug  
+                                                   
+                        #filter unwanted ids by title
+                        if title == ('Paid Programming'):
+                            tvdbid = 0
+                            imdbid = 0
+                            
+                        #Read the "new" boolean for this program
+                        if elem.find("new") != None:
+                            Unaired = True
+                            title = (title + '*NEW*')
+                        else:
+                            Unaired = False
+
+                        #Correct encoding??
+                        title = uni(title)
+                        description = uni(description)
+                        subtitle = uni(subtitle)
+                        episodeDesc = uni(episodeDesc)
+                        episodeName = uni(episodeName)
+                        genre = uni(category)
+                        
+                        #Build LiveID (imdb/tvdb/sickbeard or couchpoato/unaired or aired)
+                        LiveID = ''
+                        if imdbid != 0:
+                            IID = ('imdb_' + str(imdbid))
+                            LiveID = (IID + '|')
+                        else:
+                            LiveID = ('NA' + '|')
+                        
+                        if tvdbid != 0:
+                            TID = ('tvdb_' + str(tvdbid))
+                            LiveID = (LiveID + '|' + TID + '|')
+                        else:
+                            LiveID = (LiveID + '|' + 'NA' + '|')
+                                              
+                        if sbManaged == True:
+                            SB = ('SB')
+                            LiveID = (LiveID + '|' + SB + '|')
+                        elif cpManaged == True:
+                            CP = ('CP')
+                            LiveID = (LiveID + '|' + CP + '|')
+                        else:
+                            LiveID = (LiveID + '|' + 'NA' + '|')
+                            
+                        if Unaired == True:
+                            LiveID = (LiveID + '|' + 'NEW' + '|')
+                        else:
+                            LiveID = (LiveID + '|' + 'OLD' + '|')
+
+                        
+                        LiveID = LiveID.replace('||','|')
+                        self.log('LiveID = ' + LiveID)##Debug
+                        
                         #skip old shows that have already ended
                         if now > stopDate:
                             self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  OLD: " + title)
-                            self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))         
+                            self.logDebug("Unaired = " + str(Unaired) + ", tvdbid = " + str(tvdbid) + ", imdbid = " + str(imdbid) + ", seasonNumber = " + str(seasonNumber) + ", episodeNumber = " + str(episodeNumber) + ", category = " + str(category) + ", sbManaged = " + str(sbManaged) + ", cpManaged = " + str(cpManaged))         
                             continue
                         
                         #adjust the duration of the current show
@@ -1909,7 +2221,7 @@ class ChannelList:
                             try:
                                 dur = ((stopDate - startDate).seconds)
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  NOW PLAYING: " + title + "  DUR: " + str(dur))
-                                self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))      
+                                self.logDebug("Unaired = " + str(Unaired) + ", tvdbid = " + str(tvdbid) + ", imdbid = " + str(imdbid) + ", seasonNumber = " + str(seasonNumber) + ", episodeNumber = " + str(episodeNumber) + ", category = " + str(category) + ", sbManaged = " + str(sbManaged) + ", cpManaged = " + str(cpManaged))           
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 60 min)")
@@ -1920,31 +2232,39 @@ class ChannelList:
                             try:
                                 dur = (stopDate - startDate).seconds
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + "  UPCOMING: " + title + "  DUR: " + str(dur))
-                                self.log("Unaired = " + str(Unaired) + " tvdbid = " + str(tvdbid) + " imdbid = " + str(imdbid) + " episodeId = " + str(episodeId) + " seasonNumber = " + str(seasonNumber) + " episodeNumber = " + str(episodeNumber) + " category = " + str(category) + " sbManaged = " + str(sbManaged) + " cpManaged = " + str(cpManaged))     
+                                self.logDebug("Unaired = " + str(Unaired) + ", tvdbid = " + str(tvdbid) + ", imdbid = " + str(imdbid) + ", seasonNumber = " + str(seasonNumber) + ", episodeNumber = " + str(episodeNumber) + ", category = " + str(category) + ", sbManaged = " + str(sbManaged) + ", cpManaged = " + str(cpManaged))          
                             except:
                                 dur = 3600  #60 minute default
                                 self.log("buildLiveTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (default to 60 min)")
                                 raise
 
-                        if tvdbid > 0:  #TVDB Playlist
-                            LiveID = ('tvdb_' + str(tvdbid))
-                            if self.showSeasonEpisode:
-                                episodetitle = ('S' + ('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'E' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ str(episodeName))
-                            else:
-                                episodetitle = (('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'x' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ str(episodeName))
+                        if imdbid > 0 or tvdbid > 0:#Enhanced tmpstr
                             
-                            tmpstr = str(dur) + ',' + title + "//" + episodetitle + "//" + description + "//" + str(startDate) + "//" + LiveID + '\n' + url
+                            if movie == False: #TV IMDB/TVDB
+                                if self.showSeasonEpisode:
+                                    episodetitle = ('S' + ('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'E' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ episodeName)
+                                else:
+                                    episodetitle = (('0' if seasonNumber < 10 else '') + str(seasonNumber) + 'x' + ('0' if episodeNumber < 10 else '') + str(episodeNumber) + ' - '+ episodeName)
+                                
+                                if str(episodetitle[0:6]) == 'S00E00':
+                                    episodetitle = episodetitle.split("- ", 1)[-1]
+                                    
+                                episodetitle = uni(episodetitle)
+                                tmpstr = uni(str(dur) + ',' + title + "//" + episodetitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url)
                             
-                        elif imdbid > 0:#TMDB Playlist
-                            LiveID = ('imdbid' + str(imdbid))
-                            tmpstr = str(dur) + ',' + title + "//" + subtitle + "//" + description + "//" + str(startDate) + "//" + LiveID + '\n' + url
+                            else: #Movie IMDB           
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url
+                        
+                        else: #Default Playlist
                             
-                        else:           #Default Playlist
-                            tmpstr = str(dur) + ',' + title + "//" + subtitle + "//" + description + "//" + str(startDate) + "//" + 'LiveID' + '\n' + url               
-
+                            if movie == False: #TV fallback  
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url               
+                            
+                            else: #Movie fallback         
+                                tmpstr = str(dur) + ',' + title + "//" + subtitle[:50] + "//" + description[:150] + "//" + genre + "//" + str(startDate) + "//" + LiveID + '\n' + url       
+                        
                         tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
                         showList.append(tmpstr)
-                        
 
                     else:
                         if inSet == True:
@@ -2012,7 +2332,7 @@ class ChannelList:
                             self.log("buildInternetTVFileList, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                             raise
 
-                    tmpstr = str(dur) + ',' + title + "//" + "InternetTV" + "//" + description + '\n' + url
+                    tmpstr = str(dur) + ',' + title + "//" + "InternetTV" + "//" + description + "//" 'InternetTV' + "////" + 'LiveID|' + '\n' + url
                     tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
 
                     showList.append(tmpstr)
@@ -2117,127 +2437,133 @@ class ChannelList:
                     feed = feedparser.parse(youtubechannel)
             
                 for i in range(len(feed['entries'])):
-                
-                    showtitle = feed.channel.author_detail['name']
-                    showtitle = showtitle.replace(":", "")
-                    genre = (feed.entries[0].tags[1]['term'])
                     try:
-                        thumburl = feed.entries[i].media_thumbnail[0]['url']
-                    except:
-                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
-                        return 
+                        showtitle = feed.channel.author_detail['name']
+                        showtitle = showtitle.replace(":", "")
+                        try:
+                            genre = (feed.entries[0].tags[1]['term'])
+                        except:
+                            self.log("createYoutubeFilelist, Invalid genre")
+                            return
+                        try:
+                            thumburl = feed.entries[i].media_thumbnail[0]['url']
+                        except:
+                            self.log("createYoutubeFilelist, Invalid media_thumbnail")
+                            return 
             
-                    #Time when the episode was published
-                    time = (feed.entries[i].published_parsed)
-                    time = str(time)
-                    time = time.replace("time.struct_time", "")            
-                    
-                    #Some channels release more than one episode daily.  This section converts the mm/dd/hh to season=mm episode=dd+hh
-                    showseason = [word for word in time.split() if word.startswith('tm_mon=')]
-                    showseason = str(showseason)
-                    showseason = showseason.replace("['tm_mon=", "")
-                    showseason = showseason.replace(",']", "")
-                    showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
-                    showepisodenum = str(showepisodenum)
-                    showepisodenum = showepisodenum.replace("['tm_mday=", "")
-                    showepisodenum = showepisodenum.replace(",']", "")
-                    showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
-                    showepisodenuma = str(showepisodenuma)
-                    showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
-                    showepisodenuma = showepisodenuma.replace(",']", "")
-                    
-                    eptitle = feed.entries[i].title
-                    eptitle = re.sub('[!@#$/:]', '', eptitle)
-                    eptitle = uni(eptitle)
-                    eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
-                    eptitle = eptitle[:250]                    
-                    summary = feed.entries[i].summary
-                    summary = uni(summary)
-                    summary = re.sub("[\W]+", " ", summary.strip())
-                    summary = summary[:250]
-                    
-                    # if hasattr(feed.entries[i], 'media_content'):
-                        # runtime = feed.entries[i].media_content[0]['duration']
-
-                    # else:
-                    runtime = feed.entries[i].yt_duration['seconds']
+                        #Time when the episode was published
+                        time = (feed.entries[i].published_parsed)
+                        time = str(time)
+                        time = time.replace("time.struct_time", "")            
                         
-                    runtime = int(runtime)
-                    runtime = round(runtime/60.0)
-                    runtime = int(runtime)
-
-                    if runtime >= 1:
-                        duration = runtime
-                    else:
-                        duration = 90
-                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
+                        #Some channels release more than one episode daily.  This section converts the mm/dd/hh to season=mm episode=dd+hh
+                        showseason = [word for word in time.split() if word.startswith('tm_mon=')]
+                        showseason = str(showseason)
+                        showseason = showseason.replace("['tm_mon=", "")
+                        showseason = showseason.replace(",']", "")
+                        showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
+                        showepisodenum = str(showepisodenum)
+                        showepisodenum = showepisodenum.replace("['tm_mday=", "")
+                        showepisodenum = showepisodenum.replace(",']", "")
+                        showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
+                        showepisodenuma = str(showepisodenuma)
+                        showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
+                        showepisodenuma = showepisodenuma.replace(",']", "")
                     
-                    duration = round(duration*60.0)
-                    duration = int(duration)
+                        eptitle = feed.entries[i].title
+                        eptitle = re.sub('[!@#$/:]', '', eptitle)
+                        eptitle = uni(eptitle)
+                        eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
+                        eptitle = eptitle[:250]                    
+                        summary = feed.entries[i].summary
+                        summary = uni(summary)
+                        summary = re.sub("[\W]+", " ", summary.strip())
+                        summary = summary[:250]
+                        
+                        # if hasattr(feed.entries[i], 'media_content'):
+                            # runtime = feed.entries[i].media_content[0]['duration']
 
-                    url = feed.entries[i].media_player['url']
-                    url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("&feature=youtube_gdata_player", "")     
+                        # else:
+                        runtime = feed.entries[i].yt_duration['seconds']
+                        runtime = int(runtime)
+                        runtime = round(runtime/60.0)
+                        runtime = int(runtime)
 
-                    if REAL_SETTINGS.getSetting('Includestrms') == "true":
-                        self.log("Building Youtube Channel Strms ")
+                        if runtime >= 1:
+                            duration = runtime
+                        else:
+                            duration = 90
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
+                        
+                        duration = round(duration*60.0)
+                        duration = int(duration)
+
+                        url = feed.entries[i].media_player['url']
+                        url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("&feature=youtube_gdata_player", "")     
+
+
+                        if REAL_SETTINGS.getSetting('Includestrms') == "true":
+                            self.log("Building Youtube Channel Strms ")
+                        
+                            if not os.path.exists(os.path.join(path, showtitle)):
+                                os.makedirs(os.path.join(path, showtitle))
                     
-                        if not os.path.exists(os.path.join(path, showtitle)):
-                            os.makedirs(os.path.join(path, showtitle))
+                            #Build tvshow.nfo xml tree
+                            flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 'tvshow.nfo')
+                            fle = FileAccess.open(flename, "w")
+                            fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                            fle.write('<tvshow>\n')
+                            fle.write('<title>' + showtitle + '</title>\n')
+                            fle.write('<genre>' + genre + '</genre>\n')
+                            fle.write('<studio>Youtube</studio>\n')              
+                            fle.write('<id>-1</id>\n')  
+                            fle.write('</tvshow>')            
+                            fle.close()
+                            
+                            # Build the episode.nfo xml tree     
+                            flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
+                            fle1 = FileAccess.open(flename1, "w")
+                            fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                            fle1.write('<episodedetails>\n')
+                            fle1.write('<title>' + eptitle + '</title>\n')
+                            fle1.write('<genre>' + genre + '</genre>\n')
+                            fle1.write('<season>' + showseason + '</season>\n')
+                            fle1.write('<episode>' + showepisodenuma + '</episode>\n')
+                            fle1.write('<plot>' + summary + '</plot>\n')
+                            fle1.write('<thumb>' + thumburl + '</thumb>\n')
+                            fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
+                            fle1.write('<studio>Youtube</studio>\n')              
+                            fle1.write('<id>-1</id>\n')  
+                            fle1.write('</episodedetails>')            
+                            fle1.close()
+                        
+                            #Build the episode.strm xml tree    
+                            flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
+                            fle2 = FileAccess.open(flename2, "w")
+                            fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
+                            fle2.close()
+                                    
+                        # Build M3U
+                        if setting2 == '1':
+                            inSet = True
+                            istvshow = True
+                            tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + "//" + genre + "//NA//" + 'LiveID' + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                            tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                            
+                            showList.append(tmpstr)
+                        else:
+                            if inSet == True:
+                                self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
+                                break
+                        
+                        showcount += 1
+                        limitcount += 1 
                 
-                        #Build tvshow.nfo xml tree
-                        flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 'tvshow.nfo')
-                        fle = FileAccess.open(flename, "w")
-                        fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
-                        fle.write('<tvshow>\n')
-                        fle.write('<title>' + showtitle + '</title>\n')
-                        fle.write('<genre>' + genre + '</genre>\n')
-                        fle.write('<studio>Youtube</studio>\n')              
-                        fle.write('<id>-1</id>\n')  
-                        fle.write('</tvshow>')            
-                        fle.close()
-                        
-                        # Build the episode.nfo xml tree     
-                        flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
-                        fle1 = FileAccess.open(flename1, "w")
-                        fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
-                        fle1.write('<episodedetails>\n')
-                        fle1.write('<title>' + eptitle + '</title>\n')
-                        fle1.write('<genre>' + genre + '</genre>\n')
-                        fle1.write('<season>' + showseason + '</season>\n')
-                        fle1.write('<episode>' + showepisodenuma + '</episode>\n')
-                        fle1.write('<plot>' + summary + '</plot>\n')
-                        fle1.write('<thumb>' + thumburl + '</thumb>\n')
-                        fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
-                        fle1.write('<studio>Youtube</studio>\n')              
-                        fle1.write('<id>-1</id>\n')  
-                        fle1.write('</episodedetails>')            
-                        fle1.close()
-                        
-                        #Build the episode.strm xml tree    
-                        flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'channel' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
-                        fle2 = FileAccess.open(flename2, "w")
-                        fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
-                        fle2.close()
-                                
-                    # Build M3U
-                    if setting2 == '1':
-                        inSet = True
-                        istvshow = True
-                        tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
-                        
-                        showList.append(tmpstr)
-                    else:
-                        if inSet == True:
-                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
-                            break
-                    
-                    showcount += 1
-                    limitcount += 1 
-            
-                    if limitcount == limit:
-                        break                    
+                        if limitcount == limit:
+                            break                    
+                    except:
+                        pass
                    
             elif event == "end" and setting2 == '2': #youtubeplaylist 
                 self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", Youtube Playlist" + ", Limit = " + str(limit))
@@ -2285,127 +2611,133 @@ class ChannelList:
                     feed = feedparser.parse(youtubechannel)
 
                 for i in range(len(feed['entries'])):
-                
-                    showtitle = feed.channel.author_detail['name']
-                    showtitle = showtitle.replace(":", "")
-                    genre = (feed.entries[0].tags[1]['term'])
                     try:
-                        thumburl = feed.entries[i].media_thumbnail[0]['url']
-                    except:
-                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
-                        return
-                    #Time when the episode was published
-                    time = (feed.entries[i].published_parsed)
-                    time = str(time)
-                    time = time.replace("time.struct_time", "")            
-                    
-                    #Some channels release more than one episode daily.  This section converts the mm/dd/hh to season=mm episode=dd+hh
-                    showseason = [word for word in time.split() if word.startswith('tm_mon=')]
-                    showseason = str(showseason)
-                    showseason = showseason.replace("['tm_mon=", "")
-                    showseason = showseason.replace(",']", "")
-                    showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
-                    showepisodenum = str(showepisodenum)
-                    showepisodenum = showepisodenum.replace("['tm_mday=", "")
-                    showepisodenum = showepisodenum.replace(",']", "")
-                    showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
-                    showepisodenuma = str(showepisodenuma)
-                    showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
-                    showepisodenuma = showepisodenuma.replace(",']", "")
-                    
-                    eptitle = feed.entries[i].title
-                    eptitle = re.sub('[!@#$/:]', '', eptitle)
-                    eptitle = uni(eptitle)
-                    eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
-                    eptitle = eptitle[:250]                       
-                    summary = feed.entries[i].summary
-                    summary = uni(summary)
-                    summary = re.sub("[\W]+", " ", summary.strip())
-                    summary = summary[:250]
-                    
-                    # if hasattr(feed.entries[i], 'media_content'):
-                        # runtime = feed.entries[i].media_content[0]['duration']
+                        showtitle = feed.channel.author_detail['name']
+                        showtitle = showtitle.replace(":", "")
+                        try:
+                            genre = (feed.entries[0].tags[1]['term'])
+                        except:
+                            self.log("createYoutubeFilelist, Invalid genre")
+                            return
+                        try:
+                            thumburl = feed.entries[i].media_thumbnail[0]['url']
+                        except:
+                            self.log("createYoutubeFilelist, Invalid media_thumbnail")
+                            return
+                        #Time when the episode was published
+                        time = (feed.entries[i].published_parsed)
+                        time = str(time)
+                        time = time.replace("time.struct_time", "")            
+                        
+                        #Some channels release more than one episode daily.  This section converts the mm/dd/hh to season=mm episode=dd+hh
+                        showseason = [word for word in time.split() if word.startswith('tm_mon=')]
+                        showseason = str(showseason)
+                        showseason = showseason.replace("['tm_mon=", "")
+                        showseason = showseason.replace(",']", "")
+                        showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
+                        showepisodenum = str(showepisodenum)
+                        showepisodenum = showepisodenum.replace("['tm_mday=", "")
+                        showepisodenum = showepisodenum.replace(",']", "")
+                        showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
+                        showepisodenuma = str(showepisodenuma)
+                        showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
+                        showepisodenuma = showepisodenuma.replace(",']", "")
+                        
+                        eptitle = feed.entries[i].title
+                        eptitle = re.sub('[!@#$/:]', '', eptitle)
+                        eptitle = uni(eptitle)
+                        eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
+                        eptitle = eptitle[:250]                       
+                        summary = feed.entries[i].summary
+                        summary = uni(summary)
+                        summary = re.sub("[\W]+", " ", summary.strip())
+                        summary = summary[:250]
+                        
+                        # if hasattr(feed.entries[i], 'media_content'):
+                            # runtime = feed.entries[i].media_content[0]['duration']
 
-                    # else:
-                    runtime = feed.entries[i].yt_duration['seconds']
-                        
-                    runtime = int(runtime)
-                    runtime = round(runtime/60.0)
-                    runtime = int(runtime)
-
-                    if runtime >= 1:
-                        duration = runtime
-                    else:
-                        duration = 90
-                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
-                    
-                    duration = round(duration*60.0)
-                    duration = int(duration)
-                    
-                    url = feed.entries[i].media_player['url']
-                    url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=playlists&app=youtube_gdata", "").replace("&feature=youtube_gdata_player", "")
-                                            
-                    if REAL_SETTINGS.getSetting('Includestrms') == "true":
-                        self.log("Building Youtube Playlist Strms ")
-                    
-                        if not os.path.exists(os.path.join(path, showtitle)):
-                            os.makedirs(os.path.join(path, showtitle))
-                    
-                        #Build tvshow.nfo xml tree
-                        flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 'tvshow.nfo')
-                        fle = FileAccess.open(flename, "w")
-                        fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
-                        fle.write('<tvshow>\n')
-                        fle.write('<title>' + showtitle + '</title>\n')
-                        fle.write('<genre>' + genre + '</genre>\n')
-                        fle.write('<studio>Youtube</studio>\n')              
-                        fle.write('<id>-1</id>\n')  
-                        fle.write('</tvshow>')            
-                        fle.close()
-                        
-                        # Build the episode.nfo xml tree        
-                        flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
-                        fle1 = FileAccess.open(flename1, "w")
-                        fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
-                        fle1.write('<episodedetails>\n')
-                        fle1.write('<title>' + eptitle + '</title>\n')
-                        fle1.write('<genre>' + genre + '</genre>\n')                        
-                        fle1.write('<season>' + showseason + '</season>\n')
-                        fle1.write('<episode>' + showepisodenuma + '</episode>\n')
-                        fle1.write('<plot>' + summary + '</plot>\n')
-                        fle1.write('<thumb>' + thumburl + '</thumb>\n')
-                        fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
-                        fle1.write('<studio>Youtube</studio>\n')              
-                        fle1.write('<id>-1</id>\n')  
-                        fle1.write('</episodedetails>')            
-                        fle1.close()
-                        
-                        #Build the episode.strm xml tree   
-                        flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
-                        fle2 = FileAccess.open(flename2, "w")
-                        fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
-                        fle2.close()
+                        # else:
+                        runtime = feed.entries[i].yt_duration['seconds']
                             
-                    # Build M3U
-                    if setting2 == '2':
-                        inSet = True
-                        istvshow = True
-                        tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        runtime = int(runtime)
+                        runtime = round(runtime/60.0)
+                        runtime = int(runtime)
+
+                        if runtime >= 1:
+                            duration = runtime
+                        else:
+                            duration = 90
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                         
-                        showList.append(tmpstr)
-                    else:
-                        if inSet == True:
-                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
-                            break
-                    
-                    showcount += 1
-                    limitcount += 1 
-            
-                    if limitcount == limit:
-                        break   
-            
+                        duration = round(duration*60.0)
+                        duration = int(duration)
+                        
+                        url = feed.entries[i].media_player['url']
+                        url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=playlists&app=youtube_gdata", "").replace("&feature=youtube_gdata_player", "")
+                                                
+                        if REAL_SETTINGS.getSetting('Includestrms') == "true":
+                            self.log("Building Youtube Playlist Strms ")
+                        
+                            if not os.path.exists(os.path.join(path, showtitle)):
+                                os.makedirs(os.path.join(path, showtitle))
+                        
+                            #Build tvshow.nfo xml tree
+                            flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 'tvshow.nfo')
+                            fle = FileAccess.open(flename, "w")
+                            fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                            fle.write('<tvshow>\n')
+                            fle.write('<title>' + showtitle + '</title>\n')
+                            fle.write('<genre>' + genre + '</genre>\n')
+                            fle.write('<studio>Youtube</studio>\n')              
+                            fle.write('<id>-1</id>\n')  
+                            fle.write('</tvshow>')            
+                            fle.close()
+                            
+                            # Build the episode.nfo xml tree        
+                            flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
+                            fle1 = FileAccess.open(flename1, "w")
+                            fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                            fle1.write('<episodedetails>\n')
+                            fle1.write('<title>' + eptitle + '</title>\n')
+                            fle1.write('<genre>' + genre + '</genre>\n')                        
+                            fle1.write('<season>' + showseason + '</season>\n')
+                            fle1.write('<episode>' + showepisodenuma + '</episode>\n')
+                            fle1.write('<plot>' + summary + '</plot>\n')
+                            fle1.write('<thumb>' + thumburl + '</thumb>\n')
+                            fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
+                            fle1.write('<studio>Youtube</studio>\n')              
+                            fle1.write('<id>-1</id>\n')  
+                            fle1.write('</episodedetails>')            
+                            fle1.close()
+                            
+                            #Build the episode.strm xml tree   
+                            flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'playlist' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
+                            fle2 = FileAccess.open(flename2, "w")
+                            fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
+                            fle2.close()
+                                
+                        # Build M3U
+                        if setting2 == '2':
+                            inSet = True
+                            istvshow = True
+                            tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + "//" + genre + "//NA//" + 'LiveID' + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                            tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                            
+                            showList.append(tmpstr)
+                        else:
+                            if inSet == True:
+                                self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
+                                break
+                        
+                        showcount += 1
+                        limitcount += 1 
+                
+                        if limitcount == limit:
+                            break   
+                    except:
+                        pass
+                        
             elif event == "end" and setting2 == '3': #subscriptions 
                 self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", Youtube Subscription" + ", Limit = " + str(limit))
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'youtube' + '/' + 'subscriptions')
@@ -2452,127 +2784,133 @@ class ChannelList:
                     feed = feedparser.parse(youtubechannel)
                 
                 for i in range(len(feed['entries'])):
-                
-                    showtitle = feed.channel.title
-                    showtitle = showtitle.replace(":", "")
-                    genre = (feed.entries[0].tags[1]['term'])
                     try:
-                        thumburl = feed.entries[i].media_thumbnail[0]['url']
-                    except:
-                        self.log("createYoutubeFilelist, Invaild media_thumbnail")
-                        return 
-                    #Time when the episode was published
-                    time = (feed.entries[i].published_parsed)
-                    time = str(time)
-                    time = time.replace("time.struct_time", "")            
-                    
-                    #Some channels release more than one episode daily.  This section converts the mm/dd/hh to season=mm episode=dd+hh
-                    showseason = [word for word in time.split() if word.startswith('tm_mon=')]
-                    showseason = str(showseason)
-                    showseason = showseason.replace("['tm_mon=", "")
-                    showseason = showseason.replace(",']", "")
-                    showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
-                    showepisodenum = str(showepisodenum)
-                    showepisodenum = showepisodenum.replace("['tm_mday=", "")
-                    showepisodenum = showepisodenum.replace(",']", "")
-                    showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
-                    showepisodenuma = str(showepisodenuma)
-                    showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
-                    showepisodenuma = showepisodenuma.replace(",']", "")
-                    
-                    eptitle = feed.entries[i].title
-                    eptitle = re.sub('[!@#$/:]', '', eptitle)
-                    eptitle = uni(eptitle)
-                    eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
-                    eptitle = eptitle[:250]                       
-                    summary = feed.entries[i].summary
-                    summary = uni(summary)
-                    summary = re.sub("[\W]+", " ", summary.strip())
-                    summary = summary[:250]
-                    
-                    # if hasattr(feed.entries[i], 'media_content'):
-                        # runtime = feed.entries[i].media_content[0]['duration']
+                        showtitle = feed.channel.title
+                        showtitle = showtitle.replace(":", "")
+                        try:
+                            genre = (feed.entries[0].tags[1]['term'])
+                        except:
+                            self.log("createYoutubeFilelist, Invalid genre")
+                            return 
+                        try:
+                            thumburl = feed.entries[i].media_thumbnail[0]['url']
+                        except:
+                            self.log("createYoutubeFilelist, Invalid media_thumbnail")
+                            return 
+                        #Time when the episode was published
+                        time = (feed.entries[i].published_parsed)
+                        time = str(time)
+                        time = time.replace("time.struct_time", "")            
+                        
+                        #Some channels release more than one episode daily.  This section converts the mm/dd/hh to season=mm episode=dd+hh
+                        showseason = [word for word in time.split() if word.startswith('tm_mon=')]
+                        showseason = str(showseason)
+                        showseason = showseason.replace("['tm_mon=", "")
+                        showseason = showseason.replace(",']", "")
+                        showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
+                        showepisodenum = str(showepisodenum)
+                        showepisodenum = showepisodenum.replace("['tm_mday=", "")
+                        showepisodenum = showepisodenum.replace(",']", "")
+                        showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
+                        showepisodenuma = str(showepisodenuma)
+                        showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
+                        showepisodenuma = showepisodenuma.replace(",']", "")
+                        
+                        eptitle = feed.entries[i].title
+                        eptitle = re.sub('[!@#$/:]', '', eptitle)
+                        eptitle = uni(eptitle)
+                        eptitle = re.sub("[\W]+", " ", eptitle.strip()) 
+                        eptitle = eptitle[:250]                       
+                        summary = feed.entries[i].summary
+                        summary = uni(summary)
+                        summary = re.sub("[\W]+", " ", summary.strip())
+                        summary = summary[:250]
+                        
+                        # if hasattr(feed.entries[i], 'media_content'):
+                            # runtime = feed.entries[i].media_content[0]['duration']
 
-                    # else:
-                    runtime = feed.entries[i].yt_duration['seconds']
-                        
-                    runtime = int(runtime)
-                    runtime = round(runtime/60.0)
-                    runtime = int(runtime)
-
-                    if runtime >= 1:
-                        duration = runtime
-                    else:
-                        duration = 90
-                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
-                    
-                    duration = round(duration*60.0)
-                    duration = int(duration)
-                    
-                    url = feed.entries[i].media_player['url']
-                    url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
-                    
-                    if REAL_SETTINGS.getSetting('Includestrms') == "true":
-                        self.log("Building Youtube Subscription Strms ")
-                    
-                        if not os.path.exists(os.path.join(path, showtitle)):
-                            os.makedirs(os.path.join(path, showtitle))
-                    
-                        #Build tvshow.nfo xml tree
-                        flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 'tvshow.nfo')
-                        fle = FileAccess.open(flename, "w")
-                        fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
-                        fle.write('<tvshow>\n')
-                        fle.write('<title>' + showtitle + '</title>\n')
-                        fle.write('<genre>' + genre + '</genre>\n')
-                        fle.write('<studio>Youtube</studio>\n')              
-                        fle.write('<id>-1</id>\n')  
-                        fle.write('</tvshow>')            
-                        fle.close()
-                        
-                        # Build the episode.nfo xml tree      
-                        flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
-                        fle1 = FileAccess.open(flename1, "w")
-                        fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
-                        fle1.write('<episodedetails>\n')
-                        fle1.write('<title>' + eptitle + '</title>\n')
-                        fle1.write('<genre>' + genre + '</genre>\n')
-                        fle1.write('<season>' + showseason + '</season>\n')
-                        fle1.write('<episode>' + showepisodenuma + '</episode>\n')
-                        fle1.write('<plot>' + summary + '</plot>\n')
-                        fle1.write('<thumb>' + thumburl + '</thumb>\n')
-                        fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
-                        fle1.write('<studio>Youtube</studio>\n')              
-                        fle1.write('<id>-1</id>\n')  
-                        fle1.write('</episodedetails>')            
-                        fle1.close()
-                        
-                        #Build the episode.strm xml tree     
-                        flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
-                        fle2 = FileAccess.open(flename2, "w")
-                        fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
-                        fle2.close()
+                        # else:
+                        runtime = feed.entries[i].yt_duration['seconds']
                             
-                    # Build M3U
-                    if setting2 == '3':
-                        inSet = True
-                        istvshow = True
-                        tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
-                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                        runtime = int(runtime)
+                        runtime = round(runtime/60.0)
+                        runtime = int(runtime)
+
+                        if runtime >= 1:
+                            duration = runtime
+                        else:
+                            duration = 90
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + " - Error calculating show duration (defaulted to 90 min)")
                         
-                        showList.append(tmpstr)
-                    else:
-                        if inSet == True:
-                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
-                            break
-                    
-                    showcount += 1
-                    limitcount += 1 
-                    
-                    if limitcount == limit:
-                        break         
+                        duration = round(duration*60.0)
+                        duration = int(duration)
                         
+                        url = feed.entries[i].media_player['url']
+                        url = url.replace("https://", "").replace("http://", "").replace("www.youtube.com/watch?v=", "").replace("?version=3&f=newsubscriptionvideos&app=youtube_gdata", "")
+                        
+                        if REAL_SETTINGS.getSetting('Includestrms') == "true":
+                            self.log("Building Youtube Subscription Strms ")
+                        
+                            if not os.path.exists(os.path.join(path, showtitle)):
+                                os.makedirs(os.path.join(path, showtitle))
+                        
+                            #Build tvshow.nfo xml tree
+                            flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 'tvshow.nfo')
+                            fle = FileAccess.open(flename, "w")
+                            fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                            fle.write('<tvshow>\n')
+                            fle.write('<title>' + showtitle + '</title>\n')
+                            fle.write('<genre>' + genre + '</genre>\n')
+                            fle.write('<studio>Youtube</studio>\n')              
+                            fle.write('<id>-1</id>\n')  
+                            fle.write('</tvshow>')            
+                            fle.close()
+                            
+                            # Build the episode.nfo xml tree      
+                            flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
+                            fle1 = FileAccess.open(flename1, "w")
+                            fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                            fle1.write('<episodedetails>\n')
+                            fle1.write('<title>' + eptitle + '</title>\n')
+                            fle1.write('<genre>' + genre + '</genre>\n')
+                            fle1.write('<season>' + showseason + '</season>\n')
+                            fle1.write('<episode>' + showepisodenuma + '</episode>\n')
+                            fle1.write('<plot>' + summary + '</plot>\n')
+                            fle1.write('<thumb>' + thumburl + '</thumb>\n')
+                            fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
+                            fle1.write('<studio>Youtube</studio>\n')              
+                            fle1.write('<id>-1</id>\n')  
+                            fle1.write('</episodedetails>')            
+                            fle1.close()
+                            
+                            #Build the episode.strm xml tree     
+                            flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'youtube' + '/' + 'subscriptions' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
+                            fle2 = FileAccess.open(flename2, "w")
+                            fle2.write('plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url)
+                            fle2.close()
+                                
+                        # Build M3U
+                        if setting2 == '3':
+                            inSet = True
+                            istvshow = True
+                            tmpstr = str(duration) + ',' + eptitle + "//" + "Youtube" + "//" + summary + "//" + genre + "//NA//" + 'LiveID' + '\n' + 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+url + '\n'
+                            tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                            self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                            
+                            showList.append(tmpstr)
+                        else:
+                            if inSet == True:
+                                self.log("createYoutubeFilelist, CHANNEL: " + str(self.settingChannel) + ", DONE")
+                                break
+                        
+                        showcount += 1
+                        limitcount += 1 
+                        
+                        if limitcount == limit:
+                            break         
+                    except:
+                        pass
+            
             if limitcount == limit:
                 break    
     
@@ -2629,140 +2967,143 @@ class ChannelList:
                 path = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated') + '/' + 'rss' + '/')
 
                 for i in range(len(feed['entries'])):
-                
-                    showtitle = feed.channel.title
-                    showtitle = showtitle.replace(":", "")
-                    eptitle = feed.entries[i].title
-                    eptitle = eptitle.replace("/", "-")
-                    eptitle = eptitle.replace(":", " ")
-                    eptitle = eptitle.replace("\"", "")
-                    eptitle = eptitle.replace("?", "")
-                    eptitle = uni(eptitle)
-                    eptitle = eptitle[:250]     
-                    studio = feed.entries[i].author_detail['name']                        
-                    
                     try:
-                        thumburl = feed.entries[i].media_thumbnail[0]['url']
+                        showtitle = feed.channel.title
+                        showtitle = showtitle.replace(":", "")
+                        eptitle = feed.entries[i].title
+                        eptitle = eptitle.replace("/", "-")
+                        eptitle = eptitle.replace(":", " ")
+                        eptitle = eptitle.replace("\"", "")
+                        eptitle = eptitle.replace("?", "")
+                        eptitle = uni(eptitle)
+                        eptitle = eptitle[:250]     
+                        studio = feed.entries[i].author_detail['name']                        
+                        
+                        try:
+                            thumburl = feed.entries[i].media_thumbnail[0]['url']
+                        except:
+                            self.log("createRSSFileList, Invalid media_thumbnail")
+                            return 
+
+                        if not '<p>' in feed.entries[i].summary_detail.value:
+                            epdesc = feed.entries[i]['summary_detail']['value']
+                            head, sep, tail = epdesc.partition('<div class="feedflare">')
+                            epdesc = head
+                        else:
+                            epdesc = feed.entries[i]['subtitle']
+                            print (2)
+                        if 'media_content' in feed.entries[i]:
+                            url = feed.entries[i].media_content[0]['url']
+                        else:
+                            url = feed.entries[i].links[1]['href']
+                            
+                        epdesc = epdesc[:250]
+                        runtimex = feed.entries[i]['itunes_duration']
+                        summary = feed.channel.subtitle
+                        summary = summary.replace(":", "")
+                        
+                        try:
+                            genre = feed.channel.tags[0]['term']
+                            genre = uni(genre)
+                        except:
+                            return
+                        time = (feed.entries[i].published_parsed)
+                        time = str(time)
+                        time = time.replace("time.struct_time", "")
+                    
+                        showseason = [word for word in time.split() if word.startswith('tm_mon=')]
+                        showseason = str(showseason)
+                        showseason = showseason.replace("['tm_mon=", "")
+                        showseason = showseason.replace(",']", "")
+                        showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
+                        showepisodenum = str(showepisodenum)
+                        showepisodenum = showepisodenum.replace("['tm_mday=", "")
+                        showepisodenum = showepisodenum.replace(",']", "")
+                        showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
+                        showepisodenuma = str(showepisodenuma)
+                        showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
+                        showepisodenuma = showepisodenuma.replace(",']", "")  
+                        
+                        if len(runtimex) > 4:
+                            runtime = runtimex.split(':')[-2]
+                            runtimel = runtimex.split(':')[-3]
+                            runtime = int(runtime)
+                            runtimel = int(runtimel)
+                            runtime = runtime + (runtimel*60)
+                        if not len(runtimex) > 4:
+                            runtimex = int(runtimex)
+                            runtime = round(runtimex/60.0)
+                            runtime = int(runtime)
+                            
+                        if runtime >= 1:
+                            duration = runtime
+                        else:
+                            duration = 90
+                        
+                        duration = round(duration*60.0)
+                        duration = int(duration)
+                        
+                        if REAL_SETTINGS.getSetting('Includestrms') == "true":
+                            self.log("createRSSFileList, Building RSS Strms ")
+                    
+                            if not os.path.exists(os.path.join(path, showtitle)):
+                                os.makedirs(os.path.join(path, showtitle))
+                        
+                            #Build tvshow.nfo xml tree
+                            flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 'tvshow.nfo')
+                            fle = FileAccess.open(flename, "w")
+                            fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                            fle.write('<tvshow>\n')
+                            fle.write('<title>' + showtitle + '</title>\n')
+                            fle.write('<genre>' + genre + '</genre>\n')
+                            fle.write('<studio>' + studio + '</studio>\n')              
+                            fle.write('<id>-1</id>\n')  
+                            fle.write('</tvshow>')            
+                            fle.close()
+                            
+                            # Build the episode.nfo xml tree      
+                            flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
+                            fle1 = FileAccess.open(flename1, "w")
+                            fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
+                            fle1.write('<episodedetails>\n')
+                            fle1.write('<title>' + eptitle + '</title>\n')
+                            fle1.write('<genre>' + genre + '</genre>\n')
+                            fle1.write('<season>' + showseason + '</season>\n')
+                            fle1.write('<episode>' + showepisodenuma + '</episode>\n')
+                            fle1.write('<plot>' + epdesc + '</plot>\n')
+                            fle1.write('<thumb>' + thumburl + '</thumb>\n')
+                            fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
+                            fle1.write('<studio>' + studio + '</studio>\n')              
+                            fle1.write('<id>-1</id>\n')  
+                            fle1.write('</episodedetails>')            
+                            fle1.close()
+                            
+                            #Build the episode.strm xml tree     
+                            flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
+                            fle2 = FileAccess.open(flename2, "w")
+                            fle2.write(url)
+                            fle2.close()
+                            
+                        # Build M3U
+                        if setting2 == '1':
+                            inSet = True
+                            istvshow = True
+                            tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + epdesc + "//" + genre + "//NA//" + 'LiveID' + '\n' + url + '\n'
+                            tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
+                            self.log("createRSSFileList, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
+                            
+                            showList.append(tmpstr)
+                        else:
+                            if inSet == True:
+                                self.log("createRSSFileList, CHANNEL: " + str(self.settingChannel) + ", DONE")
+                                break
+                        showcount += 1
+                        limitcount += 1 
+                        
+                        if limitcount == limit:
+                            break         
                     except:
-                        self.log("createRSSFileList, Invaild media_thumbnail")
-                        return 
-
-                    if not '<p>' in feed.entries[i].summary_detail.value:
-                        epdesc = feed.entries[i]['summary_detail']['value']
-                        head, sep, tail = epdesc.partition('<div class="feedflare">')
-                        epdesc = head
-                    else:
-                        epdesc = feed.entries[i]['subtitle']
-                        print (2)
-                    if 'media_content' in feed.entries[i]:
-                        url = feed.entries[i].media_content[0]['url']
-                    else:
-                        url = feed.entries[i].links[1]['href']
-                        
-                    epdesc = epdesc[:250]
-                    runtimex = feed.entries[i]['itunes_duration']
-                    summary = feed.channel.subtitle
-                    summary = summary.replace(":", "")
-
-                    genre = feed.channel.tags[0]['term']
-                    genre = uni(genre)
-
-                    time = (feed.entries[i].published_parsed)
-                    time = str(time)
-                    time = time.replace("time.struct_time", "")
-                
-                    showseason = [word for word in time.split() if word.startswith('tm_mon=')]
-                    showseason = str(showseason)
-                    showseason = showseason.replace("['tm_mon=", "")
-                    showseason = showseason.replace(",']", "")
-                    showepisodenum = [word for word in time.split() if word.startswith('tm_mday=')]
-                    showepisodenum = str(showepisodenum)
-                    showepisodenum = showepisodenum.replace("['tm_mday=", "")
-                    showepisodenum = showepisodenum.replace(",']", "")
-                    showepisodenuma = [word for word in time.split() if word.startswith('tm_hour=')]
-                    showepisodenuma = str(showepisodenuma)
-                    showepisodenuma = showepisodenuma.replace("['tm_hour=", "")
-                    showepisodenuma = showepisodenuma.replace(",']", "")  
-                    
-                    if len(runtimex) > 4:
-                        runtime = runtimex.split(':')[-2]
-                        runtimel = runtimex.split(':')[-3]
-                        runtime = int(runtime)
-                        runtimel = int(runtimel)
-                        runtime = runtime + (runtimel*60)
-                    if not len(runtimex) > 4:
-                        runtimex = int(runtimex)
-                        runtime = round(runtimex/60.0)
-                        runtime = int(runtime)
-                        
-                    if runtime >= 1:
-                        duration = runtime
-                    else:
-                        duration = 90
-                    
-                    duration = round(duration*60.0)
-                    duration = int(duration)
-                    
-                    if REAL_SETTINGS.getSetting('Includestrms') == "true":
-                        self.log("createRSSFileList, Building RSS Strms ")
-                
-                        if not os.path.exists(os.path.join(path, showtitle)):
-                            os.makedirs(os.path.join(path, showtitle))
-                    
-                        #Build tvshow.nfo xml tree
-                        flename = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 'tvshow.nfo')
-                        fle = FileAccess.open(flename, "w")
-                        fle.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
-                        fle.write('<tvshow>\n')
-                        fle.write('<title>' + showtitle + '</title>\n')
-                        fle.write('<genre>' + genre + '</genre>\n')
-                        fle.write('<studio>' + studio + '</studio>\n')              
-                        fle.write('<id>-1</id>\n')  
-                        fle.write('</tvshow>')            
-                        fle.close()
-                        
-                        # Build the episode.nfo xml tree      
-                        flename1 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.nfo')
-                        fle1 = FileAccess.open(flename1, "w")
-                        fle1.write('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>\n')
-                        fle1.write('<episodedetails>\n')
-                        fle1.write('<title>' + eptitle + '</title>\n')
-                        fle1.write('<genre>' + genre + '</genre>\n')
-                        fle1.write('<season>' + showseason + '</season>\n')
-                        fle1.write('<episode>' + showepisodenuma + '</episode>\n')
-                        fle1.write('<plot>' + epdesc + '</plot>\n')
-                        fle1.write('<thumb>' + thumburl + '</thumb>\n')
-                        fle1.write('<runtime>' + str(runtime) + '</runtime>\n')
-                        fle1.write('<studio>' + studio + '</studio>\n')              
-                        fle1.write('<id>-1</id>\n')  
-                        fle1.write('</episodedetails>')            
-                        fle1.close()
-                        
-                        #Build the episode.strm xml tree     
-                        flename2 = xbmc.translatePath(os.path.join(CHANNELS_LOC, 'generated')  + '/' + 'rss' + '/' +showtitle + '/' + 's'+showseason+'e'+showepisodenum+showepisodenuma+' '+eptitle+'.strm')
-                        fle2 = FileAccess.open(flename2, "w")
-                        fle2.write(url)
-                        fle2.close()
-                        
-                    # Build M3U
-                    if setting2 == '1':
-                        inSet = True
-                        istvshow = True
-                        tmpstr = str(duration) + ',' + eptitle + "//" + "RSS" + "//" + epdesc + '\n' + url + '\n'
-                        tmpstr = tmpstr.replace("\\n", " ").replace("\\r", " ").replace("\\\"", "\"")
-                        self.log("createRSSFileList, CHANNEL: " + str(self.settingChannel) + ", " + eptitle + "  DUR: " + str(duration))
-                        
-                        showList.append(tmpstr)
-                    else:
-                        if inSet == True:
-                            self.log("createRSSFileList, CHANNEL: " + str(self.settingChannel) + ", DONE")
-                            break
-                    showcount += 1
-                    limitcount += 1 
-                    
-                    if limitcount == limit:
-                        break         
-                        
+                        pass
             if limitcount == limit:
                 break    
     
@@ -3142,47 +3483,47 @@ class ChannelList:
         # return fileList
         
     def xmltv_ok(self, setting3):
-        self.xmltvVaild = False
-        self.xmlTvFile = '' 
+        self.xmltvValid = False
+        self.xmlTvFile = ''
         self.log("setting3 = " + str(setting3))
         
         if setting3 == 'ustvnow':
             self.log("xmltv_ok, testing " + str(setting3))
             url = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow XMLTV list
-            url_bak = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow XMLTV list
+            url_bak = 'http://dl.dropboxusercontent.com/s/q6oewxto709es2r/ustvnow.xml' # USTVnow BACKUP XMLTV list
             try: 
                 urllib2.urlopen(url)
                 self.log("INFO: URL Connected...")
-                self.xmltvVaild = True
+                self.xmltvValid = True
                 self.xmlTvFile = url 
             except urllib2.URLError as e:
                 urllib2.urlopen(url_bak)
                 self.log("INFO: URL_BAK Connected...")
-                self.xmltvVaild = True
+                self.xmltvValid = True
                 self.xmlTvFile = url_bak
             except urllib2.URLError as e:
                 if "Errno 10054" in e:
                     raise
                 else:                
-                    self.log("ERROR: Problem accessing the DNS. USTVnow XMLTV URL NOT VAILD, ERROR: " + str(e))
-                    self.xmltvVaild = False
+                    self.log("ERROR: Problem accessing the DNS. USTVnow XMLTV URL NOT VALiD, ERROR: " + str(e))
+                    self.xmltvValid = False
 
         elif setting3 != 'ustvnow':
-            self.log("xmltv_ok, testing " + str(setting3) +".xml")
-            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltv'), str(setting3) +'.xml'))
+            self.xmlTvFile = xbmc.translatePath(os.path.join(REAL_SETTINGS.getSetting('xmltvLOC'), str(setting3) +'.xml'))
+            self.log("xmltv_ok, testing " + str(self.xmlTvFile))
             try:
                 FileAccess.exists(self.xmlTvFile)
                 self.log("INFO: XMLTV Data Found...")
-                self.xmltvVaild = True
+                self.xmltvValid = True
             except IOError as e:
-                self.xmltvVaild = False
+                self.xmltvValid = False
                 self.log("ERROR: Problem accessing the DNS. " + str(setting3) +".xml XMLTV file NOT FOUND, ERROR: " + str(e))
 
-        self.log("xmltvVaild = " + str(self.xmltvVaild))
+        self.log("xmltvValid = " + str(self.xmltvValid))
                     
         
     def rtmpDump(self, stream):
-        self.rtmpVaild = False
+        self.rtmpValid = False
         url = unquote(stream)
         
         OSplat = REAL_SETTINGS.getSetting('os')
@@ -3231,38 +3572,38 @@ class ChannelList:
         self.log("output = " + output)
         
         if "ERROR:" in output:
-            self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VAILD")
-            self.rtmpVaild = False 
+            self.log("ERROR: Problem accessing the DNS. RTMP URL NOT VALiD")
+            self.rtmpValid = False 
         elif "WARNING:" in output:
-            self.log("WARNING: Problem accessing the DNS. RTMP URL NOT VAILD")
-            self.rtmpVaild = False
+            self.log("WARNING: Problem accessing the DNS. RTMP URL NOT VALiD")
+            self.rtmpValid = False
         elif "INFO: Connected..." in output:
             self.log("INFO: Connected...")
-            self.rtmpVaild = True
+            self.rtmpValid = True
         else:
             self.log("ERROR?: Unknown responce...")
-            self.rtmpVaild = False
+            self.rtmpValid = False
         
-        self.log("rtmpVaild = " + str(self.rtmpVaild))
+        self.log("rtmpValid = " + str(self.rtmpValid))
 
         
     def url_ok(self, url):
-        self.urlVaild = False
+        self.urlValid = False
         url = unquote(url)
         try: 
             urllib2.urlopen(urllib2.Request(url))
             self.log("INFO: Connected...")
-            self.urlVaild = True
+            self.urlValid = True
         except urllib2.URLError as e:
-            self.log("ERROR: Problem accessing the DNS. HTTP URL NOT VAILD, ERROR: " + str(e))
-            self.urlVaild = False
+            self.log("ERROR: Problem accessing the DNS. HTTP URL NOT VALID, ERROR: " + str(e))
+            self.urlValid = False
         
-        self.log("urlVaild = " + str(self.urlVaild))
+        self.log("urlValid = " + str(self.urlValid))
         
         
     def plugin_ok(self, plugin):
         self.PluginFound = False
-        self.PluginVaild = False
+        self.PlugInvalid = False
         stream = plugin
         self.log("plugin stream = " + stream)
         id = plugin.split("/?")[0]
@@ -3283,7 +3624,14 @@ class ChannelList:
                 # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
                 # self.log('json_folder_detail = ' + str(json_folder_detail))
                 # self.log('file_detail = ' + str(file_detail))
-                # self.PluginVaild = True        
+                # self.PlugInvalid = True        
             # except Exception:
-                # self.PluginVaild = False
+                # self.PlugInvalid = False
+                
+    def smart_truncate(content, length=250, suffix='.'):
+        if len(content) <= length:
+            return content
+        else:
+            return content[:length].rsplit(' ', 1)[0]+suffix
 
+# xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "id": 1, "params": {"directory": "plugin://plugin.video.youtube"}}')
