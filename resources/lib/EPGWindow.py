@@ -771,19 +771,21 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         if plpos == -1:
             self.log('Unable to find the proper playlist to set from EPG')
             return
-                
-        if self.infoOffset > 0:
-            self.getControl(522).setLabel('COMING UP:')
-        elif self.infoOffset < 0:
-            self.getControl(522).setLabel('ALREADY SEEN:')
-        elif self.infoOffset == 0 and self.infoOffsetV == 0:
-            self.getControl(522).setLabel('NOW WATCHING:')
- 
-        if self.infoOffsetV < 0 and self.infoOffset == 0:
-            self.getControl(522).setLabel('ON NOW:')
-        elif self.infoOffsetV > 0 and self.infoOffset == 0:
-            self.getControl(522).setLabel('ON NOW:')
-        elif self.infoOffset == 0 and self.infoOffsetV == 0:
+        
+        if REAL_SETTINGS.getSetting("art.enable") == "true":        
+            if self.infoOffset > 0:
+                self.getControl(522).setLabel('COMING UP:')
+            elif self.infoOffset < 0:
+                self.getControl(522).setLabel('ALREADY SEEN:')
+            elif self.infoOffset == 0 and self.infoOffsetV == 0:
+                self.getControl(522).setLabel('NOW WATCHING:')
+            elif self.infoOffsetV < 0 and self.infoOffset == 0:
+                self.getControl(522).setLabel('ON NOW:')
+            elif self.infoOffsetV > 0 and self.infoOffset == 0:
+                self.getControl(522).setLabel('ON NOW:')
+            elif self.infoOffset == 0 and self.infoOffsetV == 0:
+                self.getControl(522).setLabel('NOW WATCHING:')
+        else: 
             self.getControl(522).setLabel('NOW WATCHING:')
 
         tvdbid = 0
@@ -853,58 +855,50 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
             self.log('setShowInfo, Dynamic artwork enabled')
         
             if chtype <= 7:
-                try:
-                    mediapathSeason, filename = os.path.split(mediapath)
-                    self.logDebug('EPG.mediapath.2 = ' + str(mediapathSeason))  
-                    mediapathSeries = os.path.dirname(mediapathSeason)
-                    self.logDebug('EPG.mediapath.3 = ' + str(mediapathSeries))
-                    mediapathSeason1PNG = (mediapathSeason + '/' + type1 + ('.png'))
-                    mediapathSeason1JPG = (mediapathSeason + '/' + type1 + ('.jpg'))
-                    if FileAccess.exists(mediapathSeason1PNG):
-                        mediapathSeason1 = mediapathSeason1PNG
-                    else:
-                        mediapathSeason1 = mediapathSeason1JPG
-                    
-                    mediapathSeason2PNG = (mediapathSeason + '/' + type2 + ('.png'))
-                    mediapathSeason2JPG = (mediapathSeason + '/' + type2 + ('.jpg'))
-                    if FileAccess.exists(mediapathSeason2PNG):
-                        mediapathSeason2 = mediapathSeason2PNG
-                    else:
-                        mediapathSeason2 = mediapathSeason2JPG
-                    self.logDebug('EPG.mediapath.mediapathSeason = ' + str(mediapathSeason1) + ',' + str(mediapathSeason2)) 
+                mediapathSeason, filename = os.path.split(mediapath)
+                self.logDebug('EPG.mediapath.2 = ' + str(mediapathSeason))  
+                mediapathSeries = os.path.dirname(mediapathSeason)
+                self.logDebug('EPG.mediapath.3 = ' + str(mediapathSeries))
+                mediapathSeries1PNG = (mediapathSeries + '/' + type1 + ('.png'))
+                mediapathSeries1JPG = (mediapathSeries + '/' + type1 + ('.jpg'))
+                mediapathSeason1PNG = (mediapathSeason + '/' + type1 + ('.png')) 
+                mediapathSeason1JPG = (mediapathSeason + '/' + type1 + ('.jpg')) 
 
-                    mediapathSeries1PNG = (mediapathSeries + '/' + type1 + ('.png'))
-                    mediapathSeries1JPG = (mediapathSeries + '/' + type1 + ('.jpg'))
-                    if FileAccess.exists(mediapathSeries1PNG):
-                        mediapathSeries1 = mediapathSeries1PNG
-                    else:
-                        mediapathSeries1 = mediapathSeries1JPG
-                    
-                    mediapathSeries2PNG = (mediapathSeries + '/' + type2 + ('.png'))
-                    mediapathSeries2JPG = (mediapathSeries + '/' + type2 + ('.jpg'))
-                    if FileAccess.exists(mediapathSeries1PNG):
-                        mediapathSeries2 = mediapathSeries2PNG
-                    else:
-                        mediapathSeries2 = mediapathSeries2JPG
-                    self.logDebug('EPG.mediapath.mediapathSeason = ' + str(mediapathSeries1) + ',' + str(mediapathSeries2)) 
+                if FileAccess.exists(mediapathSeries1PNG):
+                    self.getControl(508).setImage(mediapathSeries1PNG)
+                    self.logDebug('EPG.mediapathSeries1.png = ' + str(mediapathSeries1PNG))
+                elif FileAccess.exists(mediapathSeries1JPG):
+                    self.getControl(508).setImage(mediapathSeries1JPG)
+                    self.logDebug('EPG.mediapathSeries1.png = ' + str(mediapathSeries1JPG))
+                elif FileAccess.exists(mediapathSeason1PNG):
+                    self.getControl(508).setImage(mediapathSeason1PNG)
+                    self.logDebug('EPG.mediapathSeason1.png = ' + str(mediapathSeason1PNG)) 
+                elif FileAccess.exists(mediapathSeason1JPG):
+                    self.getControl(508).setImage(mediapathSeason1JPG)
+                    self.logDebug('EPG.mediapathSeason1.png = ' + str(mediapathSeason1JPG)) 
+                else:
+                    self.getControl(508).setImage(self.mediaPath + type1 + '.png')#default fallback art
 
-                    if FileAccess.exists(mediapathSeason1): #check art type at season level
-                        self.getControl(508).setImage(mediapathSeason1)
-                    elif FileAccess.exists(mediapathSeries1):#check art type at series level
-                        self.getControl(508).setImage(mediapathSeries1)
-                    else:
-                        self.getControl(508).setImage(self.mediaPath + type1 + '.png')#default fallback art
-                    
-                    if FileAccess.exists(mediapathSeason2): #check art type at season level
-                        self.getControl(510).setImage(mediapathSeason2)
-                    elif FileAccess.exists(mediapathSeries2):#check art type at series level
-                        self.getControl(510).setImage(mediapathSeries2)
-                    else:
-                        self.getControl(510).setImage(self.mediaPath + type2 + '.png')#default fallback art
-                except:
-                    pass
+                mediapathSeries2PNG = (mediapathSeries + '/' + type2 + ('.png'))
+                mediapathSeries2JPG = (mediapathSeries + '/' + type2 + ('.jpg'))    
+                mediapathSeason2PNG = (mediapathSeason + '/' + type2 + ('.png'))
+                mediapathSeason2JPG = (mediapathSeason + '/' + type2 + ('.jpg'))
+                
+                if FileAccess.exists(mediapathSeries2PNG):
+                    self.getControl(510).setImage(mediapathSeries2PNG)
+                    self.logDebug('EPG.mediapathSeries2.png = ' + str(mediapathSeries2PNG)) 
+                elif FileAccess.exists(mediapathSeries2JPG):
+                    self.getControl(510).setImage(mediapathSeries2JPG)
+                    self.logDebug('EPG.mediapathSeries2.png = ' + str(mediapathSeries2JPG)) 
+                elif FileAccess.exists(mediapathSeason2PNG):
+                    self.getControl(510).setImage(mediapathSeason2PNG)
+                    self.logDebug('EPG.mediapathSeason2.png = ' + str(mediapathSeason2PNG)) 
+                elif FileAccess.exists(mediapathSeason2JPG):
+                    self.getControl(510).setImage(mediapathSeason2JPG)
+                    self.logDebug('EPG.mediapathSeason2.png = ' + str(mediapathSeason2JPG)) 
+                else:
+                    self.getControl(510).setImage(self.mediaPath + type2 + '.png')#default fallback art
 
-            
             elif chtype == 8:#LiveTV w/ TVDBID via Fanart.TV
                 if tvdbid > 0 and genre != 'Movie':
                     fanartTV = fanarttv.FTV_TVProvider()

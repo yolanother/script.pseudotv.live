@@ -10,15 +10,17 @@
     	<setting id="StartMode" type="enum" label="30007" values="Resume|Real Time|Random" default="1" />
     	<setting id="ThreadMode" type="enum" label="30008" values="On|Minimum Use|Off" default="1" />
     	<setting id="ChannelSharing" type="bool" label="30009" default="false"/>
-    	<setting id="SettingsFolder" subsetting="true" type="folder" source="auto" visible="eq(-1,true)" label="30010" default="" />
-        <setting id="HdhomerunMaster" subsetting="true" type="bool" label="30011" default="true" visible="eq(-2,true)" />
+        <setting id="HdhomerunMaster" subsetting="true" type="bool" label="30011" default="true" visible="eq(-1,true)" />
+    	<setting id="SettingsFolder" subsetting="true" type="folder" source="auto" visible="eq(-2,true)" label="30010" default="" />
     </category>
 <!--Visual-->
     <category label="30200">
+    	<setting id="EnableComingUp" type="bool" label="30208" default="true"/>
         <setting id="InfoOnChange" type="bool" label="30201" default="true"/>
         <setting id="InfoTimer" subsetting="true" visible="eq(-1,true)" type="enum" label="30202" values="5|10|15|20|25" default="0"/>
         <setting id="ShowSeEp" type="bool" label="30203" default="true"/>
         <setting id="EPGcolor_enabled" label="30213" type="enum" values="Disabled|Genre Type|Channel Type" default="0" />
+        <setting id="EPGcolor_MovieGenre" subsetting="true" type="bool" label="30215" default="true" visible="eq(-1,1)" />
         <setting id="art.enable" label="30214" type="bool" default="false" /> 
         <setting id="ShowChannelBug" type="bool" label="30204" default="true"/>
     	<setting id="ColorOverlay" type="bool" label="30205" default="false"/>
@@ -33,7 +35,6 @@
         <setting id="notify" type="bool" label="30046" subsetting="true" visible="eq(-2,true)" default="false"/>
         <setting id="ChannelDelay" type="enum" label="30041" default="0" values="None|0.25|0.5|0.75|1.0|1.25|1.5|1.75|2.0"/>
         <setting id="ClockMode" type="enum" label="30207" default="0" values="12 Hour|24 Hour"/>
-    	<setting id="EnableComingUp" type="bool" label="30208" default="true"/>
     	<setting id="HideClips" type="bool" label="30209" default="true"/>
     	<setting id="ClipLength" type="enum" subsetting="true" label="30210" visible="eq(-1,true)" values="15|30|60|90|120|180|240|300|360" default="2"/>
     	<setting id="EnableDown" type="bool" label="30049" default="false"/>

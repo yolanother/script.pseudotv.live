@@ -18,7 +18,7 @@
             <texture>pstvBackground.png</texture>
             <colordiffuse>FFFFFFFF</colordiffuse>
         </control>        
-<!--TEXT Now Playing-->
+        <!--TEXT Now Playing-->
         <control type="label" id="522">
             <description>Now watching Label</description>
             <posx>950</posx>
@@ -30,92 +30,77 @@
             <align>center</align>
             <textcolor>C0C0C0C0</textcolor>
         </control>   
-<!--         <control type="label">
-            <description>Now Playing</description>
-            <posx>950</posx>
-            <posy>525</posy>
-            <width min="100" max="300">auto</width>
-            <height>30</height>
-            <label>Now Playing</label>
-            <font>Font_Bold34</font>
-            <align>center</align>
-            <textcolor>C0C0C0C0</textcolor>
-            <visible>false</visible>
-        </control>   -->
-<!--hulu.Fanart-->
-        <control type="image">
-            <description>hulu</description>
+        <!--NowPlaying.Window-->
+        <control type="group">            
             <posx>960</posx>
             <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-			<aspectratio>keep</aspectratio>
-            <texture>huluf.png</texture>
-            <visible>[substring(Player.FilenameAndPath,hulu) + IsEmpty(Player.Art(tvshow.landscape))]</visible>
-        </control>     
-<!--Movie.landscape Now Playing-->
-        <control type="image">
-            <description>landscape</description>
-            <posx>960</posx>
-            <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture fallback="landscape.png">$INFO[Player.Art(landscape)]</texture>
-            <aspectratio>keep</aspectratio>
-        </control>
-<!--TV.landscape Now Playing-->
-        <control type="image">
-            <description>landscape</description>
-            <posx>960</posx>
-            <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <colordiffuse>FFFFFFFF</colordiffuse>
-            <texture>$INFO[Player.Art(tvshow.landscape)]</texture>
-            <aspectratio>keep</aspectratio>
-        </control>
-       <control type="label" id="507">
-            <description>Dynamic art</description><!-- Calls art by label given, labels include type (ie fanart,poster,series,graphical(banner))-->
-            <label>landscape</label>
-            <visible>false</visible>
-        </control>
-       <control type="image" id="508">
-            <description>Dynamic art</description><!-- Calls art by label given-->
-            <posx>960</posx>
-            <posy>570</posy>
-            <width>285</width>
-            <height>125</height>
-            <align>center</align>
-            <aspectratio>keep</aspectratio>
-        </control>
-      <control type="label" id="509">
-            <description>Dynamic art</description>
-            <label>logo</label>
-            <visible>false</visible>
-        </control>
-       <!-- Calls art by label given-->
-        <control type="image" id="510">
-            <description>Dynamic art</description>
-            <posx>0</posx>
-            <posy>0</posy>
-            <width>0</width>
-            <height>0</height>
-            <align>center</align>
-            <aspectratio>keep</aspectratio>
-            <visible>false</visible>
-        </control>
-        <control type="image" id="512">
-            <description>Unaired NEW Icon</description>            
-            <posx>989</posx>
-            <posy>568</posy>
-            <width>100</width>
-            <height>100</height>
-            <aspectratio>keep</aspectratio>
+            <control type="label" id="509">
+                <description>Dynamic art</description>
+                <label>logo</label>
+                <visible>false</visible>
+            </control>
+            <control type="image" id="510">
+                <description>Dynamic art</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>285</width>
+                <height>125</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+                <visible>false</visible>
+            </control>
+            <!--Movie.landscape Now Playing-->
+            <control type="image">
+                <description>landscape</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>285</width>
+                <height>125</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+                <texture fallback="landscape.png">$INFO[Player.Art(landscape)]</texture>
+            </control>
+            <!--TV.landscape Now Playing-->
+            <control type="image">
+                <description>landscape</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>285</width>
+                <height>125</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+                <texture>$INFO[Player.Art(tvshow.landscape)]</texture>
+                <visible>VideoPlayer.Content(episodes)</visible>
+            </control>
+            <!--hulu-->
+            <control type="image">
+                <description>hulu</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>285</width>
+                <height>125</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+                <texture>EPG.Hulu</texture>
+                <visible>[substring(Player.FilenameAndPath,hulu) + IsEmpty(Player.Art(tvshow.landscape))]</visible>
+            </control>     
+            <control type="label" id="507">
+                <description>Dynamic art</description>
+                <label>landscape</label>
+                <visible>false</visible>
+            </control>
+            <control type="image" id="508">
+                <description>Dynamic art</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>285</width>
+                <height>125</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+            </control>
+            <control type="image" id="512">
+                <description>Unaired NEW Icon</description>            
+                <posx>989</posx>
+                <posy>568</posy>
+                <width>100</width>
+                <height>100</height>
+                <aspectratio>keep</aspectratio>
+            </control>
         </control>
 <!--LEFT/RIGHT art-->
         <control type="image">

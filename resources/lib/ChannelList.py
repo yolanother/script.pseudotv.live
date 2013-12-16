@@ -76,7 +76,8 @@ class ChannelList:
         self.enteredChannelCount = 0
         self.background = True
         random.seed()
-        self.cached_json_detailed = []
+        self.cached_json_detailed_TV = []
+        self.cached_json_detailed_Movie = []
 
 
     def readConfig(self):
@@ -1523,23 +1524,39 @@ class ChannelList:
         self.log("makeMixedList return " + str(newlist))
         return newlist
 
-    def buildGenreLiveID(self, showtitle): ##return genre and LiveID by json
+    def buildGenreLiveID(self, showtitle, type): ##return genre and LiveID by json
         #query GetTVShows for by tv or movie: get title/genre, match title return genre...
         self.log("buildGenreLiveID")
         match = []
-        json_query = uni('{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"properties":["title","year","genre","imdbnumber"]}, "id": 1}')
+        TVtype = False
+        MovieType = False
         try:
-            if not self.cached_json_detailed:
-                self.logDebug('buildGenreLiveID, json_detail creating cache')
-                self.cached_json_detailed = self.sendJSON(json_query)
-                json_detail = self.cached_json_detailed 
+            if type == 'TV':
+                json_query = uni('{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShows","params":{"properties":["title","year","genre","imdbnumber"]}, "id": 1}')
+                if not self.cached_json_detailed_TV:
+                    self.logDebug('buildGenreLiveID, json_detail creating cache')
+                    self.cached_json_detailed_TV = self.sendJSON(json_query)
+                    json_detail = self.cached_json_detailed_TV
+                    TVtype = True
+                else:
+                    json_detail = self.cached_json_detailed_TV
+                    TVtype = True
+                    self.logDebug('buildGenreLiveID, json_detail using cache')
             else:
-                json_detail = self.cached_json_detailed
-                self.logDebug('buildGenreLiveID, json_detail using cache')
-
+                json_query = uni('{"jsonrpc":"2.0","method":"VideoLibrary.GetMovies","params":{"properties":["title","year","genre","imdbnumber"]}, "id": 1}')
+                if not self.cached_json_detailed_Movie:
+                    self.logDebug('buildGenreLiveID, json_detail creating cache')
+                    self.cached_json_detailed_Movie = self.sendJSON(json_query)
+                    json_detail = self.cached_json_detailed_Movie 
+                    MovieType = True
+                else:
+                    json_detail = self.cached_json_detailed_Movie 
+                    MovieType = True
+                    self.logDebug('buildGenreLiveID, json_detail using cache')
+            
             file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_detail)
             ShowLST = json_detail.split("},{")
-            self.logDebug("buildGenreLiveID.ShowLST = " + str(ShowLST))
+            # self.logDebug("buildGenreLiveID.ShowLST = " + str(ShowLST))#JsonOutput to big for log!
             showtitle = ('"title":"' + showtitle + '"')
             self.logDebug("buildGenreLiveID.showtitle = " + str(showtitle))
             match = [s for s in ShowLST if showtitle in s]
@@ -1554,21 +1571,34 @@ class ChannelList:
             self.logDebug("buildGenreLiveID.genre.3 = " + str(genre))
             genre = genre[0]
             self.logDebug("buildGenreLiveID.genre.4 = " + str(genre))
-            tvdbid = match.split('","label":')[0]
-            self.logDebug("buildGenreLiveID.tvdbid.1 = " + str(tvdbid))
-            tvdbid = tvdbid.split('"],"', 1)[-1]
-            self.logDebug("buildGenreLiveID.tvdbid.2 = " + str(tvdbid))
-            tvdbid = tvdbid.split('imdbnumber":"', 1)[-1]
-            self.logDebug("buildGenreLiveID.tvdbid.3 = " + str(tvdbid))
-            tvdbid = (str(tvdbid))
-            self.logDebug("buildGenreLiveID.tvdbid.4 = " + str(tvdbid))
-            GenreLiveID = ( str(genre) + ',' + str(tvdbid))
+            
+            if TVtype:
+                tvdbid = match.split('","label":')[0]
+                self.logDebug("buildGenreLiveID.tvdbid.1 = " + str(tvdbid))
+                tvdbid = tvdbid.split('"],"', 1)[-1]
+                self.logDebug("buildGenreLiveID.tvdbid.2 = " + str(tvdbid))
+                tvdbid = tvdbid.split('imdbnumber":"', 1)[-1]
+                self.logDebug("buildGenreLiveID.tvdbid.3 = " + str(tvdbid))
+                tvdbid = (str(tvdbid))
+                self.logDebug("buildGenreLiveID.tvdbid.4 = " + str(tvdbid))
+                GenreLiveID = ( str(genre) + ',' + str(tvdbid))
+            elif MovieType:
+                imdbid = match.split('","label":')[0]
+                self.logDebug("buildGenreLiveID.imdbid.1 = " + str(imdbid))
+                imdbid = imdbid.split('"],"', 1)[-1]
+                self.logDebug("buildGenreLiveID.imdbid.2 = " + str(imdbid))
+                imdbid = imdbid.split('imdbnumber":"', 1)[-1]
+                self.logDebug("buildGenreLiveID.imdbid.3 = " + str(imdbid))
+                imdbid = (str(imdbid))
+                self.logDebug("buildGenreLiveID.imdbid.4 = " + str(imdbid))
+                GenreLiveID = ( str(genre) + ',' + str(imdbid))
+            
             return GenreLiveID
         except:
             return 'Unknown,0'
             self.logDebug('buildGenreLiveID, GenreLiveID failed')
     
-    
+
     def buildFileList(self, dir_name, channel): ##fix music channel todo
         self.log("buildFileList")
         fileList = []
@@ -1578,6 +1608,8 @@ class ChannelList:
         tvdbid = 0
         genre = ''
         LiveID = ''
+        cpManaged = False
+        sbManaged = False
         json_query = uni('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "fields":["season","episode","playcount","streamdetails","duration","runtime","tagline","showtitle","album","artist","plot"]}, "id": 1}' % (self.escapeDirJSON(dir_name)))
 
         if self.background == False:
@@ -1669,8 +1701,8 @@ class ChannelList:
                                     seasonval = -1
                                     epval = -1
                                     
-                                GenreLiveID = self.buildGenreLiveID(showtitle.group(1))
-                                self.logDebug('buildFileList.GenreLiveID.1 = ' + str(GenreLiveID))
+                                GenreLiveID = self.buildGenreLiveID(showtitle.group(1), 'TV')
+                                self.logDebug('buildFileList.GenreLiveID.TV = ' + str(GenreLiveID))
                                 try:
                                     if GenreLiveID != 'Unknown,0':
                                         GenreLiveID = GenreLiveID.split(',')
@@ -1753,15 +1785,90 @@ class ChannelList:
                             else:
                                 tmpstr += title.group(1) + "//"
                                 album = re.search('"album" *: *"(.*?)"', f)
+                                showtitle.group(1)
 
                                 # This is a movie
                                 if album == None or len(album.group(1)) == 0:
                                     tagline = re.search('"tagline" *: *"(.*?)"', f)
-
+                                
                                     if tagline != None:
                                         tmpstr += tagline.group(1)
+                                    
+                                    GenreLiveID = self.buildGenreLiveID(title.group(1), 'Movie')
+                                    self.logDebug('buildFileList.GenreLiveID.Movie = ' + str(GenreLiveID))
+                                    try:
+                                        if GenreLiveID != 'Unknown,0':
+                                            GenreLiveID = GenreLiveID.split(',')
+                                            self.logDebug('buildFileList.GenreLiveID.2 = ' + str(GenreLiveID))
+                                            genre = GenreLiveID[0]
+                                            self.logDebug('buildFileList.genre = ' + str(genre))
+                                            genre = uni(genre)
+                                            tvdbid = 0
+                                            imdbid = GenreLiveID[1]
+                                            self.logDebug('buildFileList.imdbid = ' + str(imdbid))   
+                                        
+                                            # Lookup IMDBID, 1st with tvdb, then with tvdb_api
+                                            if imdbid == 0:
+                                                try:
+                                                    tvdbAPI = TVDB(REAL_SETTINGS.getSetting('tvdb.apikey'))
+                                                    imdbid = tvdbAPI.getIMDBbyShowName(title.group(1))  
+                                                    self.logDebug('buildFileList.imdbid.1 = ' + title.group(1) + ' - ' + str(imdbid))
+                                                    if imdbid == 0 or imdbid == '0' or imdbid == None or imdbid == 'None':
+                                                        t = tvdb_api.Tvdb()
+                                                        imdbid = t[title.group(1)]['imdb_id']  
+                                                        self.logDebug('buildFileList.imdbid.2 = ' + title.group(1) + ' - ' + str(imdbid))
+                                                        if imdbid == 0 or imdbid == '0' or imdbid == None or imdbid == 'None':#clean output
+                                                            imdbid = 0
+                                                except:
+                                                    imdbid = 0
+                                                    self.logDebug('buildFileList, imdbid lookup failed')
+                                           
+                                            ## Correct Invalid IMDBID format   
+                                            if imdbid != 0 and str(imdbid[0:2]) != 'tt':
+                                                imdbid = ('tt' + str(imdbid))
 
-                                    tmpstr += "//" + theplot[:250] + "//" + 'Movie' + "////" + 'LiveID|'
+                                            cpManaged = False
+                                            # if REAL_SETTINGS.getSetting('couchpotato.enabled') == 'true':
+                                                # try:
+                                                    # if cpAPI.isMovieManaged(imdbid):
+                                                        # cpManaged = True
+                                                # except:
+                                                    # pass
+                                            
+                                            #Build LiveID (imdb/tvdb/sickbeard or couchpoato/unaired or aired)
+                                            
+                                            if imdbid != 0:
+                                                IID = ('imdb_' + str(imdbid))
+                                                LiveID = (IID + '|')
+                                            else:
+                                                LiveID = ('NA' + '|')
+                                            
+                                            if tvdbid != 0:
+                                                TID = ('tvdb_' + str(tvdbid))
+                                                LiveID = (LiveID + '|' + TID + '|')
+                                            else:
+                                                LiveID = (LiveID + '|' + 'NA' + '|')
+                                                                  
+                                            if sbManaged == True:
+                                                SB = ('SB')
+                                                LiveID = (LiveID + '|' + SB + '|')
+                                            elif cpManaged == True:
+                                                CP = ('CP')
+                                                LiveID = (LiveID + '|' + CP + '|')
+                                            else:
+                                                LiveID = (LiveID + '|' + 'NA' + '|')
+                                            
+                                            LiveID = (LiveID + '|' + 'NA' + '|')
+                                            LiveID = LiveID.replace('||','|')
+                                            LiveID = uni(LiveID)
+                                            genre = uni(genre)
+                                            self.logDebug('buildFileList.LiveID = ' + LiveID)
+                                            if (REAL_SETTINGS.getSetting('EPGcolor_MovieGenre') == "true" and REAL_SETTINGS.getSetting('EPGcolor_enabled') == "1"):
+                                                tmpstr += "//" + theplot[:250] + "//" + genre + "////" + LiveID
+                                            else:
+                                                tmpstr += "//" + theplot[:250] + "//" + 'Movie' + "////" + LiveID
+                                    except:
+                                        tmpstr += "//" + theplot[:250] + "//" + 'Movie' + "////" + 'LiveID|'
                                 else:
                                     artist = re.search('"artist" *: *"(.*?)"', f)
                                     tmpstr += album.group(1) + "//" + artist.group(1)
