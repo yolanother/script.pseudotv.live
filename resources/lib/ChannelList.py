@@ -840,7 +840,7 @@ class ChannelList:
     def createMusicPlaylist(self, genre, channelname):
         self.log("createMusicPlaylist")
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'songs_' + genre + '.xsp')
-        
+
         ATLimit = {}
         ATLimit['0'] = 25 
         ATLimit['1'] = 50 
@@ -849,8 +849,11 @@ class ChannelList:
         ATLimit['4'] = 500             
         ATLimit['5'] = 1000
         ATLimit['6'] = 0 #unlimited
-        
-        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+
+        if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning1") == "true":  
+            limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+        else:
+            limit = 0
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -883,7 +886,7 @@ class ChannelList:
     
     def createNetworkPlaylist(self, network):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Network_' + network + '.xsp')
-        
+  
         ATLimit = {}
         ATLimit['0'] = 25 
         ATLimit['1'] = 50 
@@ -892,8 +895,11 @@ class ChannelList:
         ATLimit['4'] = 500             
         ATLimit['5'] = 1000
         ATLimit['6'] = 0 #unlimited
-        
-        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+
+        if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning1") == "true":  
+            limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+        else:
+            limit = 0
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -928,7 +934,7 @@ class ChannelList:
 
     def createShowPlaylist(self, show, setting2):
         order = 'random'
-        
+
         ATLimit = {}
         ATLimit['0'] = 25 
         ATLimit['1'] = 50 
@@ -937,9 +943,12 @@ class ChannelList:
         ATLimit['4'] = 500             
         ATLimit['5'] = 1000
         ATLimit['6'] = 0 #unlimited
-        
-        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
-        
+
+        if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning1") == "true":  
+            limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+        else:
+            limit = 0
+
         try:
             setting = int(setting2)
 
@@ -992,7 +1001,7 @@ class ChannelList:
     
     def createGenreMixedPlaylist(self, genre):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Mixed_' + genre + '.xsp')
-        
+
         ATLimit = {}
         ATLimit['0'] = 25 
         ATLimit['1'] = 50 
@@ -1001,9 +1010,12 @@ class ChannelList:
         ATLimit['4'] = 500             
         ATLimit['5'] = 1000
         ATLimit['6'] = 0 #unlimited
-        
-        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
-        
+
+        if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning1") == "true":  
+            limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+        else:
+            limit = 0
+
         try:
             fle = FileAccess.open(flename, "w")
         except:
@@ -1022,7 +1034,7 @@ class ChannelList:
 
     def createGenrePlaylist(self, pltype, chtype, genre):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + pltype + '_' + genre + '.xsp')
-        
+
         ATLimit = {}
         ATLimit['0'] = 25 
         ATLimit['1'] = 50 
@@ -1031,8 +1043,11 @@ class ChannelList:
         ATLimit['4'] = 500             
         ATLimit['5'] = 1000
         ATLimit['6'] = 0 #unlimited
-        
-        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+
+        if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning1") == "true":  
+            limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+        else:
+            limit = 0
 
         try:
             fle = FileAccess.open(flename, "w")
@@ -1050,7 +1065,7 @@ class ChannelList:
 
     def createStudioPlaylist(self, studio):
         flename = xbmc.makeLegalFilename(GEN_CHAN_LOC + 'Studio_' + studio + '.xsp')
-        
+
         ATLimit = {}
         ATLimit['0'] = 25 
         ATLimit['1'] = 50 
@@ -1059,9 +1074,12 @@ class ChannelList:
         ATLimit['4'] = 500             
         ATLimit['5'] = 1000
         ATLimit['6'] = 0 #unlimited
-        
-        limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
-        
+
+        if Globals.REAL_SETTINGS.getSetting("Autotune") == "true" and Globals.REAL_SETTINGS.getSetting("Warning1") == "true":  
+            limit = int(ATLimit[REAL_SETTINGS.getSetting('ATLimit')])
+        else:
+            limit = 0
+
         try:
             fle = FileAccess.open(flename, "w")
         except:
@@ -3722,18 +3740,18 @@ class ChannelList:
         except Exception:
             self.PluginFound = False 
         
-        self.log("PluginFound = " + str(self.PluginFound))
+        # self.log("PluginFound = " + str(self.PluginFound))
         
         # if self.PluginFound == True:
-            # try:
-                # json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "files"}, "id": "1"}' % ( self.escapeDirJSON(stream),)
-                # json_folder_detail = self.sendJSON(json_query)
-                # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
-                # self.log('json_folder_detail = ' + str(json_folder_detail))
-                # self.log('file_detail = ' + str(file_detail))
-                # self.PlugInvalid = True        
-            # except Exception:
-                # self.PlugInvalid = False
+            # # try:
+            # json_query = uni('{"jsonrpc":"2.0","method":"Files.GetDirectory","params":{"directory":"%s""}, "id": 1}' % (self.escapeDirJSON(stream)))
+            # json_folder_detail = self.sendJSON(json_query)
+            # file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
+            # self.log('json_folder_detail = ' + str(json_folder_detail))
+            # self.log('file_detail = ' + str(file_detail))
+            # self.PlugInvalid = True        
+            # # except Exception:
+                # # self.PlugInvalid = False
                 
     def smart_truncate(content, length=250, suffix='.'):
         if len(content) <= length:
