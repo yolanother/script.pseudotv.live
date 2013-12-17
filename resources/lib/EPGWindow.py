@@ -799,12 +799,10 @@ class EPGWindow(xbmcgui.WindowXMLDialog):
         title = uni(self.MyOverlayWindow.channels[newchan - 1].getItemTitle(plpos))
         LiveID = str(self.MyOverlayWindow.channels[newchan - 1].getItemLiveID(plpos))
         self.logDebug('EPG.LiveID.1 = ' + str(LiveID))  
-        # type1 = str(self.getControl(507).getLabel())
-        # self.logDebug('EPG.type1 = ' + str(type1))  
-        # type2 = str(self.getControl(509).getLabel())
-        # self.logDebug('EPG.type2 = ' + str(type2))  
-        type1 = 'landscape'    
-        type2 = 'logo'
+        type1 = str(self.getControl(507).getLabel())
+        self.logDebug('EPG.type1 = ' + str(type1))  
+        type2 = str(self.getControl(509).getLabel())
+        self.logDebug('EPG.type2 = ' + str(type2))
 
         if not 'LiveID' in LiveID:
             try:

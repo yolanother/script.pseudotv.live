@@ -25,7 +25,7 @@
         <setting id="ShowChannelBug" type="bool" label="30204" default="true"/>
     	<setting id="ColorOverlay" type="bool" label="30205" default="false"/>
     	<setting id="ChannelLogoFolder" type="folder" source="auto" label="30206" default="special://home/addons/script.pseudotv.live/resources/skins/default/images/"/>
-    	<setting id="SkinSelector" type="enum"  label="30211" values="default|Frosted Glass|AeonNox Orange|Match XBMC Skin (if available)" default="0"/>
+    	<setting id="SkinSelector" type="enum"  label="30211" values="Default|PTVL" default="0"/>
     	<setting id="SkinLogos" type="bool" label="30212" default="false"/>
    </category>
 <!--Tweaks-->

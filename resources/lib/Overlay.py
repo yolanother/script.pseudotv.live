@@ -616,10 +616,10 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.channels[channel - 1].isValid = False
         self.invalidatedChannelCount += 1
 
-        if self.invalidatedChannelCount > 3:
-            self.Error("Exceeded 3 invalidated channels. Exiting.")
-            # REAL_SETTINGS.setSetting("CurrentChannel","1") # Force Set to channel 1
-            return
+        # if self.invalidatedChannelCount > 3:
+            # self.Error("Exceeded 3 invalidated channels. Exiting.")
+            # # REAL_SETTINGS.setSetting("CurrentChannel","1") # Force Set to channel 1
+            # return
 
         remaining = 0
 
@@ -707,12 +707,10 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         title = uni(self.channels[self.currentChannel - 1].getItemTitle(position))
         LiveID = str(self.channels[self.currentChannel - 1].getItemLiveID(position))
         self.logDebug('Overlay.LiveID.1 = ' + str(LiveID))
-        # type1 = str(self.getControl(507).getLabel())
-        # self.logDebug('EPG.type1 = ' + str(type1))  
-        # type2 = str(self.getControl(509).getLabel())
-        # self.logDebug('EPG.type2 = ' + str(type2))  
-        type1 = 'poster'    
-        type2 = 'logo'
+        type1 = str(self.getControl(507).getLabel())
+        self.logDebug('EPG.type1 = ' + str(type1))  
+        type2 = str(self.getControl(509).getLabel())
+        self.logDebug('EPG.type2 = ' + str(type2))  
 
         if not 'LiveID' in LiveID:
             try:

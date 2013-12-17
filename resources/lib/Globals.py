@@ -48,7 +48,7 @@ ADDON_ID = 'script.pseudotv.live'
 REAL_SETTINGS = xbmcaddon.Addon(id=ADDON_ID)
 ADDON_INFO = REAL_SETTINGS.getAddonInfo('path')
 ##
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 ##
 TIMEOUT = 15 * 1000
 TOTAL_FILL_CHANNELS = 20
@@ -80,23 +80,9 @@ if int(REAL_SETTINGS.getSetting('SkinSelector')) == 0:
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":
         REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
 elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 1:
-    Skin_Select = 'FrostedGlass'  
+    Skin_Select = 'PTVL'  
     if REAL_SETTINGS.getSetting("SkinLogos") == "true":  
-        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/FrostedGlass/images/')
-elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 2:
-    Skin_Select = 'AeonOrange'
-    if REAL_SETTINGS.getSetting("SkinLogos") == "true":
-        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/AeonnoxOrange/images/')
-elif int(REAL_SETTINGS.getSetting('SkinSelector')) == 3:
-    Match_Skin = xbmc.getSkinDir()
-    Match_Skin = re.sub(r'skin.',"",Match_Skin)
-    log("Match_Skin = " + Match_Skin)
-    if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Match_Skin, 'media'))):
-        Skin_Select = str(Match_Skin)
-    else:
-        Skin_Select = 'default'
-        if REAL_SETTINGS.getSetting("SkinLogos") == "true":
-            REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/default/images/')
+        REAL_SETTINGS.setSetting('ChannelLogoFolder', 'special://home/addons/script.pseudotv.live/resources/skins/Holo/images/')
 ########################################################
             
 if os.path.exists(xbmc.translatePath(os.path.join(ADDON_INFO, 'resources', 'skins', Skin_Select, 'images'))):   
