@@ -764,7 +764,7 @@ class ChannelList:
         if append == False:
             channelplaylist.write(uni("#EXTM3U\n"))
 
-        if len(fileList) == 0:
+        if None == fileList or len(fileList) == 0:
             self.log("Unable to get information about channel " + str(channel), xbmc.LOGERROR)
             channelplaylist.close()
             return False
@@ -2685,14 +2685,17 @@ class ChannelList:
                             url = feed.entries[i].media_content[0]['url']
                         else:
                             url = feed.entries[i].links[1]['href']
-                            
+
                         epdesc = epdesc[:150]
                         runtimex = feed.entries[i]['itunes_duration']
                         summary = feed.channel.subtitle
                         summary = summary.replace(":", "")
                         try:
-                            genre = feed.channel.tags[0]['term']
-                            genre = uni(genre)
+                            if feed.channel.has_key("tags"):
+                                genre = feed.channel.tags[0]['term']
+                                genre = uni(genre)
+                            else:
+                                genre = "RSS"
                         except:
                             pass
                         time = (feed.entries[i].published_parsed)
