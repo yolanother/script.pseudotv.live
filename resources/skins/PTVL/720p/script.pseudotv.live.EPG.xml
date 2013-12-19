@@ -1,7 +1,7 @@
 <window>
     <allowoverlay>no</allowoverlay>   
+    <onload condition="System.HasAddon(script.tv.show.next.aired)">RunScript(script.tv.show.next.aired,backend=True)</onload>
     <onload condition="System.HasAddon(script.extendedinfo)">RunScript(script.extendedinfo,info=trendingshows)</onload>
-    <onload>RunScript(script.tv.show.next.aired,backend=True)</onload>
     <coordinates>
         <system>1</system>
         <posx>0</posx>
@@ -36,18 +36,124 @@
             <width>516</width>
             <height>290</height>
             <aspectratio>stretch</aspectratio>
-        </control> -->      
-        <!--TEXT Now Playing-->
-         <control type="label" id="522">
-            <description>Now watching Label</description>
-            <posx>-15</posx>
+        </control> -->
+<!--         <control type="image">
+            <description>Channel Background</description>
+            <posx>0</posx>
             <posy>0</posy>
-            <width min="100" max="300">auto</width>
-            <height>30</height>
-            <label>Now Playing</label>
-            <font>Font_Bold34</font>
+            <width>274</width>
+            <height>720</height>
+            <texture>pstvButtonNoFocus1.png</texture>
+        </control> -->
+        <!-- Today Nextaired -->
+        <control type="label">
+            <posx>0</posx>
+            <posy>-1</posy>
             <align>center</align>
+            <width>310</width>
+            <height>10</height>
+            <animation effect="slide" end="285,0" time="500">WindowOpen</animation>
+            <label>$INFO[Window(Home).Property(NextAired.1.Label)]</label>
+            <texture>Bottom2.png</texture>
             <textcolor>C0C0C0C0</textcolor>
+            <fadetime>500</fadetime>
+        </control> 
+        <control type="label">
+            <posx>0</posx>
+            <posy>150</posy>
+            <align>center</align>
+            <width>310</width>
+            <height>10</height>
+            <animation effect="slide" end="285,0" time="500">WindowOpen</animation>
+            <label>$INFO[Window(Home).Property(NextAired.1.Airtime)]</label>
+            <texture>Bottom2.png</texture>
+            <textcolor>C0C0C0C0</textcolor>
+            <fadetime>500</fadetime>
+        </control> 
+        <control type="image">
+            <posx>0</posx>
+            <posy>25</posy>
+            <width>300</width>
+            <height>125</height>
+            <align>center</align>
+            <aspectratio>keep</aspectratio>
+            <animation effect="slide" end="285,0" time="500">WindowOpen</animation>
+            <texture background="true">$INFO[Window(Home).Property(NextAired.1.Art(landscape)]</texture>
+            <fadetime>500</fadetime>
+        </control>
+        <!-- ######### -->
+        <control type="label">
+            <posx>0</posx>
+            <posy>-1</posy>
+            <height>10</height>
+            <width>250</width>
+            <align>center</align>
+            <animation effect="slide" end="655,0" time="1000">WindowOpen</animation>
+            <label>$INFO[Window(Home).Property(NextAired.2.Label)]</label>
+            <texture>Bottom2.png</texture>
+            <textcolor>C0C0C0C0</textcolor>
+            <fadetime>1000</fadetime>
+        </control> 
+        <control type="label">
+            <posx>0</posx>
+            <posy>150</posy>
+            <height>10</height>
+            <width>250</width>
+            <align>center</align>
+            <animation effect="slide" end="655,0" time="1000">WindowOpen</animation>
+            <label>$INFO[Window(Home).Property(NextAired.2.Airtime)]</label>
+            <texture>Bottom2.png</texture>
+            <textcolor>C0C0C0C0</textcolor>
+            <fadetime>1000</fadetime>
+        </control> 
+        <control type="image">
+            <posx>0</posx>
+            <posy>25</posy>
+            <width>300</width>
+            <height>125</height>
+            <align>center</align>
+            <aspectratio>keep</aspectratio>
+            <animation effect="slide" end="620,0" time="1000">WindowOpen</animation>
+            <texture background="true">$INFO[Window(Home).Property(NextAired.2.Art(landscape)]</texture>
+            <fadetime>1000</fadetime>
+        </control>
+        <!-- ######### -->
+        <control type="label">
+            <posx>0</posx>
+            <posy>-1</posy>
+            <align>center</align>
+            <width>310</width>
+            <height>10</height>
+            <animation effect="slide" end="955,0" time="1500">WindowOpen</animation>
+            <label>$INFO[Window(Home).Property(NextAired.3.Label)]</label>
+            <texture>Bottom2.png</texture>
+            <textcolor>C0C0C0C0</textcolor>
+            <fadetime>1500</fadetime>
+        </control> 
+        <control type="label">
+            <posx>0</posx>
+            <posy>150</posy>
+            <height>10</height>
+            <width>250</width>
+            <fadetime>1500</fadetime>
+            <align>center</align>
+            <animation effect="slide" end="990,0" time="1500">WindowOpen</animation>
+            <!-- <shadowcolor>7fffffff</shadowcolor> -->
+            <label>$INFO[Window(Home).Property(NextAired.3.Airtime)]</label>
+            <textcolor>C0C0C0C0</textcolor>
+            <texture>Bottom2.png</texture>
+            <autoscroll delay="3000" time="1000" repeat="10000">!Control.HasFocus(13)</autoscroll>
+        </control> 
+        <control type="image">
+            <posx>0</posx>
+            <posy>25</posy>
+            <width>300</width>
+            <height>125</height>
+            <align>center</align>
+            <aspectratio>keep</aspectratio>
+            <animation effect="slide" end="955,0" time="1500">WindowOpen</animation>   
+            <texture background="true">$INFO[Window(Home).Property(NextAired.3.Art(landscape)]</texture>
+            <fadetime>1500</fadetime>
         </control>
         <control type="image">
             <description>Channel Background</description>
@@ -57,86 +163,63 @@
             <height>720</height>
             <texture>pstvButtonNoFocus1.png</texture>
         </control>
-        <!--NowPlaying.Window-->
-        <control type="group">            
-            <posx>-18</posx>
-            <posy>25</posy>     
-            <!--Movie.landscape Now Playing-->        
-            <control type="image">
-                <description>landscape</description>
-                <colordiffuse>FFFFFFFF</colordiffuse>
-                <width>310</width>
-                <height>150</height>
+        <!-- Trending -->  
+         <control type="group"> 
+            <animation type="Visible" reversible="false">
+                <effect type="fade" start="0" end="100" time="300" delay="500" tween="sine" easing="inout" />
+            </animation>
+            <animation type="Hidden" reversible="false">
+                <effect type="fade" start="100" end="0" time="300" tween="sine" easing="inout" />
+            </animation>
+            <control type="label">
+                <posx>-15</posx>
+                <posy>-1</posy>
+                <width>300</width>
+                <height>10</height>
+                <fadetime>250</fadetime>
                 <align>center</align>
-                <aspectratio>keep</aspectratio>
-                <texture fallback="landscape.png">$INFO[Player.Art(landscape)]</texture>
+                <textcolor>C0C0C0C0</textcolor>
+                <label>$INFO[Window(Home).Property(TrendingShows.1.Title)]</label>
             </control>
-            <!--TV.landscape Now Playing-->
             <control type="image">
-                <description>landscape</description>
-                <colordiffuse>FFFFFFFF</colordiffuse>
-                <width>310</width>
-                <height>150</height>
+                <posx>-15</posx>
+                <posy>25</posy>
+                <width>300</width>
+                <height>125</height>
+                <fadetime>250</fadetime>
+                <aspectratio>keep</aspectratio>
+                <texture>$INFO[Window(Home).Property(TrendingShows.1.Art(fanart))]</texture>
+            </control>   
+            <control type="label">
+                <posx>-15</posx>
+                <posy>150</posy>
+                <width>300</width>
+                <height>10</height>
+                <fadetime>250</fadetime>
                 <align>center</align>
-                <aspectratio>keep</aspectratio>
-                <texture>$INFO[Player.Art(tvshow.landscape)]</texture>
-                <visible>VideoPlayer.Content(episodes)</visible>
-            </control>
-            <!--hulu-->
-            <control type="image">
-                <description>hulu</description>
-                <colordiffuse>FFFFFFFF</colordiffuse>
-                <width>310</width>
-                <height>150</height>
-                <align>center</align>
-                <aspectratio>keep</aspectratio>
-                <texture>EPG.Hulu</texture>
-                <visible>[substring(Player.FilenameAndPath,hulu) + IsEmpty(Player.Art(tvshow.landscape))]</visible>
-            </control>            
-            <control type="button" id="507">
-                <description>Dynamic art</description>
-                <label>landscape</label>
-                <visible>false</visible>
-            </control>
-            <control type="image" id="508">
-                <description>Dynamic art</description>
-                <colordiffuse>FFFFFFFF</colordiffuse>
-                <width>310</width>
-                <height>150</height>
-                <align>center</align>
-                <aspectratio>keep</aspectratio>
-            </control>  
-            <control type="image" id="512">
-                <description>Unaired NEW Icon</description>     
-                <width>100</width>
-                <height>100</height>
-                <aspectratio>keep</aspectratio>
+                <textcolor>C0C0C0C0</textcolor>
+                <label>Trending Now</label>
             </control>
         </control>
-     <control type="group">
-        <control type="label">
-            <posx>700</posx>
-            <posy>25</posy>
-            <height>10</height>
-            <label>$INFO[Window(Home).Property(NextAired.1.Label)]</label>
-        </control> 
-        <control type="label">
-            <posx>900</posx>
-            <posy>50</posy>
-            <height>10</height>
-            <label>$INFO[Window(Home).Property(NextAired.1.Airtime)]</label>
-        </control> 
-        <control type="image">
-            <posx>285</posx>
-            <posy>25</posy>
-            <width>310</width>
-            <height>150</height>
-            <align>center</align>
-            <aspectratio>keep</aspectratio>
-            <texture background="true">$INFO[Window(Home).Property(NextAired.1.Art(landscape)]</texture>
-            <fadetime>300</fadetime>
-        </control>      
-        </control>      
+        
+            
+            
+            
+            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         <control type="image">
             <description>Channel Background</description>        
             <posx>0</posx>
@@ -630,83 +713,75 @@
         </control>
         
         
-        <control type="group">
-            <posx>10</posx>
-            <posy>530</posy>		
-            <animation type="Visible" reversible="false">
-                <effect type="fade" start="0" end="100" time="300" delay="500" tween="sine" easing="inout" />
-            </animation>
-            <animation type="Hidden" reversible="false">
-                <effect type="fade" start="100" end="0" time="300" tween="sine" easing="inout" />
-            </animation>
-            <control type="label">
-                <width>200</width>
-                <height>100</height>
-                <aspectratio>keep</aspectratio>
-                <label>$INFO[Window(Home).Property(TrendingShows.1.Title)]</label>
-                <!-- <label2>$INFO[Window(Home).Property(TrendingShows.1.Rating)]$INFO[Window(Home).Property(TrendingShows.1.Year), • ,]</label2> -->
-                <visible>!IsEmpty(Window(Home).Property(TrendingMovies.1.Art(fanart)))</visible>
-            </control>
+        <!--NowPlaying.Window-->>
+        <control type="group">            
+            <posx>-15</posx>
+            <posy>530</posy>
+            <!--Movie.landscape Now Playing-->        
             <control type="image">
-                <width>200</width>
-                <height>100</height>
+                <description>landscape</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>300</width>
+                <height>125</height>
+                <align>center</align>
                 <aspectratio>keep</aspectratio>
-                <texture>$INFO[Window(Home).Property(TrendingShows.1.Art(fanart))]</texture>
+                <texture fallback="landscape.png">$INFO[Player.Art(landscape)]</texture>
             </control>
-            <control type="label">
-                <width>200</width>
-                <height>100</height>
-                <aspectratio>keep</aspectratio>
-                <label>$INFO[Window(Home).Property(TrendingShows.2.Title)]</label>
-                <visible>!IsEmpty(Window(Home).Property(TrendingMovies.2.Art(fanart)))</visible>
-            </control>
+            <!--TV.landscape Now Playing-->
             <control type="image">
-                <width>200</width>
-                <height>100</height>
+                <description>landscape</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>300</width>
+                <height>125</height>
+                <align>center</align>
                 <aspectratio>keep</aspectratio>
-                <texture>$INFO[Window(Home).Property(TrendingShows.2.Art(fanart))]</texture>
+                <texture>$INFO[Player.Art(tvshow.landscape)]</texture>
+                <visible>VideoPlayer.Content(episodes)</visible>
             </control>
-            <control type="label">
-                <width>200</width>
-                <height>100</height>
-                <aspectratio>keep</aspectratio>
-                <label>$INFO[Window(Home).Property(TrendingShows.3.Title)]</label>
-                <visible>!IsEmpty(Window(Home).Property(TrendingMovies.3.Art(fanart)))</visible>
-            </control>
+            <!--hulu-->
             <control type="image">
-                <width>200</width>
+                <description>hulu</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>300</width>
+                <height>125</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+                <texture>EPG.Hulu</texture>
+                <visible>[substring(Player.FilenameAndPath,hulu) + IsEmpty(Player.Art(tvshow.landscape))]</visible>
+            </control>            
+            <control type="button" id="507">
+                <description>Dynamic art</description>
+                <label>landscape</label>
+                <visible>false</visible>
+            </control>
+            <control type="image" id="508">
+                <description>Dynamic art</description>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <width>300</width>
+                <height>125</height>
+                <align>center</align>
+                <aspectratio>keep</aspectratio>
+            </control>  
+            <control type="image" id="512">
+                <description>Unaired NEW Icon</description>     
+                <width>100</width>
                 <height>100</height>
                 <aspectratio>keep</aspectratio>
-                <texture>$INFO[Window(Home).Property(TrendingShows.3.Art(fanart))]</texture>
             </control>
-            <control type="label">
-                <width>200</width>
-                <height>100</height>
-                <aspectratio>keep</aspectratio>
-                <label>$INFO[Window(Home).Property(TrendingShows.4.Title)]</label>
-                <visible>!IsEmpty(Window(Home).Property(TrendingMovies.4.Art(fanart)))</visible>
-            </control>
-            <control type="image">
-                <width>200</width>
-                <height>100</height>
-                <aspectratio>keep</aspectratio>
-                <texture>$INFO[Window(Home).Property(TrendingShows.4.Art(fanart))]</texture>
-            </control>
-            <control type="label">
-                <width>200</width>
-                <height>100</height>
-                <aspectratio>keep</aspectratio>
-                <label>$INFO[Window(Home).Property(TrendingShows.5.Title)]</label>
-                <visible>!IsEmpty(Window(Home).Property(TrendingMovies.5.Art(fanart)))</visible>
-            </control>
-            <control type="image">
-                <width>200</width>
-                <height>100</height>
-                <aspectratio>keep</aspectratio>
-                <texture>$INFO[Window(Home).Property(TrendingShows.5.Art(fanart))]</texture>
-            </control>
+        </control>     
+        <!--TEXT Now Playing-->
+         <control type="label" id="522">           
+            <posx>-15</posx>
+            <posy>652</posy>
+            <description>Now watching Label</description>
+            <width min="100" max="300">auto</width>
+            <height>30</height>
+            <label>Now Playing</label>
+            <font>Font_Bold34</font>
+            <align>center</align>
+            <textcolor>C0C0C0C0</textcolor>
         </control>
-        
+
         
 <!--Time/Weather-->    
         <control type="label">

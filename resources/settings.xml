@@ -44,12 +44,10 @@
 <!--Live Features-->
    <category label="30400">
         <setting id="os" type="enum" values="Android Arm|Android x86|ATV1 Linux|ATV1 Stock|ATV2|IOS|Linux 32bit|Linux 64bit|Mac 32bit|Mac 64bit|Rasberry Pi|Windows|TLBB" label="30401" default="11" />
-       	<setting id="IncludeIceLib" type="bool" label="30402" visible="eq(-1,!true)" default="true"/>
-        <setting label="30403" type="lsep"/>
         <setting id="xmltvLOC" type="folder" source="auto" label="30404" default="" />
-        <setting label="30405" type="lsep"/>
-        <setting id="Parselimit" type="enum" label="30406" values="50|100|150|200|250" default="0"/>
-        <setting id="Includestrms" type="bool" label="30407" default="false"/>
+        <setting id="PVR_Enabled" label="30801" type="bool" default="false"/>
+        <setting id="PVR_Folder" subsetting="true" label="30802" visible="eq(-1,true)" type="text" default="" />
+        <setting id="IncludeIceLib" type="bool" label="30402" visible="eq(-1,!true)" default="true"/>
     </category>
 <!--Autotune-->
     <category label="30070">
@@ -115,11 +113,6 @@
         <setting label="30308" type="text" visible="eq(-5,true) + !eq(-3,) + eq(-1,0)" enable="true"/>
         <setting id="maxtrailers" type="enum" label="30309" visible="eq(-6,true) + !eq(-4,) + eq(-2,0)" values="1|2|3|4|5" default="0"/>
     </category>
-    <!--PVR-->
-    <category label="30800">
-        <setting id="PVR_Enabled" label="30801" type="bool" default="false"/>
-        <setting id="PVR_Folder" subsetting="true" label="30802" visible="eq(-1,true)" type="text" default="" />
-    </category> 
     <!--APIs-->
     <category label="30700">  
         <setting id="tvdb.enabled" label="30702" type="bool" default="false" />

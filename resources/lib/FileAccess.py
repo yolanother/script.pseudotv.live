@@ -199,7 +199,10 @@ class VFSFile:
         
         
     def readlines(self):
-        return self.currentFile.read().split('\n')
+        return self.currentFile.read().split('\n')    
+        
+    def writelines(self):
+        return self.currentFile.write().split('\n')
         
         
     def tell(self):

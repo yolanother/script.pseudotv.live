@@ -631,6 +631,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             self.Error("No channels available. Exiting.")
             return
 
+        self.setChannel(self.fixChannel(channel))
     def waitForVideoPaused(self):
         self.log('waitForVideoPaused')
         sleeptime = 0

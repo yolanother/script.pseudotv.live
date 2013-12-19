@@ -36,16 +36,13 @@
     <string id="30048">Service Starting...</string>
     <string id="30049">Enable Artwork Download (Coming Soon)</string>
     <string id="30050">TV File System</string>
-    <string id="30051">Movie File System</string>
-    
-<string id="30400">Live Features</string> 
-    <string id="30401">Choose Your Operating System</string>   
-    <!-- <string id="30402">Include Strms</string> 	 -->
-    <string id="30403">LiveTV Options:</string>
+    <string id="30051">Movie File System</string> 
+<string id="30400">Live Features</string>  
+    <string id="30401">Choose Your Operating System</string>  
 	<string id="30404">XMLTV file location</string>
-    <string id="30405">Youtube/RSS Options:</string>
-    <string id="30406">Media Limit Per Channel</string>
-    <string id="30407">Optionally Generate Strms/NFOs</string>
+    <string id="30801">Enable PVR (Coming Soon)</string>
+    <string id="30802">Record Folder</string>
+    <!-- <string id="30402">Include Strms</string> 	 -->
 <string id="30070">AutoTune</string>
     <string id="30071">Enable Autotune</string>
     <string id="30072">Warning!! this will delete your current channel configuration, are you sure?</string>
@@ -107,9 +104,6 @@
     <string id="30307"># of Trailers to Show Between Shows</string>
     <string id="30308">If Auto, set the maximum number to show between shows</string>
     <string id="30309">Maximum Number of Trailers</string>
-<string id="30800">PVR</string>
-    <string id="30801">Enable PVR (Coming Soon)</string>
-    <string id="30802">Record Folder</string>
 <string id="30700">APIs</string>
     <string id="30702">Enable TVDB</string>
     <string id="30703">TVDB API KEY</string>
